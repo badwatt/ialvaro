@@ -1,19 +1,34 @@
 [
-	{"id":"1","title":"react.js","image":"/skills/react.svg","url":"https://react.dev/"},
-	{"id":"2","title":"vue.js","image":"/skills/vue.svg","url":"https://vuejs.org/"},
-	{"id":"3","title":"typescript","image":"/skills/typescript.svg","url":"https://typescriptlang.org/"},
-	{"id":"4","title":"javascript","image":"/skills/javascript.svg","url":"https://javascript.com/"},
-	{"id":"5","title":"tailwind","image":"/skills/tailwind.svg","url":"https://tailwindcss.com/"},
-	{"id":"6","title":"next.js","image":"/skills/next.svg","url":"https://nextjs.org/"},
-	{"id":"9","title":"astro","image":"/skills/astro.svg","url":"https://astro.build/"},
-	{"id":"7","title":"rust","image":"/skills/ferris.svg","url":"https://rust-lang.org/"},
-	{"id":"8","title":"go","image":"/skills/go.svg","url":"https://go.dev/"},
-	{"id":"10","title":"zig","image":"/skills/zig.svg","url":"https://ziglang.org/"},
-	{"id":"11","title":"odin","image":"/skills/odin.svg","url":"https://odin-lang.org/"},
-	{"id":"12","title":"node.js","image":"/skills/node.svg","url":"https://nodejs.org/"},
-	{"id":"13","title":"docker","image":"/skills/docker.svg","url":"https://docker.com/"},
-	{"id":"14","title":"podman","image":"/skills/podman.svg","url":"https://podman.io/"},
-	{"id":"15","title":"sql","image":"/skills/sql.svg","url":"https://mysql.com/"},
-	{"id":"16","title":"jest","image":"/skills/jest.svg","url":"https://jestjs.io/"},
-	{"id":"17","title":"vitest","image":"/skills/vitest.svg","url":"https://vitest.dev/"}
+  { "id": "1", "title": "react.js", "image": "/skills/react.svg", "url": "https://react.dev/" },
+  { "id": "2", "title": "vue.js", "image": "/skills/vue.svg", "url": "https://vuejs.org/" },
+  {
+    "id": "3",
+    "title": "typescript",
+    "image": "/skills/typescript.svg",
+    "url": "https://typescriptlang.org/"
+  },
+  {
+    "id": "4",
+    "title": "javascript",
+    "image": "/skills/javascript.svg",
+    "url": "https://javascript.com/"
+  },
+  {
+    "id": "5",
+    "title": "tailwind",
+    "image": "/skills/tailwind.svg",
+    "url": "https://tailwindcss.com/"
+  },
+  { "id": "6", "title": "next.js", "image": "/skills/next.svg", "url": "https://nextjs.org/" },
+  { "id": "9", "title": "astro", "image": "/skills/astro.svg", "url": "https://astro.build/" },
+  { "id": "7", "title": "rust", "image": "/skills/ferris.svg", "url": "https://rust-lang.org/" },
+  { "id": "8", "title": "go", "image": "/skills/go.svg", "url": "https://go.dev/" },
+  { "id": "10", "title": "zig", "image": "/skills/zig.svg", "url": "https://ziglang.org/" },
+  { "id": "11", "title": "odin", "image": "/skills/odin.svg", "url": "https://odin-lang.org/" },
+  { "id": "12", "title": "node.js", "image": "/skills/node.svg", "url": "https://nodejs.org/" },
+  { "id": "13", "title": "docker", "image": "/skills/docker.svg", "url": "https://docker.com/" },
+  { "id": "14", "title": "podman", "image": "/skills/podman.svg", "url": "https://podman.io/" },
+  { "id": "15", "title": "sql", "image": "/skills/sql.svg", "url": "https://mysql.com/" },
+  { "id": "16", "title": "jest", "image": "/skills/jest.svg", "url": "https://jestjs.io/" },
+  { "id": "17", "title": "vitest", "image": "/skills/vitest.svg", "url": "https://vitest.dev/" }
 ]

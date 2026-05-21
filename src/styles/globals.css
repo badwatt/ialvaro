@@ -1,260 +1,311 @@
 @import "tailwindcss";
 
 @theme {
-	--color-alvaro-base: #08080F;
-	--color-alvaro-surface: #12121D;
-	--color-alvaro-border: #202035;
-	--color-alvaro-muted: #9898B0;
-	--color-alvaro-white: #E8E8F2;
-	--color-alvaro-primary: #5B9BD5;
-	--color-alvaro-dark: #08080F;
-	--color-alvaro-accent: #E0556A;
+  --color-alvaro-base: #08080f;
+  --color-alvaro-surface: #12121d;
+  --color-alvaro-border: #202035;
+  --color-alvaro-muted: #9898b0;
+  --color-alvaro-white: #e8e8f2;
+  --color-alvaro-primary: #5b9bd5;
+  --color-alvaro-dark: #08080f;
+  --color-alvaro-accent: #e0556a;
 }
 
 /* Light theme */
 [data-theme="light"] {
-	--color-alvaro-base: #F4F6FA;
-	--color-alvaro-surface: #E8ECF2;
-	--color-alvaro-border: #CDD4DE;
-	--color-alvaro-muted: #5A6377;
-	--color-alvaro-white: #0F1117;
-	--color-alvaro-primary: #3A7BD5;
-	--color-alvaro-dark: #08080F;
-	--color-alvaro-accent: #D64558;
+  --color-alvaro-base: #f4f6fa;
+  --color-alvaro-surface: #e8ecf2;
+  --color-alvaro-border: #cdd4de;
+  --color-alvaro-muted: #5a6377;
+  --color-alvaro-white: #0f1117;
+  --color-alvaro-primary: #3a7bd5;
+  --color-alvaro-dark: #08080f;
+  --color-alvaro-accent: #d64558;
 }
 
 @property --angle {
-	syntax: "<angle>";
-	initial-value: 0deg;
-	inherits: false;
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 * {
-	-webkit-tap-highlight-color: transparent;
-	font-family: "Outfit Variable", "Outfit", sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Outfit Variable", "Outfit", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-	box-sizing: border-box;
-	color: var(--color-alvaro-white);
-	background-color: var(--color-alvaro-base);
-	font-variant-numeric: tabular-nums;
-	letter-spacing: -0.01em;
+  box-sizing: border-box;
+  color: var(--color-alvaro-white);
+  background-color: var(--color-alvaro-base);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 /* Grain overlay */
 body::after {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: 50;
-	pointer-events: none;
-	opacity: 0.03;
-	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-	background-repeat: repeat;
-	background-size: 256px 256px;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 /* Vignette */
 body::before {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: 49;
-	pointer-events: none;
-	background: radial-gradient(ellipse at 50% 0%, transparent 60%, rgba(8, 8, 15, 0.5) 100%);
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%, transparent 60%, rgba(8, 8, 15, 0.5) 100%);
 }
 
 body::-webkit-scrollbar {
-	width: 0.5em;
+  width: 0.5em;
 }
 
 body::-webkit-scrollbar-thumb {
-	background-color: var(--color-alvaro-primary);
-	border-radius: 1ex;
+  background-color: var(--color-alvaro-primary);
+  border-radius: 1ex;
 }
 
 body::-webkit-scrollbar-thumb:active {
-	background-color: var(--color-alvaro-muted);
+  background-color: var(--color-alvaro-muted);
 }
 
 *:focus-visible {
-	outline: 2px solid var(--color-alvaro-primary);
-	outline-offset: 2px;
+  outline: 2px solid var(--color-alvaro-primary);
+  outline-offset: 2px;
 }
 
 html {
-	scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 ::selection {
-	background-color: var(--color-alvaro-primary);
-	color: var(--color-alvaro-base);
+  background-color: var(--color-alvaro-primary);
+  color: var(--color-alvaro-base);
 }
 
 /* === ANIMATIONS === */
 
 @keyframes rubberBand {
-	0% { transform: scale3d(1, 1, 1); }
-	30% { transform: scale3d(1.25, 0.75, 1); }
-	40% { transform: scale3d(0.75, 1.25, 1); }
-	50% { transform: scale3d(1.15, 0.85, 1); }
-	65% { transform: scale3d(0.95, 1.05, 1); }
-	75% { transform: scale3d(1.05, 0.95, 1); }
-	100% { transform: scale3d(1, 1, 1); }
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  30% {
+    transform: scale3d(1.25, 0.75, 1);
+  }
+  40% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+  50% {
+    transform: scale3d(1.15, 0.85, 1);
+  }
+  65% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+  75% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
 }
 
 @keyframes marquee {
-	from { transform: translateX(0); }
-	to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes marquee-reverse {
-	from { transform: translateX(-50%); }
-	to { transform: translateX(0); }
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes pulse-glow {
-	0%, 100% { opacity: 0.4; transform: scale(1); }
-	50% { opacity: 0.8; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes scaleIn {
-	from { opacity: 0; transform: scale(0.9); }
-	to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* === MARQUEE === */
 
 .marquee-container {
-	overflow: hidden;
-	white-space: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .marquee-track {
-	display: inline-block;
-	animation: marquee linear infinite;
+  display: inline-block;
+  animation: marquee linear infinite;
 }
 
 .marquee-track:hover {
-	animation-play-state: paused;
+  animation-play-state: paused;
 }
 
 .marquee-track-reverse {
-	display: inline-block;
-	animation: marquee-reverse linear infinite;
+  display: inline-block;
+  animation: marquee-reverse linear infinite;
 }
 
 .marquee-track-reverse:hover {
-	animation-play-state: paused;
+  animation-play-state: paused;
 }
 
 /* === SPOTLIGHT CARD === */
 
 .spotlight-card {
-	position: relative;
-	border-radius: 1.5rem;
-	background: var(--color-alvaro-surface);
-	border: 1px solid var(--color-alvaro-border);
-	overflow: hidden;
-	transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  border-radius: 1.5rem;
+  background: var(--color-alvaro-surface);
+  border: 1px solid var(--color-alvaro-border);
+  overflow: hidden;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .spotlight-card::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	opacity: 0;
-	transition: opacity 0.4s ease;
-	background: radial-gradient(
-		600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-		rgba(91, 155, 213, 0.06),
-		transparent 40%
-	);
-	pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(91, 155, 213, 0.06),
+    transparent 40%
+  );
+  pointer-events: none;
 }
 
 .spotlight-card:hover::before {
-	opacity: 1;
+  opacity: 1;
 }
 
 .spotlight-card:hover {
-	border-color: rgba(91, 155, 213, 0.3);
-	box-shadow: 0 0 40px -10px rgba(91, 155, 213, 0.1);
+  border-color: rgba(91, 155, 213, 0.3);
+  box-shadow: 0 0 40px -10px rgba(91, 155, 213, 0.1);
 }
 
 /* === ANIMATED BORDER === */
 
 .gradient-border {
-	background: conic-gradient(
-		from var(--angle, 0deg),
-		var(--color-alvaro-primary),
-		var(--color-alvaro-border),
-		var(--color-alvaro-primary),
-		var(--color-alvaro-border),
-		var(--color-alvaro-primary)
-	);
-	animation: border-rotate 8s linear infinite;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    var(--color-alvaro-primary),
+    var(--color-alvaro-border),
+    var(--color-alvaro-primary),
+    var(--color-alvaro-border),
+    var(--color-alvaro-primary)
+  );
+  animation: border-rotate 8s linear infinite;
 }
 
 @keyframes border-rotate {
-	to { --angle: 360deg; }
+  to {
+    --angle: 360deg;
+  }
 }
 
 /* === FLOATING TAG ANIMATION === */
 
 .float {
-	animation: float-drift ease-in-out infinite;
+  animation: float-drift ease-in-out infinite;
 }
 
 @keyframes float-drift {
-	0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-	50% { transform: translate(-50%, -50%) translateY(-6px); }
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-6px);
+  }
 }
 
 /* === SECTION CURVE === */
 
 .section-curve {
-	padding-top: 6rem;
-	padding-bottom: 8rem;
-	padding-left: 1rem;
-	padding-right: 1rem;
+  padding-top: 6rem;
+  padding-bottom: 8rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 @media (min-width: 768px) {
-	.section-curve {
-		padding-top: 8rem;
-		padding-bottom: 12rem;
-		padding-left: 0;
-		padding-right: 0;
-	}
+  .section-curve {
+    padding-top: 8rem;
+    padding-bottom: 12rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 /* === RUBBER BAND === */
 
 .rubber-band:hover {
-	animation: rubberBand 0.8s ease;
+  animation: rubberBand 0.8s ease;
 }
 
 /* === MESH BLOBS === */
 
 .mesh-blob {
-	animation: blob-drift 20s ease-in-out infinite;
+  animation: blob-drift 20s ease-in-out infinite;
 }
 
 .mesh-blob-delayed {
-	animation: blob-drift 25s ease-in-out infinite reverse;
+  animation: blob-drift 25s ease-in-out infinite reverse;
 }
 
 .mesh-blob-slow {
-	animation: blob-drift 30s ease-in-out infinite;
+  animation: blob-drift 30s ease-in-out infinite;
 }
 
 @keyframes blob-drift {
-	0%, 100% { transform: translate(0, 0) scale(1); }
-	33% { transform: translate(30px, -30px) scale(1.05); }
-	66% { transform: translate(-20px, 20px) scale(0.95); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
 }

@@ -16,11 +16,11 @@ pnpm remove <package>
 
 Every task — no exceptions — must use these skills:
 
-| Skill | File | Purpose |
-|-------|------|---------|
-| `tdd` | `/home/alvaro17f/.pi/agent/skills/tdd/SKILL.md` | Red-green-refactor loop. Write failing test first, then implement. |
-| `gpt-taste` | `/home/alvaro17f/.pi/agent/skills/gpt-taste/SKILL.md` | Award-winning design engineering. AIDA structure, hero rules, bento grids, GSAP motion. |
-| `conventional-commit` | `/home/alvaro17f/.pi/agent/skills/conventional-commit/SKILL.md` | Structured commit messages (`feat:`, `fix:`, `refactor:`, `BREAKING:`). |
+| Skill                 | File                                                            | Purpose                                                                                 |
+| --------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `tdd`                 | `/home/alvaro17f/.pi/agent/skills/tdd/SKILL.md`                 | Red-green-refactor loop. Write failing test first, then implement.                      |
+| `gpt-taste`           | `/home/alvaro17f/.pi/agent/skills/gpt-taste/SKILL.md`           | Award-winning design engineering. AIDA structure, hero rules, bento grids, GSAP motion. |
+| `conventional-commit` | `/home/alvaro17f/.pi/agent/skills/conventional-commit/SKILL.md` | Structured commit messages (`feat:`, `fix:`, `refactor:`, `BREAKING:`).                 |
 
 **Before any implementation**, read the relevant skill files and follow their directives.
 

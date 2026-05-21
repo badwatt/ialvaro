@@ -1,41 +1,45 @@
 {
-	"name": "ialvaro",
-	"type": "module",
-	"version": "0.2.0",
-	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro",
-		"format": "biome --write .",
-		"test": "vitest",
-		"test:ui": "vitest --ui",
-		"coverage": "vitest --coverage",
-		"coverage:ui": "vitest --coverage --ui",
-		"upgrade": "nlx @astrojs/upgrade"
-	},
-	"dependencies": {
-		"@astrojs/node": "10.1.1",
-		"@astrojs/react": "5.0.5",
-		"@emailjs/browser": "4.4.1",
-		"@fontsource-variable/jetbrains-mono": "^5.2.8",
-		"@fontsource-variable/outfit": "^5.2.8",
-		"@phosphor-icons/react": "^2.1.10",
-		"@tailwindcss/vite": "4.3.0",
-		"@types/react": "19.2.14",
-		"astro": "6.3.3",
-		"react": "19.2.6",
-		"react-dom": "19.2.6",
-		"react-hot-toast": "2.6.0"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.4.15",
-		"@testing-library/react": "16.3.2",
-		"@vitest/coverage-v8": "4.1.6",
-		"@vitest/ui": "4.1.6",
-		"happy-dom": "20.9.0",
-		"typescript": "6.0.3",
-		"vitest": "4.1.6"
-	}
+  "name": "ialvaro",
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "astro": "astro",
+    "build": "astro build",
+    "coverage": "vitest --coverage",
+    "coverage:ui": "vitest --coverage --ui",
+    "dev": "astro dev",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "preview": "astro preview",
+    "start": "astro dev",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "upgrade": "nlx @astrojs/upgrade"
+  },
+  "dependencies": {
+    "@astrojs/node": "10.1.1",
+    "@astrojs/react": "5.0.5",
+    "@emailjs/browser": "4.4.1",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource-variable/outfit": "^5.2.8",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tailwindcss/vite": "4.3.0",
+    "@types/react": "19.2.14",
+    "astro": "6.3.3",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-hot-toast": "2.6.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "16.3.2",
+    "@vitest/coverage-v8": "4.1.6",
+    "@vitest/ui": "4.1.6",
+    "happy-dom": "20.9.0",
+    "oxfmt": "0.51.0",
+    "oxlint": "1.66.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.6"
+  }
 }

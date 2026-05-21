@@ -18,7 +18,7 @@ services:
     labels:
       caddy: ialvaro.com, azama.es
       caddy.import: cloudflare
-      caddy.reverse_proxy: '{{upstreams 4321}}'
+      caddy.reverse_proxy: "{{upstreams 4321}}"
 
 networks:
   proxy:
