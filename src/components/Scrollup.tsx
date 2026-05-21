@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowUp } from "@phosphor-icons/react";
+import { ArrowUpIcon } from "@phosphor-icons/react";
 
 export const goToTop = () => {
   document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
@@ -22,7 +22,7 @@ export const Scrollup = () => {
       aria-label="Scroll to top"
       className="flex justify-center items-center fixed bottom-12 right-12 w-12 h-12 bg-alvaro-primary text-alvaro-dark rounded-full cursor-pointer hover:opacity-90 transition-all duration-300 active:scale-95 animate-[scaleIn_0.3s_ease-out] z-60"
     >
-      <ArrowUp size={24} weight="bold" />
+      <ArrowUpIcon size={24} weight="bold" />
     </button>
   );
 };

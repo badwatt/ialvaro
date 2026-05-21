@@ -1,4 +1,4 @@
-import { DownloadSimple } from "@phosphor-icons/react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 export const CV = () => {
   return (
@@ -6,7 +6,7 @@ export const CV = () => {
       <a href="/cv/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="Download CV">
         <div className="grid place-items-center p-12 md:p-20 rounded-3xl bg-alvaro-surface border border-alvaro-border hover:border-alvaro-primary/40 transition-all duration-500 group cursor-pointer active:scale-[0.99] relative overflow-hidden">
           {/* Background glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-alvaro-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute inset-0 bg-linear-to-br from-alvaro-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
           {/* Corner decorations */}
           <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-alvaro-primary/20 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
@@ -16,7 +16,7 @@ export const CV = () => {
             Download my CV
           </h2>
           <div className="relative z-10 mt-6 p-3 rounded-full bg-alvaro-primary/10 group-hover:bg-alvaro-primary/20 transition-all duration-300">
-            <DownloadSimple
+            <DownloadSimpleIcon
               size={32}
               weight="bold"
               className="text-alvaro-muted group-hover:text-alvaro-primary transition-colors duration-300"

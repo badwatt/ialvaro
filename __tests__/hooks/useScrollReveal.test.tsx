@@ -1,7 +1,6 @@
 import { act, cleanup, render } from "@testing-library/react";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createObserverMock } from "../helpers/observerMock";
 
 let observeMock: ReturnType<typeof vi.fn>;
 let disconnectMock: ReturnType<typeof vi.fn>;

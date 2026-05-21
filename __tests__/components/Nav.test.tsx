@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { Nav } from "src/components/Nav";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 describe("<Nav />", () => {
   afterEach(cleanup);

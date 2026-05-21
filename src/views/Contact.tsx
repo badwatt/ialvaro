@@ -1,7 +1,7 @@
-import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
+import { type ChangeEvent, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { Spinner } from "src/components/Spinner";
-import { PaperPlaneTilt, CheckCircle } from "@phosphor-icons/react";
+import { PaperPlaneTiltIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import toast, { Toaster } from "react-hot-toast";
 
 export const Contact = () => {
@@ -41,7 +41,7 @@ export const Contact = () => {
     }
   };
 
-  const sendEmail = async (e: FormEvent) => {
+  const sendEmail = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
@@ -177,7 +177,7 @@ export const Contact = () => {
               ) : (
                 <>
                   Send message
-                  <PaperPlaneTilt size={20} weight="bold" />
+                  <PaperPlaneTiltIcon size={20} weight="bold" />
                 </>
               )}
             </button>
@@ -185,7 +185,7 @@ export const Contact = () => {
         </section>
       ) : (
         <section className="grid place-items-center p-12 rounded-2xl bg-alvaro-surface border border-alvaro-border animate-[scaleIn_0.5s_ease-out]">
-          <CheckCircle size={48} weight="bold" className="text-alvaro-primary mb-4" />
+          <CheckCircleIcon size={48} weight="bold" className="text-alvaro-primary mb-4" />
           <h2 className="text-2xl font-semibold tracking-tight mb-2">Message sent</h2>
           <p className="text-alvaro-muted">I will get back to you soon.</p>
         </section>

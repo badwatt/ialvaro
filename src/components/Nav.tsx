@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { List, X } from "@phosphor-icons/react";
+import { ListIcon, XIcon } from "@phosphor-icons/react";
 import { ThemeToggle } from "src/components/ThemeToggle";
 
 const links = [
@@ -52,7 +52,7 @@ export const Nav = () => {
             type="button"
             onClick={() => {
               scroller("home");
-              isOpen && setIsOpen(false);
+              if (isOpen) setIsOpen(false);
             }}
             className="text-lg font-bold tracking-[-0.03em] text-alvaro-white hover:text-alvaro-primary transition-colors duration-300 cursor-pointer"
           >
@@ -86,7 +86,7 @@ export const Nav = () => {
               aria-label="menu-mobile"
               aria-expanded={isOpen}
             >
-              {isOpen ? <X size={24} weight="bold" /> : <List size={24} weight="bold" />}
+              {isOpen ? <XIcon size={24} weight="bold" /> : <ListIcon size={24} weight="bold" />}
             </button>
           </div>
         </div>
