@@ -83,7 +83,7 @@ export const Footer = () => {
         {/* Bottom bar */}
         <div className="mt-16 pt-6 border-t border-alvaro-primary/5 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-xs text-alvaro-muted/40">
-            &copy; {new Date().getFullYear()} Alvaro Garcia Macias
+            {new Date().getFullYear()} Alvaro Garcia Macias
           </p>
           <p className="text-xs text-alvaro-muted/30">Designed &amp; built with intention</p>
         </div>

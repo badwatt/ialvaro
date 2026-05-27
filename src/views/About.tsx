@@ -32,7 +32,7 @@ export default function About() {
             <div className="absolute -inset-8 rounded-3xl bg-alvaro-primary/6 blur-3xl" />
             <div className="absolute -inset-[2px] rounded-3xl gradient-border -z-10 opacity-60" />
             <img
-              src="/images/profile/profile.png"
+              src="/images/profile/profile_alt.png"
               alt="Alvaro Garcia Macias"
               className={`relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-3xl transition-all duration-700 ${
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
