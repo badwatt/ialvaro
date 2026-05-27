@@ -47,10 +47,10 @@ export const Contact = () => {
     setIsSubmitting(true);
     try {
       await emailjs.sendForm(
-        "service_ialvaro",
-        "template_ialvaro",
+        import.meta.env.PUBLIC_SERVICE_ID,
+        import.meta.env.PUBLIC_TEMPLATE_ID,
         form.current as unknown as HTMLFormElement,
-        "ialvaro_public_key",
+        import.meta.env.PUBLIC_PUBLIC_KEY,
       );
       setIsSubmitted(true);
     } catch {
