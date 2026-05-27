@@ -2,6 +2,19 @@ import { useEffect, useState } from "react";
 
 const sections = ["Home", "About", "Skills", "Experience", "Portfolio", "CV", "Contact"];
 
+const syncHash = (id: string) => {
+  const target = `#${id}`;
+  if (window.location.hash !== target) {
+    history.replaceState(null, "", target);
+  }
+};
+
+const clearHash = () => {
+  if (window.location.hash) {
+    history.replaceState(null, "", window.location.pathname);
+  }
+};
+
 export const DynamicTitle = () => {
   const [title, setTitle] = useState("ialvaro");
 
@@ -11,6 +24,7 @@ export const DynamicTitle = () => {
 
       if (scrollY < 100) {
         setTitle("Home | ialvaro");
+        syncHash("home");
         return;
       }
 
@@ -21,10 +35,13 @@ export const DynamicTitle = () => {
           const rect = el.getBoundingClientRect();
           if (rect.top <= 150) {
             setTitle(`${sections[i]} | ialvaro`);
+            syncHash(id);
             return;
           }
         }
       }
+
+      clearHash();
     };
 
     updateTitle();
