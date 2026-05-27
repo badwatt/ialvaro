@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { Skills } from "src/views/Skills";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createObserverMock } from "./helpers/observerMock";
 
 describe("<Skills />", () => {
@@ -16,25 +16,9 @@ describe("<Skills />", () => {
     expect(screen.getByRole("heading", { name: /skills/i })).toBeDefined();
   });
 
-  it("should show first 12 skills by default", () => {
+  it("should show all 18 skills by default", () => {
     render(<Skills />);
-    expect(screen.getAllByLabelText(/skill/i).length).toBe(12);
-  });
-
-  it("should reveal all skills on Show more", () => {
-    render(<Skills />);
-    const btn = screen.getByText(/show more/i);
-    expect(btn.classList.contains("cursor-pointer")).toBe(true);
-    fireEvent.click(btn);
-    expect(screen.getAllByLabelText(/skill/i).length).toBe(17);
-    expect(screen.getByText(/show less/i)).toBeDefined();
-  });
-
-  it("should collapse back on Show less", () => {
-    render(<Skills />);
-    fireEvent.click(screen.getByText(/show more/i));
-    fireEvent.click(screen.getByText(/show less/i));
-    expect(screen.getAllByLabelText(/skill/i).length).toBe(12);
+    expect(screen.getAllByLabelText(/skill/i).length).toBe(18);
   });
 
   it("skills become visible when intersecting", () => {

@@ -255,12 +255,6 @@ html {
   }
 }
 
-/* === RUBBER BAND === */
-
-.rubber-band:hover {
-  animation: rubberBand 0.8s ease;
-}
-
 /* === MESH BLOBS === */
 
 .mesh-blob {

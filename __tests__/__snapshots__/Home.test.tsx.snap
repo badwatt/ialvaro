@@ -38,32 +38,32 @@ exports[`<Home /> > matches snapshot 1`] = `
           class="block text-alvaro-white"
         >
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             L
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             V
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             R
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             O
           </span>
@@ -73,32 +73,32 @@ exports[`<Home /> > matches snapshot 1`] = `
           class="block text-alvaro-muted"
         >
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             G
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             R
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             C
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             I
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
@@ -108,32 +108,32 @@ exports[`<Home /> > matches snapshot 1`] = `
           class="block text-alvaro-white"
         >
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             M
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             C
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             I
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             A
           </span>
           <span
-            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary "
+            class="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
           >
             S
           </span>
