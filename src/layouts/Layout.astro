@@ -4,7 +4,6 @@ import "@fontsource-variable/jetbrains-mono";
 import "src/styles/globals.css";
 import { Nav } from "src/components/Nav";
 import { Footer } from "src/components/Footer";
-import { ThemeToggle } from "src/components/ThemeToggle";
 import { DynamicTitle } from "src/utils/DynamicTitle";
 ---
 
@@ -33,11 +32,12 @@ import { DynamicTitle } from "src/utils/DynamicTitle";
 				document.documentElement.setAttribute('data-theme', 'light');
 			}
 		</script>
+    <a rel="me" href="https://mastodon.social/@badwatt" />
 	</head>
 	<body>
 		<a
 			href="#main-content"
-			class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-alvaro-primary focus:text-alvaro-dark focus:rounded-lg focus:font-medium"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-alvaro-primary focus:text-alvaro-dark focus:rounded-lg focus:font-medium"
 		>
 			Skip to content
 		</a>
