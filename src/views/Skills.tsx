@@ -3,8 +3,8 @@ import { Header } from "src/components/Header";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
 import data from "src/data/skills.json";
 
-const featuredIndices = new Set([0, 2, 6, 7, 12]);
-const INITIAL_COUNT = 12;
+const featuredIndices = new Set([0, 2]);
+const INITIAL_COUNT = 18;
 
 export const Skills = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.05 });
