@@ -7,7 +7,11 @@ describe("ThemeToggle", () => {
     document.documentElement.removeAttribute("data-theme");
     vi.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
   });
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
 
   it("renders toggle button", async () => {
     const { ThemeToggle } = await import("src/components/ThemeToggle");
@@ -72,6 +76,19 @@ describe("ThemeToggle", () => {
     const { ThemeToggle } = await import("src/components/ThemeToggle");
     render(<ThemeToggle />);
 
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  });
+
+  it("defaults to dark in SSR environment (window undefined)", async () => {
+    const savedWindow = globalThis.window;
+    Object.defineProperty(globalThis, "window", { value: undefined, writable: true, configurable: true });
+
+    vi.resetModules();
+    const { ThemeToggle } = await import("src/components/ThemeToggle");
+
+    Object.defineProperty(globalThis, "window", { value: savedWindow, writable: true, configurable: true });
+
+    render(<ThemeToggle />);
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
   });
 });

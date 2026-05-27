@@ -1,6 +1,22 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { SpotlightCard } from "src/components/SpotlightCard";
+import { SpotlightCard, setupSpotlight } from "src/components/SpotlightCard";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+describe("setupSpotlight", () => {
+  it("returns undefined when element is null", () => {
+    expect(setupSpotlight(null)).toBeUndefined();
+  });
+
+  it("returns cleanup function when element exists", () => {
+    const el = document.createElement("div");
+    const addSpy = vi.spyOn(el, "addEventListener");
+    const cleanup = setupSpotlight(el);
+    expect(addSpy).toHaveBeenCalledWith("mousemove", expect.any(Function), { passive: true });
+    expect(typeof cleanup).toBe("function");
+    cleanup!();
+    addSpy.mockRestore();
+  });
+});
 
 describe("<SpotlightCard />", () => {
   afterEach(cleanup);

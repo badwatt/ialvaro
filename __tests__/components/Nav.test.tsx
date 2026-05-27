@@ -62,10 +62,26 @@ describe("<Nav />", () => {
 
   it("mousedown does nothing when menu closed (isOpen=false)", () => {
     render(<Nav />);
-    // menu is closed by default, mousedown should not crash
     act(() => {
       document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
     });
+  });
+
+  it("mousedown inside nav does not close menu", () => {
+    render(<Nav />);
+    fireEvent.click(screen.getByLabelText(/menu-mobile/i));
+    expect(screen.getByLabelText(/home-mobile/i)).toBeDefined();
+    const nav = screen.getByRole("navigation");
+    act(() => {
+      nav.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    });
+    expect(screen.getByLabelText(/home-mobile/i)).toBeDefined();
+  });
+
+  it("brand click does not close when menu already closed", () => {
+    render(<Nav />);
+    fireEvent.click(screen.getByText("AM"));
+    expect(screen.queryByLabelText(/home-mobile/i)).toBeNull();
   });
 
   it("brand click scrolls to home and closes mobile menu", () => {

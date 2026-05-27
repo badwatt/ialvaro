@@ -1,16 +1,8 @@
 import { useState, useEffect } from "react";
 import { SunIcon, MoonIcon } from "@phosphor-icons/react";
+import { getInitialTheme } from "src/utils/getInitialTheme";
 
-const getInitialTheme = (): "dark" | "light" => {
-  const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
-  if (stored === "light" || stored === "dark") return stored;
-
-  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: light)").matches) {
-    return "light";
-  }
-
-  return "dark";
-};
+export { getInitialTheme };
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<"dark" | "light">(getInitialTheme);

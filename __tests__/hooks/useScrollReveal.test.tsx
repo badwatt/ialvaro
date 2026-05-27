@@ -70,6 +70,15 @@ describe("useScrollReveal", () => {
     expect(getByTestId("el").dataset.visible).toBe("false");
   });
 
+  it("with once=true ignores non-intersecting entry", () => {
+    const { getByTestId } = render(<HookTester once={true} />);
+    act(() => {
+      observerCallback([{ isIntersecting: false }]);
+    });
+    expect(getByTestId("el").dataset.visible).toBe("false");
+    expect(disconnectMock).not.toHaveBeenCalled();
+  });
+
   it("disconnects on unmount", () => {
     const { unmount } = render(<HookTester />);
     unmount();

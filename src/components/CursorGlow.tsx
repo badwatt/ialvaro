@@ -1,25 +1,29 @@
 import { useEffect, useRef } from "react";
 
+export function setupGlow(glow: HTMLDivElement | null): (() => void) | undefined {
+  if (!glow) return;
+
+  let rafId: number;
+  const handleMouseMove = (e: MouseEvent) => {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      glow.style.transform = `translate(${e.clientX - 250}px, ${e.clientY - 250}px)`;
+    });
+  };
+
+  window.addEventListener("mousemove", handleMouseMove, { passive: true });
+  return () => {
+    window.removeEventListener("mousemove", handleMouseMove);
+    cancelAnimationFrame(rafId);
+  };
+}
+
 export const CursorGlow = () => {
   const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const glow = glowRef.current;
-    if (!glow) return;
-
-    let rafId: number;
-    const handleMouseMove = (e: MouseEvent) => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        glow.style.transform = `translate(${e.clientX - 250}px, ${e.clientY - 250}px)`;
-      });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(rafId);
-    };
+    const cleanup = setupGlow(glowRef.current);
+    return cleanup;
   }, []);
 
   return (

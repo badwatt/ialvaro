@@ -1,6 +1,22 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { CursorGlow } from "src/components/CursorGlow";
+import { CursorGlow, setupGlow } from "src/components/CursorGlow";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+describe("setupGlow", () => {
+  it("returns undefined when element is null", () => {
+    expect(setupGlow(null)).toBeUndefined();
+  });
+
+  it("returns cleanup function when element exists", () => {
+    const el = document.createElement("div");
+    const addSpy = vi.spyOn(window, "addEventListener");
+    const cleanup = setupGlow(el);
+    expect(addSpy).toHaveBeenCalledWith("mousemove", expect.any(Function), { passive: true });
+    expect(typeof cleanup).toBe("function");
+    cleanup!();
+    addSpy.mockRestore();
+  });
+});
 
 describe("<CursorGlow />", () => {
   afterEach(cleanup);
