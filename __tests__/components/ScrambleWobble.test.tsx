@@ -29,7 +29,7 @@ describe("triggerRubberBand", () => {
       onfinish: null,
       finished: Promise.resolve(),
       cancel: vi.fn(),
-    } as Animation);
+    } as unknown as Animation);
     triggerRubberBand(0, elements, playing);
     expect(animateSpy).not.toHaveBeenCalled();
     animateSpy.mockRestore();

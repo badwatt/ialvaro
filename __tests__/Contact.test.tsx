@@ -1,11 +1,11 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { Contact } from "src/views/Contact";
+import type { EmailJSResponseStatus } from "@emailjs/browser";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-function mockEmailjs(sendForm: ReturnType<typeof vi.fn>) {
-  vi.doMock("@emailjs/browser", () => ({
-    default: { sendForm },
-  }));
-}
+vi.mock("@emailjs/browser", () => ({
+  default: { sendForm: vi.fn().mockRejectedValue(new Error("fail")) },
+}));
 
 describe("<Contact />", () => {
   beforeEach(() => {
@@ -15,22 +15,14 @@ describe("<Contact />", () => {
       disconnect = vi.fn();
     } as unknown as typeof window.IntersectionObserver;
   });
-  afterEach(() => {
-    cleanup();
-    vi.doUnmock("@emailjs/browser");
-    vi.resetModules();
-  });
+  afterEach(cleanup);
 
-  it("renders heading and form", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("renders heading and form", () => {
     render(<Contact />);
     expect(screen.getByRole("heading", { name: /get in touch/i })).toBeDefined();
   });
 
-  it("shows validation errors on empty submit", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("shows validation errors on empty submit", () => {
     render(<Contact />);
     fireEvent.submit(screen.getByLabelText("submit"));
     expect(screen.getByText("Name is required")).toBeDefined();
@@ -38,9 +30,7 @@ describe("<Contact />", () => {
     expect(screen.getByText("Message is required")).toBeDefined();
   });
 
-  it("shows invalid email error", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("shows invalid email error", () => {
     render(<Contact />);
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { name: "email", value: "not-an-email" },
@@ -49,9 +39,7 @@ describe("<Contact />", () => {
     expect(screen.getByText("Invalid email address")).toBeDefined();
   });
 
-  it("clears error when field is corrected", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("clears error when field is corrected", () => {
     render(<Contact />);
     fireEvent.submit(screen.getByLabelText("submit"));
     expect(screen.getByText("Name is required")).toBeDefined();
@@ -60,8 +48,6 @@ describe("<Contact />", () => {
   });
 
   it("catches emailjs failure and shows toast", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
     render(<Contact />);
     fireEvent.change(screen.getByLabelText(/name/i), { target: { name: "name", value: "Alvaro" } });
     fireEvent.change(screen.getByLabelText(/email/i), {
@@ -78,8 +64,8 @@ describe("<Contact />", () => {
   });
 
   it("shows success on emailjs send", async () => {
-    mockEmailjs(vi.fn().mockResolvedValue(undefined));
-    const { Contact } = await import("src/views/Contact");
+    const { default: emailjs } = await import("@emailjs/browser");
+    vi.mocked(emailjs.sendForm).mockResolvedValueOnce({ status: 200, text: 'OK' } as EmailJSResponseStatus);
     render(<Contact />);
     fireEvent.change(screen.getByLabelText(/name/i), { target: { name: "name", value: "Alvaro" } });
     fireEvent.change(screen.getByLabelText(/email/i), {
@@ -95,18 +81,14 @@ describe("<Contact />", () => {
     });
   });
 
-  it("updates form data on input change", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("updates form data on input change", () => {
     render(<Contact />);
     const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
     fireEvent.change(nameInput, { target: { name: "name", value: "Alvaro" } });
     expect(nameInput.value).toBe("Alvaro");
   });
 
-  it("matches snapshot", async () => {
-    mockEmailjs(vi.fn().mockRejectedValue(new Error("fail")));
-    const { Contact } = await import("src/views/Contact");
+  it("matches snapshot", () => {
     const { container } = render(<Contact />);
     expect(container).toMatchSnapshot();
   });
