@@ -45,11 +45,11 @@ describe("<Portfolio />", () => {
   it("renders external links with correct attributes", () => {
     render(<Portfolio />);
     const githubLink = screen.getByLabelText("ialvaro");
-    expect(githubLink.getAttribute("href")).toBe("https://github.com/alvaro17f/ialvaro");
+    expect(githubLink.getAttribute("href")).toBe("https://github.com/badwatt/ialvaro");
     expect(githubLink.getAttribute("target")).toBe("_blank");
 
     const wresticLink = screen.getByLabelText("wrestic");
-    expect(wresticLink.getAttribute("href")).toBe("https://github.com/alvaro17f/wrestic");
+    expect(wresticLink.getAttribute("href")).toBe("https://github.com/badwatt/wrestic");
   });
 
   it("renders header title", () => {

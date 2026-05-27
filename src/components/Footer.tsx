@@ -58,7 +58,7 @@ export const Footer = () => {
             <ul className="space-y-2.5">
               <li>
                 <a
-                  href="https://github.com/alvaro17f"
+                  href="https://github.com/badwatt"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-alvaro-muted hover:text-alvaro-primary transition-colors duration-200"

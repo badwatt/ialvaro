@@ -46,7 +46,7 @@ describe("<Footer />", () => {
   it("renders GitHub link", () => {
     render(<Footer />);
     const ghLink = screen.getByText("GitHub");
-    expect(ghLink.closest("a")?.getAttribute("href")).toBe("https://github.com/alvaro17f");
+    expect(ghLink.closest("a")?.getAttribute("href")).toBe("https://github.com/badwatt");
     expect(ghLink.closest("a")?.getAttribute("target")).toBe("_blank");
     expect(ghLink.closest("a")?.getAttribute("rel")).toBe("noopener noreferrer");
   });
