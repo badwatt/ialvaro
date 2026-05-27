@@ -1,5 +1,11 @@
 [
-  { "id": "0", "title": "react.js", "image": "/skills/react.svg", "url": "https://react.dev/", "featured": true },
+  {
+    "id": "0",
+    "title": "react.js",
+    "image": "/skills/react.svg",
+    "url": "https://react.dev/",
+    "featured": true
+  },
   { "id": "1", "title": "vue.js", "image": "/skills/vue.svg", "url": "https://vuejs.org/" },
   {
     "id": "2",

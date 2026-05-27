@@ -40,8 +40,8 @@ describe("<DynamicTitle />", () => {
   function setupSections(visibleIds: string[] = [], missingIds: string[] = []) {
     const allIds = ["home", "about", "skills", "experience", "portfolio", "cv", "contact"];
     const html = allIds
-      .filter(id => !missingIds.includes(id))
-      .map(id => `<section id="${id}"></section>`)
+      .filter((id) => !missingIds.includes(id))
+      .map((id) => `<section id="${id}"></section>`)
       .join("");
     document.body.innerHTML = html;
 
@@ -126,7 +126,7 @@ describe("<DynamicTitle />", () => {
     setupSections(["about"]);
     setScrollY(500);
     render(<DynamicTitle />);
-    const aboutCalls = replaceStateSpy.mock.calls.filter(c => c[2] === "#about");
+    const aboutCalls = replaceStateSpy.mock.calls.filter((c) => c[2] === "#about");
     expect(aboutCalls.length).toBe(0);
     replaceStateSpy.mockRestore();
   });
@@ -146,7 +146,7 @@ describe("<DynamicTitle />", () => {
     setupSections([]);
     setScrollY(5000);
     render(<DynamicTitle />);
-    const pathCalls = replaceStateSpy.mock.calls.filter(c => c[2] === window.location.pathname);
+    const pathCalls = replaceStateSpy.mock.calls.filter((c) => c[2] === window.location.pathname);
     expect(pathCalls.length).toBe(0);
     replaceStateSpy.mockRestore();
   });

@@ -81,12 +81,20 @@ describe("ThemeToggle", () => {
 
   it("defaults to dark in SSR environment (window undefined)", async () => {
     const savedWindow = globalThis.window;
-    Object.defineProperty(globalThis, "window", { value: undefined, writable: true, configurable: true });
+    Object.defineProperty(globalThis, "window", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
 
     vi.resetModules();
     const { ThemeToggle } = await import("src/components/ThemeToggle");
 
-    Object.defineProperty(globalThis, "window", { value: savedWindow, writable: true, configurable: true });
+    Object.defineProperty(globalThis, "window", {
+      value: savedWindow,
+      writable: true,
+      configurable: true,
+    });
 
     render(<ThemeToggle />);
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");

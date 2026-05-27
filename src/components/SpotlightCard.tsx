@@ -15,7 +15,15 @@ export function setupSpotlight(card: HTMLDivElement | null): (() => void) | unde
   return () => card.removeEventListener("mousemove", handleMouseMove);
 }
 
-export const SpotlightCard = ({ children, className = "", style }: { children: ReactNode; className?: string; style?: CSSProperties }) => {
+export const SpotlightCard = ({
+  children,
+  className = "",
+  style,
+}: {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+}) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

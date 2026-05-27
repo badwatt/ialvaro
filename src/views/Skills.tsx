@@ -10,34 +10,34 @@ export const Skills = () => {
       <Header title="Skills" />
       <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense gap-4 md:gap-6">
         {data.map(({ id, title, image, url, featured }, i) => (
-            <a
-              key={id}
-              href={url}
-              rel="noopener noreferrer"
-              target="_blank"
-              className={`
+          <a
+            key={id}
+            href={url}
+            rel="noopener noreferrer"
+            target="_blank"
+            className={`
 								spotlight-card grid gap-3 p-6 text-center cursor-pointer place-items-center group transition-all duration-500
 								${featured ? "md:col-span-2 md:row-span-2 md:p-10" : ""}
 								${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
 							`}
-              style={{ transitionDelay: `${i * 60}ms` }}
-              aria-label={`Skill: ${title}`}
+            style={{ transitionDelay: `${i * 60}ms` }}
+            aria-label={`Skill: ${title}`}
+          >
+            <img
+              src={image}
+              alt={title}
+              className={`object-contain transition-transform duration-500 group-hover:scale-110 ${
+                featured ? "w-32 h-32 md:w-48 md:h-48" : "w-24 h-24 md:w-32 md:h-32"
+              }`}
+            />
+            <h2
+              className={`font-medium text-alvaro-muted group-hover:text-alvaro-white transition-colors duration-200 ${
+                featured ? "text-base md:text-lg" : "text-sm"
+              }`}
             >
-              <img
-                src={image}
-                alt={title}
-                className={`object-contain transition-transform duration-500 group-hover:scale-110 ${
-                  featured ? "w-32 h-32 md:w-48 md:h-48" : "w-24 h-24 md:w-32 md:h-32"
-                }`}
-              />
-              <h2
-                className={`font-medium text-alvaro-muted group-hover:text-alvaro-white transition-colors duration-200 ${
-                  featured ? "text-base md:text-lg" : "text-sm"
-                }`}
-              >
-                {title}
-              </h2>
-            </a>
+              {title}
+            </h2>
+          </a>
         ))}
       </div>
     </section>

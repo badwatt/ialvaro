@@ -39,16 +39,23 @@ describe("<Wobble />", () => {
   });
 
   it("plays rubberBand animation on mouseenter", () => {
-    const animateMock = vi.fn().mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
+    const animateMock = vi
+      .fn()
+      .mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
     HTMLElement.prototype.animate = animateMock;
     render(<Wobble sentence="HI" />);
     const spans = document.querySelectorAll("span[aria-label='wobble']");
     fireEvent.mouseEnter(spans[0]);
-    expect(animateMock).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ duration: 800 }));
+    expect(animateMock).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.objectContaining({ duration: 800 }),
+    );
   });
 
   it("does not retrigger animation while playing", () => {
-    const animateMock = vi.fn().mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
+    const animateMock = vi
+      .fn()
+      .mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
     HTMLElement.prototype.animate = animateMock;
     render(<Wobble sentence="HI" />);
     const spans = document.querySelectorAll("span[aria-label='wobble']");
@@ -60,7 +67,11 @@ describe("<Wobble />", () => {
 
   it("retriggers animation after previous finishes", () => {
     const animateMock = vi.fn().mockImplementation(() => {
-      const anim = { onfinish: null as (() => void) | null, finished: Promise.resolve(), cancel: vi.fn() };
+      const anim = {
+        onfinish: null as (() => void) | null,
+        finished: Promise.resolve(),
+        cancel: vi.fn(),
+      };
       return anim;
     });
     HTMLElement.prototype.animate = animateMock;

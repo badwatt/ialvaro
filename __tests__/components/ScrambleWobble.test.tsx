@@ -25,7 +25,11 @@ describe("triggerRubberBand", () => {
     const el = document.createElement("div");
     const elements = new Map<number, HTMLElement>([[0, el]]);
     const playing = new Map<number, boolean>([[0, true]]);
-    const animateSpy = vi.spyOn(el, "animate").mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() } as Animation);
+    const animateSpy = vi.spyOn(el, "animate").mockReturnValue({
+      onfinish: null,
+      finished: Promise.resolve(),
+      cancel: vi.fn(),
+    } as Animation);
     triggerRubberBand(0, elements, playing);
     expect(animateSpy).not.toHaveBeenCalled();
     animateSpy.mockRestore();
@@ -36,7 +40,11 @@ describe("triggerRubberBand", () => {
     const elements = new Map<number, HTMLElement>([[0, el]]);
     const playing = new Map<number, boolean>();
     const animateSpy = vi.spyOn(el, "animate").mockImplementation(function (this: HTMLElement) {
-      const anim = { onfinish: null as (() => void) | null, finished: Promise.resolve(), cancel: vi.fn() };
+      const anim = {
+        onfinish: null as (() => void) | null,
+        finished: Promise.resolve(),
+        cancel: vi.fn(),
+      };
       return anim as unknown as Animation;
     });
     triggerRubberBand(0, elements, playing);
@@ -97,7 +105,9 @@ describe("<ScrambleWobble />", () => {
 
   it("plays rubberBand on mouseenter after settled", async () => {
     vi.useFakeTimers();
-    const animateMock = vi.fn().mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
+    const animateMock = vi
+      .fn()
+      .mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
     HTMLElement.prototype.animate = animateMock;
     render(<ScrambleWobble text="HI" scrambleSpeed={10} />);
     act(() => {
@@ -107,12 +117,17 @@ describe("<ScrambleWobble />", () => {
     const spans = el.querySelectorAll("span");
     fireEvent.mouseEnter(spans[0]);
     spans[0].dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
-    expect(animateMock).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ duration: 800 }));
+    expect(animateMock).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.objectContaining({ duration: 800 }),
+    );
     vi.useRealTimers();
   });
 
   it("does not play rubberBand before settled", () => {
-    const animateMock = vi.fn().mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
+    const animateMock = vi
+      .fn()
+      .mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
     HTMLElement.prototype.animate = animateMock;
     render(<ScrambleWobble text="HI" scrambleSpeed={40} />);
     const el = screen.getByLabelText("HI");
@@ -123,7 +138,9 @@ describe("<ScrambleWobble />", () => {
 
   it("does not retrigger animation while playing", async () => {
     vi.useFakeTimers();
-    const animateMock = vi.fn().mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
+    const animateMock = vi
+      .fn()
+      .mockReturnValue({ onfinish: null, finished: Promise.resolve(), cancel: vi.fn() });
     HTMLElement.prototype.animate = animateMock;
     render(<ScrambleWobble text="HI" scrambleSpeed={10} />);
     act(() => {

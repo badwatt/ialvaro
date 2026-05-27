@@ -1,5 +1,9 @@
 import { useRef } from "react";
-import { rubberBandKeyframes, rubberBandTiming, triggerRubberBand } from "src/components/ScrambleWobble";
+import {
+  rubberBandKeyframes,
+  rubberBandTiming,
+  triggerRubberBand,
+} from "src/components/ScrambleWobble";
 
 export { rubberBandKeyframes, rubberBandTiming };
 

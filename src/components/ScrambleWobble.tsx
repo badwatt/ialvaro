@@ -75,7 +75,11 @@ export const ScrambleWobble = ({ text, className = "", scrambleSpeed = 40 }: Pro
           ref={(el) => {
             if (el) elementsRef.current.set(i, el);
           }}
-          onMouseEnter={settled ? () => triggerRubberBand(i, elementsRef.current, playingRefs.current) : undefined}
+          onMouseEnter={
+            settled
+              ? () => triggerRubberBand(i, elementsRef.current, playingRefs.current)
+              : undefined
+          }
           className="inline-block cursor-default transition-colors duration-200 hover:text-alvaro-primary"
         >
           {char === " " ? "\u00A0" : char}
