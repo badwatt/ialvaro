@@ -110,7 +110,7 @@ exports[`<Footer /> > matches snapshot 1`] = `
             <li>
               <a
                 class="text-sm text-alvaro-muted hover:text-alvaro-primary transition-colors duration-200"
-                href="https://github.com/alvaro17f"
+                href="https://github.com/badwatt"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -136,7 +136,6 @@ exports[`<Footer /> > matches snapshot 1`] = `
         <p
           class="text-xs text-alvaro-muted/40"
         >
-          © 
           2026
            Alvaro Garcia Macias
         </p>

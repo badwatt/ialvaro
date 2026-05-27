@@ -111,8 +111,7 @@ exports[`<Contact /> > matches snapshot 1`] = `
             class="text-sm font-medium text-alvaro-muted"
             for="contact-phone"
           >
-            Phone
-             
+            Phone 
             <span
               class="text-alvaro-border"
             >

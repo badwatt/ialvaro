@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpIcon } from "@phosphor-icons/react";
 
-export const goToTop = () => {
+const goToTop = () => {
   document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
 };
 

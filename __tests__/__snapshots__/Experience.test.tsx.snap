@@ -46,7 +46,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
             </p>
           </div>
           <svg
-            class="text-alvaro-muted transition-transform duration-300 flex-shrink-0 ml-4 rotate-180"
+            class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 rotate-180"
             fill="currentColor"
             height="20"
             viewBox="0 0 256 256"
@@ -140,7 +140,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
             </p>
           </div>
           <svg
-            class="text-alvaro-muted transition-transform duration-300 flex-shrink-0 ml-4 "
+            class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 "
             fill="currentColor"
             height="20"
             viewBox="0 0 256 256"

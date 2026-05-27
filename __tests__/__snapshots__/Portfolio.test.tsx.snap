@@ -33,7 +33,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
         >
           <a
             aria-label="ialvaro"
-            href="https://github.com/alvaro17f/ialvaro"
+            href="https://github.com/badwatt/ialvaro"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -59,7 +59,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
           </p>
           <a
             class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-alvaro-primary hover:underline underline-offset-4"
-            href="https://github.com/alvaro17f/ialvaro"
+            href="https://github.com/badwatt/ialvaro"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -81,7 +81,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
         >
           <a
             aria-label="wrestic"
-            href="https://github.com/alvaro17f/wrestic"
+            href="https://github.com/badwatt/wrestic"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -107,7 +107,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
           </p>
           <a
             class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-alvaro-primary hover:underline underline-offset-4"
-            href="https://github.com/alvaro17f/wrestic"
+            href="https://github.com/badwatt/wrestic"
             rel="noopener noreferrer"
             target="_blank"
           >
