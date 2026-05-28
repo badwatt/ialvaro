@@ -25,6 +25,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/outfit": "^5.2.8",
     "@phosphor-icons/react": "^2.1.10",
+    "@react-pdf/renderer": "4.5.1",
     "@tailwindcss/vite": "4.3.0",
     "astro": "6.3.8",
     "react": "19.2.6",
