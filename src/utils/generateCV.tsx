@@ -25,11 +25,46 @@ async function loadImage(url: string): Promise<string> {
   });
 }
 
+function toCircular(
+  base64: string,
+  size: number
+): Promise<string | null> {
+  if (typeof document === "undefined") return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(null);
+        return;
+      }
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, 0, 0, size, size);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(null);
+    img.src = base64;
+  });
+}
+
 export async function generateAndOpenCV(): Promise<void> {
-  const [{ jsPDF }, profileImg] = await Promise.all([
+  const [{ jsPDF }, profileRaw, profileAltRaw] = await Promise.all([
     import("jspdf"),
     loadImage("/images/profile/profile.png").catch(() => ""),
+    loadImage("/images/profile/profile_alt.png").catch(() => ""),
   ]);
+
+  const CIRCULAR_SIZE = 80;
+  const CIRCULAR_SMALL = 20;
+  const profileImg = profileRaw ? await toCircular(profileRaw, CIRCULAR_SIZE) : null;
+  const profileAltImg = profileAltRaw ? await toCircular(profileAltRaw, CIRCULAR_SMALL) : null;
 
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
@@ -76,11 +111,16 @@ export async function generateAndOpenCV(): Promise<void> {
   // ── Sidebar ──
   let sy = y;
 
-  // Profile image
+  // Profile image circular
   if (profileImg) {
     try {
-      doc.addImage(profileImg, "PNG", M + (sidebarW - 80) / 2, sy, 80, 80);
-      sy += 88;
+      const imgX = M + (sidebarW - CIRCULAR_SIZE) / 2;
+      doc.addImage(profileImg, "PNG", imgX, sy, CIRCULAR_SIZE, CIRCULAR_SIZE);
+      // circular frame
+      doc.setDrawColor(...C.primary);
+      doc.setLineWidth(2);
+      doc.ellipse(imgX + CIRCULAR_SIZE / 2, sy + CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, "S");
+      sy += CIRCULAR_SIZE + 24;
     } catch {
       // image add failed, skip
     }
@@ -123,7 +163,7 @@ export async function generateAndOpenCV(): Promise<void> {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(...C.muted);
-    doc.text(`${job.date_from} — ${job.date_to}`, mainX, my);
+    doc.text(`${job.date_from} \u2014 ${job.date_to}`, mainX, my);
     my += 16;
 
     const desc = job.description;
@@ -160,7 +200,20 @@ export async function generateAndOpenCV(): Promise<void> {
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
   doc.text(`Generated from ${window.location.hostname}`, M, fy);
-  doc.text(String(new Date().getFullYear()), W - M - 40, fy);
+
+  // Year and small circular alt image on right
+  doc.text(String(new Date().getFullYear()), W - M - 60, fy);
+  if (profileAltImg) {
+    try {
+      const altX = W - M - 24;
+      doc.addImage(profileAltImg, "PNG", altX, fy - 14, CIRCULAR_SMALL, CIRCULAR_SMALL);
+      doc.setDrawColor(...C.primary);
+      doc.setLineWidth(1);
+      doc.ellipse(altX + CIRCULAR_SMALL / 2, fy - 14 + CIRCULAR_SMALL / 2, CIRCULAR_SMALL / 2, CIRCULAR_SMALL / 2, "S");
+    } catch {
+      // skip small footer image
+    }
+  }
 
   // Open in new tab
   const blob = doc.output("blob");
