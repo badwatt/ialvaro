@@ -61,7 +61,7 @@ export const Contact = () => {
   };
 
   return (
-    <section id="contact" className="min-h-[80vh] px-4 md:px-0 relative">
+    <section id="contact" className="section-curve min-h-[80vh] px-4 md:px-0 relative">
       <div id="contact-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <div className="h-12 md:h-24" />
       <Toaster

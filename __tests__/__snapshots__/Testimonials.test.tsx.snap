@@ -3,7 +3,7 @@
 exports[`<Testimonials /> > matches snapshot 1`] = `
 <div>
   <section
-    class="py-32 md:py-48 px-4 md:px-0"
+    class="section-curve py-32 md:py-48 px-4 md:px-0"
     id="testimonials"
   >
     <div

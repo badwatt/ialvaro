@@ -3,7 +3,7 @@
 exports[`<CV /> > matches snapshot 1`] = `
 <div>
   <section
-    class="mt-32 md:mt-48 px-4 md:px-0"
+    class="section-curve mt-32 md:mt-48 px-4 md:px-0"
     id="cv"
   >
     <a

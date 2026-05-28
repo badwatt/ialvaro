@@ -2,7 +2,7 @@ import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 export const CV = () => {
   return (
-    <section id="cv" className="mt-32 md:mt-48 px-4 md:px-0">
+    <section id="cv" className="section-curve mt-32 md:mt-48 px-4 md:px-0">
       <a href="/cv/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="Download CV">
         <div className="grid place-items-center p-12 md:p-20 rounded-3xl bg-alvaro-surface border border-alvaro-border hover:border-alvaro-primary/40 transition-all duration-500 group cursor-pointer active:scale-[0.99] relative overflow-hidden">
           {/* Background glow */}
