@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrambleWobble } from "src/components/ScrambleWobble";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
+import { pdf } from "@react-pdf/renderer";
+import { CVDocument } from "src/components/CVDocument";
 
 export const Home = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +15,25 @@ export const Home = () => {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleDownload = useCallback(async () => {
+    setDownloading(true);
+    try {
+      const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Alvaro_Garcia_Macias_CV_${new Date().toISOString().split("T")[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("CV generation failed:", err);
+    } finally {
+      setDownloading(false);
+    }
   }, []);
 
   return (
@@ -69,13 +91,14 @@ export const Home = () => {
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <span className="relative">View work</span>
           </a>
-          <a
-            href="/cv/cv.pdf"
-            target="_blank"
-            className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97]"
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer disabled:opacity-60"
           >
-            CV
-          </a>
+            {downloading ? "Generating..." : "CV"}
+          </button>
         </div>
       </div>
 
