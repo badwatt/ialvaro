@@ -12,10 +12,12 @@ const C = {
 
 const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
 const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
-const bioText =
-  biographyData.find((b) => b.id === "3")?.bio || biographyData[0]?.bio || "";
 
-async function loadImage(url: string): Promise<string> {
+export function getBioText(data = biographyData): string {
+  return data.find((b) => b.id === "3")?.bio || data[0]?.bio || "";
+}
+
+export async function loadImage(url: string): Promise<string> {
   const res = await fetch(url);
   const blob = await res.blob();
   return new Promise((resolve) => {
@@ -25,7 +27,7 @@ async function loadImage(url: string): Promise<string> {
   });
 }
 
-function toCircular(
+export function toCircular(
   base64: string,
   size: number,
   scale = 4
@@ -118,7 +120,6 @@ export async function generateAndOpenCV(): Promise<void> {
     try {
       const imgX = M + (sidebarW - CIRCULAR_SIZE) / 2;
       doc.addImage(profileImg, "PNG", imgX, sy, CIRCULAR_SIZE, CIRCULAR_SIZE);
-      // circular frame
       doc.setDrawColor(...C.primary);
       doc.setLineWidth(2);
       doc.ellipse(imgX + CIRCULAR_SIZE / 2, sy + CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, "S");
@@ -133,7 +134,7 @@ export async function generateAndOpenCV(): Promise<void> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...C.muted);
-  const bioLines = doc.splitTextToSize(bioText, sidebarW);
+  const bioLines = doc.splitTextToSize(getBioText(), sidebarW);
   doc.text(bioLines, M, sy);
   sy += bioLines.length * 13 + 16;
 
@@ -193,25 +194,22 @@ export async function generateAndOpenCV(): Promise<void> {
   }
 
   // ── Footer ──
-  const fy = H - 28;
+  const footerY = H - 24;
   doc.setDrawColor(...C.border);
   doc.setLineWidth(1);
-  doc.line(M, fy - 10, W - M, fy - 10);
+  doc.line(M, footerY - 14, W - M, footerY - 14);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
-  doc.text(`Generated from ${window.location.hostname}`, M, fy);
+  doc.text(`Generated from ${window.location.hostname}`, M, footerY);
+  doc.text(String(new Date().getFullYear()), W - M - 60, footerY);
 
-  // Year and small circular alt image on right
-  doc.text(String(new Date().getFullYear()), W - M - 60, fy);
   if (profileAltImg) {
     try {
       const altX = W - M - 24;
-      doc.addImage(profileAltImg, "PNG", altX, fy - 14, CIRCULAR_SMALL, CIRCULAR_SMALL);
-      doc.setDrawColor(...C.primary);
-      doc.setLineWidth(1);
-      doc.ellipse(altX + CIRCULAR_SMALL / 2, fy - 14 + CIRCULAR_SMALL / 2, CIRCULAR_SMALL / 2, CIRCULAR_SMALL / 2, "S");
+      const altY = footerY - 10;
+      doc.addImage(profileAltImg, "PNG", altX, altY, CIRCULAR_SMALL, CIRCULAR_SMALL);
     } catch {
       // skip small footer image
     }
