@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
+const SEPARATOR = "·";
+
 const sections = ["Home", "About", "Skills", "Experience", "Portfolio", "CV", "Contact"];
 
 const getSiteName = () => {
   const host = window.location.hostname;
   const parts = host.split(".");
-  return parts.length >= 2 ? parts[parts.length - 2] : host;
+  return parts.slice(-2).join(".");
 };
 
 const syncHash = (id: string) => {
@@ -26,13 +28,13 @@ export const DynamicTitle = () => {
 
   useEffect(() => {
     const site = getSiteName();
-    setTitle(`Home | ${site}`);
+    setTitle(`Home ${SEPARATOR} ${site}`);
 
     const updateTitle = () => {
       const scrollY = window.scrollY;
 
       if (scrollY < 100) {
-        setTitle(`Home | ${site}`);
+        setTitle(`Home ${SEPARATOR} ${site}`);
         syncHash("home");
         return;
       }
@@ -43,7 +45,7 @@ export const DynamicTitle = () => {
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect.top <= 150) {
-            setTitle(`${sections[i]} | ${site}`);
+            setTitle(`${sections[i]} ${SEPARATOR} ${site}`);
             syncHash(id);
             return;
           }
