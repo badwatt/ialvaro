@@ -7,31 +7,31 @@ describe("<CVPreview />", () => {
 
   it("returns null when no url and not generating", () => {
     const { container } = render(
-      <CVPreview url={null} isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />
+      <CVPreview url={null} isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} domain="test.dev" />
     );
     expect(container.firstChild).toBeNull();
   });
 
   it("renders generating state", () => {
-    render(<CVPreview url={null} isGenerating={true} onClose={vi.fn()} onDownload={vi.fn()} />);
+    render(<CVPreview url={null} isGenerating={true} onClose={vi.fn()} onDownload={vi.fn()} domain="test.dev" />);
     expect(screen.getByText("Generating CV...")).toBeDefined();
   });
 
-  it("renders iframe when url ready", () => {
-    render(<CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />);
-    expect(screen.getByTitle("CV Preview")).toBeDefined();
+  it("renders HTML preview when url ready", () => {
+    render(<CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} domain="test.dev" />);
+    expect(screen.getByText("Alvaro Garcia Macias")).toBeDefined();
   });
 
   it("calls onClose when backdrop clicked", () => {
     const onClose = vi.fn();
-    render(<CVPreview url="blob:test" isGenerating={false} onClose={onClose} onDownload={vi.fn()} />);
+    render(<CVPreview url="blob:test" isGenerating={false} onClose={onClose} onDownload={vi.fn()} domain="test.dev" />);
     fireEvent.click(screen.getByLabelText("Close preview"));
     expect(onClose).toHaveBeenCalled();
   });
 
   it("calls onDownload when download button clicked", () => {
     const onDownload = vi.fn();
-    render(<CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={onDownload} />);
+    render(<CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={onDownload} domain="test.dev" />);
     const btn = screen.getByText("Download");
     fireEvent.click(btn);
     expect(onDownload).toHaveBeenCalled();
@@ -39,7 +39,7 @@ describe("<CVPreview />", () => {
 
   it("disables download button when no url", () => {
     const onDownload = vi.fn();
-    render(<CVPreview url={null} isGenerating={true} onClose={vi.fn()} onDownload={onDownload} />);
+    render(<CVPreview url={null} isGenerating={true} onClose={vi.fn()} onDownload={onDownload} domain="test.dev" />);
     const btn = screen.getByText("Download");
     expect(btn.hasAttribute("disabled")).toBe(true);
   });
@@ -47,7 +47,7 @@ describe("<CVPreview />", () => {
   it("locks body scroll on mount and restores on unmount", () => {
     const original = document.body.style.overflow;
     const { unmount } = render(
-      <CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />
+      <CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} domain="test.dev" />
     );
     expect(document.body.style.overflow).toBe("hidden");
 
@@ -57,7 +57,7 @@ describe("<CVPreview />", () => {
 
   it("has fullscreen classes for mobile", () => {
     const { container } = render(
-      <CVPreview url="http://test/cv.pdf" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />,
+      <CVPreview url="http://test/cv.pdf" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} domain="test.dev" />,
     );
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.className).toContain("p-0");

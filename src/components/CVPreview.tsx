@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import { XIcon, DownloadSimpleIcon, SpinnerIcon } from "@phosphor-icons/react";
+import { CVPreviewContent } from "./CVPreviewContent";
 
 type Props = {
   url: string | null;
   isGenerating: boolean;
   onClose: () => void;
   onDownload: () => void;
+  domain: string;
 };
 
-export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => {
+export const CVPreview = ({ url, isGenerating, onClose, onDownload, domain }: Props) => {
   useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -55,18 +57,14 @@ export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => 
         </div>
 
         {/* Content */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative overflow-auto">
           {isGenerating ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
               <SpinnerIcon size={40} weight="bold" className="text-alvaro-primary animate-spin" />
               <p className="text-alvaro-muted text-sm">Generating CV...</p>
             </div>
           ) : (
-            <iframe
-              src={url ?? undefined}
-              title="CV Preview"
-              className="w-full h-full border-0"
-            />
+            <CVPreviewContent domain={domain} />
           )}
         </div>
       </div>

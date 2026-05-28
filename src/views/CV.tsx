@@ -51,6 +51,7 @@ export const CV = () => {
           isGenerating={state.status === "generating"}
           onClose={handleClose}
           onDownload={download}
+          domain={window.location.hostname}
         />
       )}
     </>

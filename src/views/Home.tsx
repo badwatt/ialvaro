@@ -136,6 +136,7 @@ export const Home = () => {
           isGenerating={cvState.status === "generating"}
           onClose={handleCloseCV}
           onDownload={downloadCV}
+          domain={window.location.hostname}
         />
       )}
     </>
