@@ -43,4 +43,16 @@ describe("<CVPreview />", () => {
     const btn = screen.getByText("Download");
     expect(btn.hasAttribute("disabled")).toBe(true);
   });
+
+it("has fullscreen classes for mobile", () => {
+    const { container } = render(
+      <CVPreview url="http://test/cv.pdf" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />,
+    );
+    const wrapper = container.firstChild as HTMLElement;
+    expect(wrapper.className).toContain("p-0");
+    expect(wrapper.className).toContain("md:p-8");
+    const modal = wrapper.querySelector(".bg-alvaro-surface") as HTMLElement;
+    expect(modal.className).toContain("rounded-none");
+    expect(modal.className).toContain("md:rounded-2xl");
+  });
 });

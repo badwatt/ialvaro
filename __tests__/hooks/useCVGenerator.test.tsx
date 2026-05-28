@@ -109,4 +109,66 @@ describe("useCVGenerator", () => {
     });
     expect(result.current.state.status).toBe("idle");
   });
+
+  it("stores blob in ready state", async () => {
+    const { result } = renderHook(() => useCVGenerator());
+    act(() => {
+      result.current.generate();
+    });
+    await waitFor(() => {
+      expect(result.current.state.status).toBe("ready");
+    });
+    if (result.current.state.status === "ready") {
+      expect(result.current.state.blob).toBeInstanceOf(Blob);
+    }
+  });
+
+  it("uses showSaveFilePicker when available", async () => {
+    const mockWrite = vi.fn().mockResolvedValue(undefined);
+    const mockClose = vi.fn().mockResolvedValue(undefined);
+    const mockCreateWritable = vi.fn().mockResolvedValue({ write: mockWrite, close: mockClose });
+    const mockShowSaveFilePicker = vi.fn().mockResolvedValue({ createWritable: mockCreateWritable });
+
+    Object.defineProperty(window, "showSaveFilePicker", {
+      value: mockShowSaveFilePicker,
+      configurable: true,
+      writable: true,
+    });
+
+    const { result } = renderHook(() => useCVGenerator());
+    act(() => {
+      result.current.generate();
+    });
+    await waitFor(() => {
+      expect(result.current.state.status).toBe("ready");
+    });
+
+    await act(async () => {
+      await result.current.download();
+    });
+
+    expect(mockShowSaveFilePicker).toHaveBeenCalled();
+    expect(mockCreateWritable).toHaveBeenCalled();
+    expect(mockWrite).toHaveBeenCalled();
+
+    delete (window as unknown as Record<string, unknown>).showSaveFilePicker;
+  });
+
+  it("falls back to anchor when showSaveFilePicker unavailable", async () => {
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    const { result } = renderHook(() => useCVGenerator());
+    act(() => {
+      result.current.generate();
+    });
+    await waitFor(() => {
+      expect(result.current.state.status).toBe("ready");
+    });
+
+    await act(async () => {
+      await result.current.download();
+    });
+
+    expect(clickSpy).toHaveBeenCalled();
+    clickSpy.mockRestore();
+  });
 });

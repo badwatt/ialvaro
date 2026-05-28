@@ -11,7 +11,7 @@ export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => 
   if (!url && !isGenerating) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-8">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-alvaro-dark/80 backdrop-blur-sm"
@@ -20,7 +20,7 @@ export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => 
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl h-[85vh] bg-alvaro-surface rounded-2xl border border-alvaro-border shadow-2xl flex flex-col overflow-hidden">
+      <div className="relative w-full h-full md:max-w-4xl md:h-[85vh] bg-alvaro-surface rounded-none md:rounded-2xl border border-alvaro-border shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-alvaro-border">
           <h3 className="text-lg font-bold text-alvaro-white">CV Preview</h3>
@@ -52,13 +52,13 @@ export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => 
               <SpinnerIcon size={40} weight="bold" className="text-alvaro-primary animate-spin" />
               <p className="text-alvaro-muted text-sm">Generating CV...</p>
             </div>
-          ) : url ? (
+          ) : (
             <iframe
-              src={url}
+              src={url ?? undefined}
               title="CV Preview"
               className="w-full h-full border-0"
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>
