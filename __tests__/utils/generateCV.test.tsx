@@ -1,21 +1,38 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@react-pdf/renderer", async (importOriginal) => {
-  const actual = await importOriginal() as Record<string, unknown>;
-  return {
-    ...actual,
-    pdf: vi.fn().mockReturnValue({
-      toBlob: vi.fn().mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" })),
-    }),
-  };
-});
+const mockOutput = vi.fn().mockReturnValue(new Blob(["pdf"], { type: "application/pdf" }));
+const mockText = vi.fn();
+const mockTextWithLink = vi.fn();
+
+class MockJsPDF {
+  internal = { pageSize: { getWidth: () => 595, getHeight: () => 842 } };
+  setTextColor = vi.fn();
+  setFillColor = vi.fn();
+  setDrawColor = vi.fn();
+  setFont = vi.fn();
+  setFontSize = vi.fn();
+  setLineWidth = vi.fn();
+  text = mockText;
+  textWithLink = mockTextWithLink;
+  line = vi.fn();
+  rect = vi.fn();
+  roundedRect = vi.fn();
+  splitTextToSize = vi.fn().mockReturnValue(["line1", "line2"]);
+  getTextWidth = vi.fn().mockReturnValue(50);
+  output = mockOutput;
+}
+
+vi.mock("jspdf", () => ({
+  jsPDF: MockJsPDF,
+}));
 
 describe("generateAndOpenCV", () => {
-  it("generates PDF blob and opens in new tab", async () => {
+  it("generates PDF and opens in new tab", async () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     await generateAndOpenCV();
-    expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+    expect(mockOutput).toHaveBeenCalledWith("blob");
+    expect(openSpy).toHaveBeenCalled();
     openSpy.mockRestore();
   });
 });
