@@ -20,11 +20,11 @@ describe("getBioText", () => {
 
 describe("CVDocument", () => {
   it("renders without throwing", () => {
-    expect(() => <CVDocument />).not.toThrow();
+    expect(() => <CVDocument domain="test.dev" />).not.toThrow();
   });
 
   it("generates PDF blob", async () => {
-    const result = pdf(<CVDocument />);
+    const result = pdf(<CVDocument domain="test.dev" />);
     const blob = await result.toBlob();
     expect(blob).toBeDefined();
     expect(blob.type).toBe("application/pdf");

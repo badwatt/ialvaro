@@ -184,7 +184,7 @@ const bioText = getBioText(biographyData);
 const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
 const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 
-export const CVDocument = () => (
+export const CVDocument = ({ domain }: { domain: string }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {/* Header */}
@@ -258,7 +258,7 @@ export const CVDocument = () => (
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Generated from alvarogmacias.dev</Text>
+        <Text style={styles.footerText}>Generated from {domain}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <Text style={styles.footerText}>{new Date().getFullYear()}</Text>
           <Image src="/images/profile/profile_alt.png" style={styles.footerPhoto} />

@@ -9,7 +9,7 @@ export const CV = () => {
   const handleDownload = useCallback(async () => {
     setDownloading(true);
     try {
-      const blob = await pdf(<CVDocument />).toBlob();
+      const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
