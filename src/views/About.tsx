@@ -16,7 +16,7 @@ export default function About() {
       id="about"
       className="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32"
     >
-      <div id="about-nav" className="scroll-mt-[4rem]" aria-hidden="true" />
+      <div id="about-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
       {/* Atmospheric layers */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 -right-1/3 w-[700px] h-[700px] rounded-full bg-alvaro-primary/3 blur-[150px]" />
