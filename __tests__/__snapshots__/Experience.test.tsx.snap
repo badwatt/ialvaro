@@ -7,10 +7,10 @@ exports[`<Experience /> > should match the snapshot 1`] = `
     id="experience"
   >
     <div
-      class="h-32 md:h-48"
+      class="h-16 md:h-24"
     />
     <div
-      class="mb-10 overflow-hidden"
+      class="mb-8 md:mb-10 overflow-hidden"
     >
       <h1
         class="text-4xl md:text-5xl tracking-tight leading-none font-bold text-alvaro-white transition-all duration-700 ease-out origin-left opacity-0 scale-x-0"

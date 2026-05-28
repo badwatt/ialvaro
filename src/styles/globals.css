@@ -239,7 +239,7 @@ html {
 /* === SECTION CURVE === */
 
 .section-curve {
-  padding-top: 4rem;
+  padding-top: 2rem;
   padding-bottom: 4rem;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -247,8 +247,8 @@ html {
 
 @media (min-width: 768px) {
   .section-curve {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
+    padding-top: 3rem;
+    padding-bottom: 5rem;
     padding-left: 0;
     padding-right: 0;
   }
