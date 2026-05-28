@@ -1,10 +1,10 @@
 import { FloatingTags } from "src/components/FloatingTags";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
-import data from "src/data/biography.json";
+import { biographyData } from "src/utils/content";
 
 const profileTags = ["React", "TypeScript", "Node.js", "Full Stack", "UI/UX"];
 
-const selectedBio = data[2];
+const selectedBio = biographyData[0];
 
 export default function About() {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });

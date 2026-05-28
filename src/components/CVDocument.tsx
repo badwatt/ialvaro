@@ -7,9 +7,8 @@ import {
   Link,
   Image,
 } from "@react-pdf/renderer";
-import experienceData from "src/data/experience.json";
+import { experienceData, biographyData } from "src/utils/content";
 import skillsData from "src/data/skills.json";
-import biographyData from "src/data/biography.json";
 
 const colors = {
   base: "#08080f",

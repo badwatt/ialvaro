@@ -1,6 +1,6 @@
 import { Header } from "src/components/Header";
 import { SpotlightCard } from "src/components/SpotlightCard";
-import data from "src/data/portfolio.json";
+import { portfolioData } from "src/utils/content";
 
 export const Portfolio = () => {
   return (
@@ -8,7 +8,7 @@ export const Portfolio = () => {
       <div id="portfolio-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Portfolio" />
       <div className="space-y-6">
-        {data.map(({ id, title, image, url, description }, i) => (
+        {portfolioData.map(({ id, title, image, url, description }, i) => (
           <SpotlightCard
             key={id}
             className={`sticky grid md:grid-cols-[1fr_2fr] gap-8 p-6 md:p-10 group`}

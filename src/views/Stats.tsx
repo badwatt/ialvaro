@@ -1,6 +1,5 @@
 import { AnimatedCounter } from "src/components/AnimatedCounter";
-import experienceData from "src/data/experience.json";
-import portfolioData from "src/data/portfolio.json";
+import { experienceData, portfolioData } from "src/utils/content";
 import skillsData from "src/data/skills.json";
 
 function getYearsExperience(): number {

@@ -8,6 +8,7 @@ export default mergeConfig(
     test: {
       globals: true,
       environment: "happy-dom",
+      setupFiles: ["__tests__/setup.ts"],
       projects: [
         {
           extends: true,
@@ -32,7 +33,7 @@ export default mergeConfig(
       },
       coverage: {
         include: ["src/**/*.{ts,tsx}"],
-        exclude: ["src/data/**", "src/env.d.ts", ".astro/**"],
+        exclude: ["src/data/**", "src/env.d.ts", "src/utils/content.ts", ".astro/**"],
       },
     },
   }),

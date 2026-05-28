@@ -1,9 +1,9 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
-import data from "src/data/experience.json";
+import { experienceData } from "src/utils/content";
 
 export const Experience = () => {
-  const items = data.map((entry) => ({
+  const items = experienceData.map((entry) => ({
     id: String(entry.id),
     title: entry.title,
     subtitle: `${entry.date_from} — ${entry.date_to}`,
@@ -66,7 +66,7 @@ export const Experience = () => {
     <section id="experience" className="section-curve relative">
       <div id="experience-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Experience" />
-      <Accordion items={items} defaultOpenId={String(data[0].id)} />
+      <Accordion items={items} defaultOpenId={String(experienceData[0].id)} />
     </section>
   );
 };
