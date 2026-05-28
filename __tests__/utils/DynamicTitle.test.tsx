@@ -4,16 +4,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const getSiteName = (hostname: string) => {
   const parts = hostname.split(".");
-  return parts.length >= 2 ? parts[parts.length - 2] : hostname;
+  return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
 };
 
 describe("getSiteName", () => {
   it("extracts name from simple domain", () => {
-    expect(getSiteName("ialvaro.com")).toBe("ialvaro");
+    expect(getSiteName("ialvaro.com")).toBe("ialvaro.com");
   });
 
   it("extracts name from subdomain", () => {
-    expect(getSiteName("www.ialvaro.com")).toBe("ialvaro");
+    expect(getSiteName("www.ialvaro.com")).toBe("ialvaro.com");
   });
 
   it("returns full hostname when single part", () => {
@@ -61,7 +61,7 @@ describe("<DynamicTitle />", () => {
   it("sets initial title to Home | {site}", () => {
     setupSections();
     render(<DynamicTitle />);
-    expect(document.title).toBe(`Home | ${site}`);
+    expect(document.title).toBe(`Home · ${site}`);
   });
 
   it("uses domain name when hostname has multiple parts", () => {
@@ -72,28 +72,28 @@ describe("<DynamicTitle />", () => {
     });
     setupSections();
     render(<DynamicTitle />);
-    expect(document.title).toBe("Home | ialvaro");
+    expect(document.title).toBe("Home · ialvaro.com");
   });
 
   it("updates title for visible about", () => {
     setupSections(["about"]);
     setScrollY(500);
     render(<DynamicTitle />);
-    expect(document.title).toBe(`About | ${site}`);
+    expect(document.title).toBe(`About · ${site}`);
   });
 
   it("updates title for visible skills", () => {
     setupSections(["skills"]);
     setScrollY(500);
     render(<DynamicTitle />);
-    expect(document.title).toBe(`Skills | ${site}`);
+    expect(document.title).toBe(`Skills · ${site}`);
   });
 
   it("keeps home when scrollY < 100", () => {
     setupSections(["skills"]);
     setScrollY(50);
     render(<DynamicTitle />);
-    expect(document.title).toBe(`Home | ${site}`);
+    expect(document.title).toBe(`Home · ${site}`);
   });
 
   it("falls back to site name when no section visible", () => {

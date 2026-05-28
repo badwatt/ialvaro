@@ -1,6 +1,6 @@
 import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
-import { glob } from "astro/loaders";
+import { glob, file } from "astro/loaders";
 
 const experience = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/experience" }),
@@ -34,7 +34,7 @@ const about = defineCollection({
 });
 
 const skills = defineCollection({
-  loader: glob({ pattern: "**/*.json", base: "./src/content/skills" }),
+  loader: file("src/content/skills/skills.json"),
   schema: ({ image }) =>
     z.object({
       id: z.string(),
