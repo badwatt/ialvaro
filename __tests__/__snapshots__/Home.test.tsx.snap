@@ -7,6 +7,11 @@ exports[`<Home /> > matches snapshot 1`] = `
     id="home"
   >
     <div
+      aria-hidden="true"
+      class="absolute top-0 left-0 scroll-mt-[4rem]"
+      id="home-nav"
+    />
+    <div
       class="absolute inset-0 overflow-hidden pointer-events-none"
     >
       <div

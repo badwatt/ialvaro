@@ -61,7 +61,8 @@ export const Contact = () => {
   };
 
   return (
-    <section id="contact" className="min-h-[80vh] px-4 md:px-0">
+    <section id="contact" className="min-h-[80vh] px-4 md:px-0 relative">
+      <div id="contact-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
       <div className="h-12 md:h-24" />
       <Toaster
         position="bottom-right"

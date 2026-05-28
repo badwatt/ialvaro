@@ -3,9 +3,14 @@
 exports[`<Skills /> > matches snapshot 1`] = `
 <div>
   <section
-    class="section-curve"
+    class="section-curve relative"
     id="skills"
   >
+    <div
+      aria-hidden="true"
+      class="absolute top-0 left-0 scroll-mt-[4rem]"
+      id="skills-nav"
+    />
     <div
       class="h-16 md:h-24"
     />

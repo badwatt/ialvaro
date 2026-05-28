@@ -3,9 +3,14 @@
 exports[`<Contact /> > matches snapshot 1`] = `
 <div>
   <section
-    class="min-h-[80vh] px-4 md:px-0"
+    class="min-h-[80vh] px-4 md:px-0 relative"
     id="contact"
   >
+    <div
+      aria-hidden="true"
+      class="absolute top-0 left-0 scroll-mt-[4rem]"
+      id="contact-nav"
+    />
     <div
       class="h-12 md:h-24"
     />

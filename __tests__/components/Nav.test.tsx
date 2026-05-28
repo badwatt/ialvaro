@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { Nav } from "src/components/Nav";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("<Nav />", () => {
   afterEach(cleanup);
@@ -41,7 +41,6 @@ describe("<Nav />", () => {
 
   it("remains transparent when scrollY <= 50", () => {
     render(<Nav />);
-    // after mount, scrollY is 0
     Object.defineProperty(window, "scrollY", { value: 10, configurable: true, writable: true });
     act(() => {
       window.dispatchEvent(new Event("scroll"));
@@ -91,20 +90,22 @@ describe("<Nav />", () => {
     expect(screen.queryByLabelText(/home-mobile/i)).toBeNull();
   });
 
-  it("desktop link click calls scroller", () => {
+  it("desktop link click scrolls to anchor", () => {
+    const scrollIntoViewSpy = vi.fn();
     const anchor = document.createElement("div");
     anchor.id = "home-nav";
+    anchor.scrollIntoView = scrollIntoViewSpy;
     document.body.appendChild(anchor);
     render(<Nav />);
-    const homeLink = screen.getByLabelText(/home-desktop/i);
-    fireEvent.click(homeLink);
+    fireEvent.click(screen.getByLabelText(/home-desktop/i));
+    expect(scrollIntoViewSpy).toHaveBeenCalledWith({ behavior: "smooth" });
     document.body.removeChild(anchor);
   });
 
-  it("scroller falls back to section id when no anchor", () => {
+  it("scroller does nothing when anchor is missing", () => {
     render(<Nav />);
     const aboutLink = screen.getByLabelText(/about-desktop/i);
-    fireEvent.click(aboutLink);
+    expect(() => fireEvent.click(aboutLink)).not.toThrow();
   });
 
   it("brand button has cursor-pointer", () => {

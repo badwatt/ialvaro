@@ -63,7 +63,8 @@ export const Experience = () => {
   }));
 
   return (
-    <section id="experience" className="section-curve">
+    <section id="experience" className="section-curve relative">
+      <div id="experience-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
       <Header title="Experience" />
       <Accordion items={items} defaultOpenId={String(data[0].id)} />
     </section>
