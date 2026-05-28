@@ -3,7 +3,7 @@
 exports[`<About /> > matches snapshot 1`] = `
 <div>
   <section
-    class="relative grid items-start overflow-hidden pt-2 md:pt-4 pb-16 md:pb-24 scroll-mt-[4.5rem]"
+    class="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32"
     id="about"
   >
     <div
@@ -17,7 +17,7 @@ exports[`<About /> > matches snapshot 1`] = `
       />
     </div>
     <div
-      class="relative z-10 grid md:grid-cols-[1fr_1.3fr] gap-12 md:gap-24 items-start max-w-7xl mx-auto px-5 sm:px-6 lg:px-8"
+      class="relative z-10 grid md:grid-cols-[1fr_1.3fr] gap-12 md:gap-24 items-center max-w-7xl mx-auto px-5 sm:px-6 lg:px-8"
     >
       <div
         class="relative flex justify-center"
