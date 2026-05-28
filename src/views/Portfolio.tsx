@@ -11,7 +11,7 @@ export const Portfolio = () => {
         {data.map(({ id, title, image, url, description }, i) => (
           <SpotlightCard
             key={id}
-            className={`sticky top-20 grid md:grid-cols-[1fr_2fr] gap-8 p-6 md:p-10 group`}
+            className={`sticky grid md:grid-cols-[1fr_2fr] gap-8 p-6 md:p-10 group`}
           >
             <div
               className="grid cursor-pointer place-items-center rounded-2xl overflow-hidden bg-alvaro-base/50"
