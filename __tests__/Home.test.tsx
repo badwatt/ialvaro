@@ -58,7 +58,9 @@ describe("<Home />", () => {
   it("opens CV via generateAndOpenCV", async () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     render(<Home />);
-    screen.getByText("CV").click();
+    act(() => {
+      screen.getByText("CV").click();
+    });
     await waitFor(() => {
       expect(generateAndOpenCV).toHaveBeenCalled();
     });
@@ -70,7 +72,9 @@ describe("<Home />", () => {
       () => new Promise((r) => setTimeout(r, 50))
     );
     render(<Home />);
-    screen.getByText("CV").click();
+    act(() => {
+      screen.getByText("CV").click();
+    });
     expect(await screen.findByText("Generating...")).toBeDefined();
     await screen.findByText("CV");
   });
@@ -80,7 +84,9 @@ describe("<Home />", () => {
     vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<Home />);
-    screen.getByText("CV").click();
+    act(() => {
+      screen.getByText("CV").click();
+    });
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
     });

@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, act } from "@testing-library/react";
 import { CV } from "src/views/CV";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -49,7 +49,9 @@ describe("<CV />", () => {
   it("opens CV via generateAndOpenCV", async () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     render(<CV />);
-    screen.getByLabelText("Open CV").click();
+    act(() => {
+      screen.getByLabelText("Open CV").click();
+    });
     await waitFor(() => {
       expect(generateAndOpenCV).toHaveBeenCalled();
     });
@@ -60,7 +62,9 @@ describe("<CV />", () => {
     vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<CV />);
-    screen.getByLabelText("Open CV").click();
+    act(() => {
+      screen.getByLabelText("Open CV").click();
+    });
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
     });
