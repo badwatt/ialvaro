@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { Home } from "src/views/Home";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createObserverMock } from "./helpers/observerMock";
@@ -67,11 +67,24 @@ describe("<Home />", () => {
     render(<Home />);
     const btn = screen.getByText("CV");
     btn.click();
-    const { pdf } = await import("@react-pdf/renderer");
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
     });
     openSpy.mockRestore();
+  });
+
+  it("shows generating state while loading", async () => {
+    const { pdf } = await import("@react-pdf/renderer");
+    vi.mocked(pdf).mockReturnValueOnce({
+      toBlob: vi.fn().mockImplementation(
+        () => new Promise((r) => setTimeout(() => r(new Blob(["pdf"], { type: "application/pdf" })), 50))
+      ),
+    } as unknown as ReturnType<typeof pdf>);
+    render(<Home />);
+    const btn = screen.getByText("CV");
+    btn.click();
+    expect(await screen.findByText("Generating...")).toBeDefined();
+    await screen.findByText("CV");
   });
 
   it("handles CV generation failure gracefully", async () => {
@@ -83,7 +96,7 @@ describe("<Home />", () => {
     render(<Home />);
     const btn = screen.getByText("CV");
     btn.click();
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
     });
     consoleSpy.mockRestore();

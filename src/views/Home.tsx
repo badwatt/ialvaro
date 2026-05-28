@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrambleWobble } from "src/components/ScrambleWobble";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
 import { pdf } from "@react-pdf/renderer";
@@ -7,6 +7,7 @@ import { CVDocument } from "src/components/CVDocument";
 export const Home = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,7 +17,8 @@ export const Home = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleOpenCV = useCallback(async () => {
+  const handleOpenCV = async () => {
+    setLoading(true);
     try {
       const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
       const url = URL.createObjectURL(blob);
@@ -24,8 +26,10 @@ export const Home = () => {
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (err) {
       console.error("CV generation failed:", err);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
   return (
     <section
@@ -85,9 +89,10 @@ export const Home = () => {
           <button
             type="button"
             onClick={handleOpenCV}
-            className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer"
+            disabled={loading}
+            className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer disabled:opacity-60"
           >
-            CV
+            {loading ? "Generating..." : "CV"}
           </button>
         </div>
       </div>

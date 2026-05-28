@@ -40,6 +40,16 @@ describe("<CV />", () => {
     expect(container.querySelector("svg")).toBeDefined();
   });
 
+  it("shows generating state on click", async () => {
+    render(<CV />);
+    const btn = screen.getByLabelText("Open CV");
+    fireEvent.click(btn);
+    expect(screen.getByText("Generating CV...")).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText("Check out my CV")).toBeDefined();
+    });
+  });
+
   it("opens CV in new tab on click", async () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<CV />);
