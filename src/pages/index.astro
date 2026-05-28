@@ -18,15 +18,16 @@ import { CV } from "src/views/CV";
 import { Contact } from "src/views/Contact";
 
 import type { ExperienceEntry, PortfolioEntry, AboutEntry, SkillEntry } from "src/utils/content";
+import type { ImageMetadata } from "astro";
 
-const imageModules = import.meta.glob(
+const imageModules = import.meta.glob<ImageMetadata>(
   "/src/assets/**/*.{png,jpg,svg,webp}",
   { eager: true }
 );
 const imageMap: Record<string, string> = {};
 for (const [path, mod] of Object.entries(imageModules)) {
   const key = path.replace("/src/assets", "");
-  imageMap[key] = (mod as { default: string }).default;
+  imageMap[key] = mod.src;
 }
 function resolveImage(path: string): string {
   return imageMap[path] ?? path;
