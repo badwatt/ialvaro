@@ -1,6 +1,6 @@
 {
   "id": "1",
   "title": "vue.js",
-  "image": "/skills/vue.svg",
+  "image": "../../assets/skills/vue.svg",
   "url": "https://vuejs.org/"
 }

@@ -1,4 +1,5 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 
 const experience = defineCollection({
@@ -34,13 +35,14 @@ const about = defineCollection({
 
 const skills = defineCollection({
   loader: glob({ pattern: "**/*.json", base: "./src/content/skills" }),
-  schema: z.object({
-    id: z.string(),
-    title: z.string(),
-    image: z.string(),
-    url: z.string(),
-    featured: z.boolean().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      image: image(),
+      url: z.string(),
+      featured: z.boolean().optional(),
+    }),
 });
 
 export const collections = { experience, portfolio, about, skills };

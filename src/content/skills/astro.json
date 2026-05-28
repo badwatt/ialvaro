@@ -1,6 +1,6 @@
 {
   "id": "4",
   "title": "astro",
-  "image": "/skills/astro.svg",
+  "image": "../../assets/skills/astro.svg",
   "url": "https://astro.build/"
 }
