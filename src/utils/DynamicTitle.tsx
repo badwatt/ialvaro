@@ -4,9 +4,8 @@ const SEPARATOR = "·";
 
 const sections = ["Home", "About", "Skills", "Experience", "Portfolio", "CV", "Contact"];
 
-const getSiteName = () => {
-  const host = window.location.hostname;
-  const parts = host.split(".");
+export const getSiteName = (hostname: string): string => {
+  const parts = hostname.split(".");
   return parts.slice(-2).join(".");
 };
 
@@ -24,10 +23,10 @@ const clearHash = () => {
 };
 
 export const DynamicTitle = () => {
-  const [title, setTitle] = useState<string>();
+  const [title, setTitle] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const site = getSiteName();
+    const site = getSiteName(window.location.hostname);
     setTitle(`Home ${SEPARATOR} ${site}`);
 
     const updateTitle = () => {

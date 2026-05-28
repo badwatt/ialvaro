@@ -1,11 +1,6 @@
 import { cleanup, render } from "@testing-library/react";
-import { DynamicTitle } from "src/utils/DynamicTitle";
+import { DynamicTitle, getSiteName } from "src/utils/DynamicTitle";
 import { afterEach, describe, expect, it, vi } from "vitest";
-
-const getSiteName = (hostname: string) => {
-  const parts = hostname.split(".");
-  return parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
-};
 
 describe("getSiteName", () => {
   it("extracts name from simple domain", () => {
@@ -62,17 +57,6 @@ describe("<DynamicTitle />", () => {
     setupSections();
     render(<DynamicTitle />);
     expect(document.title).toBe(`Home · ${site}`);
-  });
-
-  it("uses domain name when hostname has multiple parts", () => {
-    Object.defineProperty(window, "location", {
-      value: { hostname: "ialvaro.com", hash: "", pathname: "/", replace: () => {} },
-      writable: true,
-      configurable: true,
-    });
-    setupSections();
-    render(<DynamicTitle />);
-    expect(document.title).toBe("Home · ialvaro.com");
   });
 
   it("updates title for visible about", () => {
