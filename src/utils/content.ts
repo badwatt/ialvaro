@@ -25,6 +25,9 @@ export type PortfolioEntry = {
 };
 
 export type AboutEntry = {
-  id: string;
+  email: string;
+  location: string;
+  languages: { language: string; level: string }[];
+  education?: { institution: string; degree: string; year?: string }[];
   bio: string;
 };

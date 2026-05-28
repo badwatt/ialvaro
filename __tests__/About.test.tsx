@@ -33,6 +33,24 @@ describe("<About />", () => {
     expect(screen.getByText(/non-conformist/i)).toBeDefined();
   });
 
+  it("should render email and location", () => {
+    render(<About aboutData={testAboutData} />);
+    expect(screen.getByText("alvaro@example.com")).toBeDefined();
+    expect(screen.getByText("Madrid, Spain")).toBeDefined();
+  });
+
+  it("should render languages", () => {
+    render(<About aboutData={testAboutData} />);
+    expect(screen.getByText("Spanish")).toBeDefined();
+    expect(screen.getByText("English")).toBeDefined();
+  });
+
+  it("should render education", () => {
+    render(<About aboutData={testAboutData} />);
+    expect(screen.getByText("Bachelor in Computer Science")).toBeDefined();
+    expect(screen.getByText(/Universidad Complutense de Madrid/)).toBeDefined();
+  });
+
   it("reveals profile image when intersecting", () => {
     render(<About aboutData={testAboutData} />);
     const img = screen.getByAltText("Alvaro Garcia Macias");

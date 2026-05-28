@@ -51,7 +51,10 @@ const portfolioData: PortfolioEntry[] = portfolioDocs.map((e) => ({
 }));
 
 const aboutData: AboutEntry[] = aboutDocs.map((e) => ({
-  id: e.data.id,
+  email: e.data.email,
+  location: e.data.location,
+  languages: e.data.languages,
+  education: e.data.education,
   bio: e.body?.trim() ?? "",
 }));
 

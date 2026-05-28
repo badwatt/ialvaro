@@ -9,10 +9,10 @@ interface AboutProps {
 }
 
 export function About({ aboutData }: AboutProps) {
-  const selectedBio = aboutData[0];
+  const entry = aboutData[0];
   const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });
 
-  const paragraphs: string[] = selectedBio.bio.split("\n").filter(Boolean);
+  const paragraphs: string[] = entry.bio.split("\n").filter(Boolean);
 
   return (
     <section
@@ -100,6 +100,66 @@ export function About({ aboutData }: AboutProps) {
                 {text}
               </p>
             ))}
+          </div>
+
+          {/* Details grid */}
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 transition-all duration-700 delay-400 ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+          >
+            {entry.email && (
+              <div>
+                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
+                  Email
+                </span>
+                <p className="text-alvaro-white text-sm mt-1">{entry.email}</p>
+              </div>
+            )}
+            {entry.location && (
+              <div>
+                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
+                  Location
+                </span>
+                <p className="text-alvaro-white text-sm mt-1">{entry.location}</p>
+              </div>
+            )}
+            {entry.languages && entry.languages.length > 0 && (
+              <div>
+                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
+                  Languages
+                </span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {entry.languages.map((lang) => (
+                    <span
+                      key={lang.language}
+                      className="text-xs px-2.5 py-1 rounded-md bg-alvaro-surface border border-alvaro-border text-alvaro-muted"
+                    >
+                      {lang.language}
+                      <span className="text-alvaro-primary/60 ml-1.5">{lang.level}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {entry.education && entry.education.length > 0 && (
+              <div>
+                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
+                  Education
+                </span>
+                <div className="space-y-2 mt-2">
+                  {entry.education.map((edu) => (
+                    <div key={edu.institution + edu.degree}>
+                      <p className="text-alvaro-white text-sm">{edu.degree}</p>
+                      <p className="text-alvaro-muted text-xs">
+                        {edu.institution}
+                        {edu.year && <span className="ml-1 text-alvaro-primary/50">· {edu.year}</span>}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

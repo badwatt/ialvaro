@@ -21,7 +21,7 @@ function parseDate(str: string): number {
 }
 
 export function getBioText(data: AboutEntry[]): string {
-  return data.find((b) => b.id === "3")?.bio || data[0]?.bio || "";
+  return data[0]?.bio ?? "";
 }
 
 export async function loadImage(url: string): Promise<string> {
@@ -357,6 +357,52 @@ export async function generateAndOpenCV(
   const bio = doc.splitTextToSize(getBioText(aboutData), sidebarW - 8);
   doc.text(bio, M, sy);
   sy += bio.length * 11 + 18;
+
+  // Location
+  if (aboutData[0]?.location) {
+    sy = sectionTitle(doc, "LOCATION", M, sy);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...C.muted);
+    doc.text(aboutData[0].location, M, sy);
+    sy += 14;
+  }
+
+  // Languages
+  if (aboutData[0]?.languages && aboutData[0].languages.length > 0) {
+    sy = sectionTitle(doc, "LANGUAGES", M, sy);
+    for (const lang of aboutData[0].languages) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...C.white);
+      const tw = doc.getTextWidth(`${lang.language} · ${lang.level}`);
+      doc.setFillColor(...C.surface);
+      doc.setDrawColor(...C.border);
+      doc.roundedRect(M, sy - 8, tw + 12, 13, 2, 2, "FD");
+      doc.text(`${lang.language} · ${lang.level}`, M + 6, sy + 1);
+      sy += 18;
+    }
+    sy += 4;
+  }
+
+  // Education
+  if (aboutData[0]?.education && aboutData[0].education.length > 0) {
+    sy = sectionTitle(doc, "EDUCATION", M, sy);
+    for (const edu of aboutData[0].education) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...C.white);
+      doc.text(edu.degree, M, sy);
+      sy += 10;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(...C.muted);
+      const instText = edu.year ? `${edu.institution} · ${edu.year}` : edu.institution;
+      doc.text(instText, M, sy);
+      sy += 12;
+    }
+    sy += 4;
+  }
 
   sy = sectionTitle(doc, "SKILLS", M, sy);
   let tx = M;

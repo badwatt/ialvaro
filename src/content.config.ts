@@ -29,7 +29,21 @@ const portfolio = defineCollection({
 const about = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/about" }),
   schema: z.object({
-    id: z.string(),
+    email: z.string(),
+    location: z.string(),
+    languages: z.array(
+      z.object({
+        language: z.string(),
+        level: z.string(),
+      })
+    ),
+    education: z.array(
+      z.object({
+        institution: z.string(),
+        degree: z.string(),
+        year: z.string().optional(),
+      })
+    ).optional(),
   }),
 });
 

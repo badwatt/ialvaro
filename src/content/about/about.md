@@ -1,5 +1,15 @@
 ---
-id: "3"
+email: "alvaro@example.com"
+location: "Madrid, Spain"
+languages:
+  - language: "Spanish"
+    level: "Native"
+  - language: "English"
+    level: "Professional"
+education:
+  - institution: "Universidad Complutense de Madrid"
+    degree: "Bachelor in Computer Science"
+    year: "2018"
 ---
 I feel very fortunate to have found what I am passionate about and to make it my job.
 I have also worked managing, training and leading marketing teams at a national level.
