@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { XIcon, DownloadSimpleIcon, SpinnerIcon } from "@phosphor-icons/react";
 
 type Props = {
@@ -8,6 +9,14 @@ type Props = {
 };
 
 export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => {
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
+
   if (!url && !isGenerating) return null;
 
   return (

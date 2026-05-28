@@ -44,7 +44,18 @@ describe("<CVPreview />", () => {
     expect(btn.hasAttribute("disabled")).toBe(true);
   });
 
-it("has fullscreen classes for mobile", () => {
+  it("locks body scroll on mount and restores on unmount", () => {
+    const original = document.body.style.overflow;
+    const { unmount } = render(
+      <CVPreview url="blob:test" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />
+    );
+    expect(document.body.style.overflow).toBe("hidden");
+
+    unmount();
+    expect(document.body.style.overflow).toBe(original);
+  });
+
+  it("has fullscreen classes for mobile", () => {
     const { container } = render(
       <CVPreview url="http://test/cv.pdf" isGenerating={false} onClose={vi.fn()} onDownload={vi.fn()} />,
     );
