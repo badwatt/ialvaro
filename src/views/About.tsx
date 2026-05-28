@@ -14,7 +14,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32 scroll-mt-[4.5rem]"
+      className="relative grid items-start overflow-hidden pt-2 md:pt-4 pb-16 md:pb-24 scroll-mt-[4.5rem]"
     >
       {/* Atmospheric layers */}
       <div className="absolute inset-0 pointer-events-none">
@@ -24,7 +24,7 @@ export default function About() {
 
       <div
         ref={ref}
-        className="relative z-10 grid md:grid-cols-[1fr_1.3fr] gap-12 md:gap-24 items-center max-w-7xl mx-auto px-5 sm:px-6 lg:px-8"
+        className="relative z-10 grid md:grid-cols-[1fr_1.3fr] gap-12 md:gap-24 items-start max-w-7xl mx-auto px-5 sm:px-6 lg:px-8"
       >
         {/* Left: Profile with floating tags */}
         <div className="relative flex justify-center">
