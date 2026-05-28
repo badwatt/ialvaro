@@ -30,7 +30,7 @@ interface MDXModule {
 }
 
 const experienceModules = import.meta.glob<MDXModule>(
-  "/src/data/experience/*.mdx",
+  "/src/data/experience/*.md",
   { eager: true }
 );
 
