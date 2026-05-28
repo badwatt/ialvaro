@@ -8,6 +8,9 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwind()],
+    optimizeDeps: {
+      include: ["jspdf"],
+    },
   },
 
   server: {
