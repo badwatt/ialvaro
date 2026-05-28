@@ -1,12 +1,13 @@
 import { experienceData, biographyData } from "src/utils/content";
 import skillsData from "src/data/skills.json";
 
-const colors = {
+const C = {
   base: [8, 8, 15] as [number, number, number],
   border: [32, 32, 53] as [number, number, number],
   muted: [152, 152, 176] as [number, number, number],
   white: [232, 232, 242] as [number, number, number],
   primary: [91, 155, 213] as [number, number, number],
+  surface: [18, 18, 29] as [number, number, number],
 };
 
 const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
@@ -14,182 +15,204 @@ const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 const bioText =
   biographyData.find((b) => b.id === "3")?.bio || biographyData[0]?.bio || "";
 
+async function loadImage(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function generateAndOpenCV(): Promise<void> {
-  const { jsPDF } = await import("jspdf");
+  const [{ jsPDF }, profileImg] = await Promise.all([
+    import("jspdf"),
+    loadImage("/images/profile/profile.png").catch(() => ""),
+  ]);
+
   const doc = new jsPDF({ unit: "pt", format: "a4" });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const margin = 40;
-  const contentW = pageW - margin * 2;
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const M = 40;
+  const sidebarW = 160;
+  const mainX = M + sidebarW + 32;
+  const mainW = W - M - sidebarW - 32;
 
   // Background
-  doc.setFillColor(...colors.base);
-  doc.rect(0, 0, pageW, pageH, "F");
+  doc.setFillColor(...C.base);
+  doc.rect(0, 0, W, H, "F");
 
   // ── Header ──
-  let y = margin;
+  let y = M;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(36);
-  doc.setTextColor(...colors.white);
-  doc.text("Alvaro Garcia Macias", margin, y + 28);
+  doc.setTextColor(...C.white);
+  doc.text("Alvaro Garcia Macias", M, y + 26);
+  y += 36;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(14);
-  doc.setTextColor(...colors.primary);
-  doc.text("FULL STACK DEVELOPER", margin, y + 48);
+  doc.setTextColor(...C.primary);
+  doc.text("FULL STACK DEVELOPER", M, y + 10);
+  y += 20;
 
   doc.setFontSize(10);
-  doc.setTextColor(...colors.primary);
-  const linkY = y + 66;
-  doc.textWithLink("github.com/badwatt", margin, linkY, {
+  doc.setTextColor(...C.primary);
+  doc.textWithLink("github.com/badwatt", M, y + 10, {
     url: "https://github.com/badwatt",
   });
-  doc.textWithLink(
-    "linkedin.com/in/alvaro-garcia-macias",
-    margin + 120,
-    linkY,
-    { url: "https://linkedin.com/in/alvaro-garcia-macias" }
-  );
+  doc.textWithLink("linkedin.com/in/alvaro-garcia-macias", M + 120, y + 10, {
+    url: "https://linkedin.com/in/alvaro-garcia-macias",
+  });
+  y += 20;
 
-  y += 84;
-  doc.setDrawColor(...colors.border);
+  doc.setDrawColor(...C.border);
   doc.setLineWidth(1);
-  doc.line(margin, y, pageW - margin, y);
-  y += 24;
+  doc.line(M, y, W - M, y);
+  y += 20;
 
-  // ── Sidebar / Main layout ──
-  const sidebarW = 160;
-  const mainX = margin + sidebarW + 32;
-  const mainW = contentW - sidebarW - 32;
-  let sidebarY = y;
-  let mainY = y;
+  // ── Sidebar ──
+  let sy = y;
 
-  // Helper: section title
-  const drawSectionTitle = (
-    title: string,
-    x: number,
-    yPos: number,
-    w: number
-  ): number => {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(...colors.primary);
-    doc.text(title.toUpperCase(), x, yPos);
-    doc.setDrawColor(...colors.border);
-    doc.setLineWidth(1);
-    doc.line(x, yPos + 4, x + w, yPos + 4);
-    return yPos + 18;
-  };
+  // Profile image
+  if (profileImg) {
+    try {
+      doc.addImage(profileImg, "PNG", M + (sidebarW - 80) / 2, sy, 80, 80);
+      sy += 88;
+    } catch {
+      // image add failed, skip
+    }
+  }
 
-  // ── Sidebar: About ──
-  sidebarY = drawSectionTitle("About", margin, sidebarY, sidebarW);
+  // About section
+  sy = drawTitle(doc, "ABOUT", M, sy, sidebarW);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(...colors.muted);
+  doc.setFontSize(9);
+  doc.setTextColor(...C.muted);
   const bioLines = doc.splitTextToSize(bioText, sidebarW);
-  doc.text(bioLines, margin, sidebarY);
-  sidebarY += bioLines.length * 14 + 24;
+  doc.text(bioLines, M, sy);
+  sy += bioLines.length * 13 + 16;
 
-  // ── Sidebar: Skills ──
-  sidebarY = drawSectionTitle("Skills", margin, sidebarY, sidebarW);
-
-  const drawTag = (
-    label: string,
-    x: number,
-    yPos: number,
-    featured: boolean
-  ): { x: number; y: number } => {
-    const tw = doc.getTextWidth(label) + 12;
-    if (x + tw > margin + sidebarW) {
-      x = margin;
-      yPos += 20;
-    }
-    if (featured) {
-      doc.setFillColor(...colors.primary);
-      doc.roundedRect(x, yPos - 10, tw, 16, 2, 2, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.setTextColor(...colors.base);
-    } else {
-      doc.setFillColor(18, 18, 29);
-      doc.setDrawColor(...colors.border);
-      doc.roundedRect(x, yPos - 10, tw, 16, 2, 2, "FD");
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(...colors.white);
-    }
-    doc.text(label, x + 6, yPos);
-    return { x: x + tw + 4, y: yPos };
-  };
-
-  let tagX = margin;
+  // Skills section
+  sy = drawTitle(doc, "SKILLS", M, sy, sidebarW);
+  let tagX = M;
   for (const s of featuredSkills) {
-    const res = drawTag(s, tagX, sidebarY, true);
-    tagX = res.x;
-    sidebarY = res.y;
+    const r = drawTag(doc, s, tagX, sy, true, M, sidebarW);
+    tagX = r.x;
+    sy = r.y;
   }
   for (const s of otherSkills) {
-    const res = drawTag(s, tagX, sidebarY, false);
-    tagX = res.x;
-    sidebarY = res.y;
+    const r = drawTag(doc, s, tagX, sy, false, M, sidebarW);
+    tagX = r.x;
+    sy = r.y;
   }
-  sidebarY += 24;
 
   // ── Main: Experience ──
-  mainY = drawSectionTitle("Experience", margin, mainY, mainW);
+  let my = y;
+  my = drawTitle(doc, "EXPERIENCE", mainX, my, mainW);
 
   for (const job of experienceData) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.setTextColor(...colors.white);
-    doc.text(job.title, mainX, mainY);
-    mainY += 16;
+    doc.setTextColor(...C.white);
+    doc.text(job.title, mainX, my);
+    my += 14;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.setTextColor(...colors.muted);
-    doc.text(`${job.date_from} — ${job.date_to}`, mainX, mainY);
-    mainY += 14;
+    doc.setTextColor(...C.muted);
+    doc.text(`${job.date_from} — ${job.date_to}`, mainX, my);
+    my += 16;
 
     const desc = job.description;
     const sections = [
-      { title: desc.title.one, content: desc.content.one },
-      { title: desc.title.two, content: desc.content.two },
-      { title: desc.title.three, content: desc.content.three },
-      { title: desc.title.four, content: desc.content.four },
-    ].filter((s) => s.title && s.content);
+      { t: desc.title.one, c: desc.content.one },
+      { t: desc.title.two, c: desc.content.two },
+      { t: desc.title.three, c: desc.content.three },
+      { t: desc.title.four, c: desc.content.four },
+    ].filter((s) => s.t && s.c);
 
     for (const sec of sections) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.setTextColor(...colors.white);
-      doc.text(sec.title!, mainX, mainY);
-      mainY += 13;
+      doc.setTextColor(...C.white);
+      doc.text(sec.t!, mainX, my);
+      my += 12;
 
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(...colors.muted);
-      const lines = doc.splitTextToSize(sec.content!, mainW);
-      doc.text(lines, mainX, mainY);
-      mainY += lines.length * 12 + 4;
+      doc.setTextColor(...C.muted);
+      const lines = doc.splitTextToSize(sec.c!, mainW);
+      doc.text(lines, mainX, my);
+      my += lines.length * 11 + 6;
     }
-    mainY += 10;
+    my += 8;
   }
 
   // ── Footer ──
-  const footerY = pageH - 32;
-  doc.setDrawColor(...colors.border);
+  const fy = H - 28;
+  doc.setDrawColor(...C.border);
   doc.setLineWidth(1);
-  doc.line(margin, footerY - 12, pageW - margin, footerY - 12);
+  doc.line(M, fy - 10, W - M, fy - 10);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.setTextColor(...colors.muted);
-  doc.text(`Generated from ${window.location.hostname}`, margin, footerY);
-  doc.text(String(new Date().getFullYear()), pageW - margin - 40, footerY);
+  doc.setTextColor(...C.muted);
+  doc.text(`Generated from ${window.location.hostname}`, M, fy);
+  doc.text(String(new Date().getFullYear()), W - M - 40, fy);
 
   // Open in new tab
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
   window.open(url, "_blank");
+}
+
+function drawTitle(
+  doc: InstanceType<typeof import("jspdf").jsPDF>,
+  label: string,
+  x: number,
+  y: number,
+  w: number
+): number {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...C.primary);
+  doc.text(label, x, y);
+  doc.setDrawColor(...C.border);
+  doc.setLineWidth(0.5);
+  doc.line(x, y + 4, x + w, y + 4);
+  return y + 16;
+}
+
+function drawTag(
+  doc: InstanceType<typeof import("jspdf").jsPDF>,
+  label: string,
+  x: number,
+  y: number,
+  featured: boolean,
+  baseX: number,
+  maxX: number
+): { x: number; y: number } {
+  const tw = doc.getTextWidth(label) + 14;
+  if (x + tw > baseX + maxX) {
+    x = baseX;
+    y += 20;
+  }
+  if (featured) {
+    doc.setFillColor(...C.primary);
+    doc.roundedRect(x, y - 10, tw, 15, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...C.base);
+  } else {
+    doc.setFillColor(...C.surface);
+    doc.setDrawColor(...C.border);
+    doc.roundedRect(x, y - 10, tw, 15, 2, 2, "FD");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...C.white);
+  }
+  doc.text(label, x + 7, y);
+  return { x: x + tw + 4, y };
 }
