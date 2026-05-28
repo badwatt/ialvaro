@@ -14,7 +14,7 @@ const C = {
   accent: [224, 85, 106] as [number, number, number],
 };
 
-function parseDate(str: string): number {
+export function parseDate(str: string): number {
   if (str.toLowerCase() === "now") return Date.now();
   const d = new Date(`${str} 01`);
   return isNaN(d.getTime()) ? 0 : d.getTime();

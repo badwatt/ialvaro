@@ -6,6 +6,7 @@ import {
   toCircular,
   generateAndOpenCV,
   parseDescription,
+  parseDate,
 } from "src/utils/generateCV";
 import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
@@ -108,6 +109,41 @@ function setupDOMMocks(imageBehavior: "load" | "error" = "load") {
   }
 }
 
+function setupFileReaderMockEmpty() {
+  class MockFileReader {
+    result = "";
+    onloadend: (() => void) | null = null;
+    readAsDataURL() {
+      setTimeout(() => this.onloadend?.(), 0);
+    }
+  }
+  vi.stubGlobal("FileReader", MockFileReader);
+}
+
+function setupFetchMockAllReject() {
+  global.fetch = vi.fn().mockImplementation(() => Promise.reject(new Error("fail")));
+}
+
+function setupDOMMocksNullCtx() {
+  vi.stubGlobal("document", {
+    createElement: (tag: string) => {
+      if (tag === "canvas") {
+        return {
+          getContext: () => null,
+          toDataURL: () => "data:image/png;base64,circular",
+        };
+      }
+      return null;
+    },
+  });
+  vi.stubGlobal("Image", class {
+    onload: (() => void) | null = null;
+    constructor() {
+      setTimeout(() => this.onload?.(), 0);
+    }
+  });
+}
+
 function stubImageToLoad() {
   vi.stubGlobal("Image", class {
     onload: (() => void) | null = null;
@@ -118,6 +154,23 @@ function stubImageToLoad() {
 }
 
 // ── Tests ──
+describe("parseDate", () => {
+  it("parses now as Date.now()", () => {
+    const result = parseDate("now");
+    expect(result).toBeGreaterThan(Date.now() - 1000);
+    expect(result).toBeLessThanOrEqual(Date.now());
+  });
+
+  it("returns 0 for invalid date", () => {
+    expect(parseDate("2024 13")).toBe(0);
+  });
+
+  it("parses normal month year", () => {
+    const result = parseDate("June 2023");
+    expect(result).toBeGreaterThan(0);
+  });
+});
+
 describe("getBioText", () => {
   it("uses id 3 bio when present", () => {
     expect(getBioText([{ id: "3", bio: "test" }])).toBe("test");
@@ -140,6 +193,14 @@ describe("loadImage", () => {
     expect(result).toBe("data:image/png;base64,abc");
     vi.unstubAllGlobals();
   });
+
+  it("returns empty string from FileReader with empty result", async () => {
+    setupFetchMock();
+    setupFileReaderMockEmpty();
+    const result = await loadImage("/test.png");
+    expect(result).toBe("");
+    vi.unstubAllGlobals();
+  });
 });
 
 describe("loadImageToPng", () => {
@@ -149,6 +210,29 @@ describe("loadImageToPng", () => {
 
   it("returns null when document undefined", async () => {
     vi.stubGlobal("document", undefined);
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when base64 is empty", async () => {
+    setupFetchMock();
+    setupFileReaderMockEmpty();
+    setupDOMMocks("load");
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when getContext returns null", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocksNullCtx();
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBeNull();
+  });
+
+  it("returns null on fetch error", async () => {
+    setupFetchMockAllReject();
+    setupDOMMocks("load");
     const result = await loadImageToPng("/a.svg", 16, 16);
     expect(result).toBeNull();
   });
@@ -260,6 +344,66 @@ describe("generateAndOpenCV", () => {
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+
+    expect(mockRegistry.output).toHaveBeenCalledWith("blob");
+    expect(openSpy).toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it("handles missing all images and minimal about data", async () => {
+    setupFetchMockAllReject();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const minimalAbout = [{
+      email: "a@b.com",
+      languages: [],
+      education: [{ institution: "Uni", degree: "BS" }],
+      bio: "short bio",
+    }];
+    const exp = [
+      {
+        id: "3",
+        title: "Now",
+        image: "../../assets/experience/now.svg",
+        date_from: "now",
+        date_to: "now",
+        url: "https://now.com/",
+        description: "# A\n\ncontent",
+      },
+      {
+        id: "4",
+        title: "Bad",
+        image: "../../assets/experience/bad.svg",
+        date_from: "bad",
+        date_to: "bad",
+        url: "https://bad.com/",
+        description: "# B\n\ncontent",
+      },
+    ];
+
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    await generateAndOpenCV(exp, minimalAbout, testSkillsData);
+
+    expect(mockRegistry.output).toHaveBeenCalledWith("blob");
+    expect(openSpy).toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it("handles empty education array", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const noEduAbout = [{
+      email: "a@b.com",
+      languages: [],
+      education: [],
+      bio: "short bio",
+    }];
+
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    await generateAndOpenCV(testExperienceData, noEduAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
