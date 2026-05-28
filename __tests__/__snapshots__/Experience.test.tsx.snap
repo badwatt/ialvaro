@@ -24,99 +24,109 @@ exports[`<Experience /> > should match the snapshot 1`] = `
       />
     </div>
     <div
-      class="space-y-3"
+      class="relative pl-10"
     >
       <div
-        class="border rounded-2xl overflow-hidden transition-colors duration-300 border-alvaro-primary/30 bg-alvaro-surface"
+        class="absolute left-4 top-6 bottom-6 w-px bg-alvaro-border"
+      />
+      <div
+        class="relative mb-6"
       >
-        <button
-          aria-controls="accordion-content-2"
-          aria-expanded="true"
-          class="w-full flex items-center justify-between p-6 text-left cursor-pointer"
-          type="button"
-        >
-          <div>
-            <span
-              class="text-xl font-semibold text-alvaro-white"
-            >
-              Openbank
-            </span>
-            <p
-              class="text-sm text-alvaro-muted mt-1 font-mono tabular-nums"
-            >
-              June 2023 — now
-            </p>
-          </div>
-          <svg
-            class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 rotate-180"
-            fill="currentColor"
-            height="20"
-            viewBox="0 0 256 256"
-            width="20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"
-            />
-          </svg>
-        </button>
         <div
-          class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[1000px] opacity-100"
-          id="accordion-content-2"
+          class="absolute -left-[29px] top-[26px] w-2.5 h-2.5 rounded-full bg-alvaro-accent ring-[3px] ring-alvaro-base"
+        />
+        <div
+          class="border rounded-2xl overflow-hidden transition-colors duration-300 border-alvaro-primary/30 bg-alvaro-surface"
         >
+          <button
+            aria-controls="accordion-content-2"
+            aria-expanded="true"
+            class="w-full flex items-center justify-between p-6 text-left cursor-pointer"
+            type="button"
+          >
+            <div>
+              <span
+                class="text-xl font-semibold text-alvaro-white"
+              >
+                Openbank
+              </span>
+              <p
+                class="text-sm text-alvaro-muted mt-1 font-mono tabular-nums"
+              >
+                June 2023 — now
+              </p>
+            </div>
+            <svg
+              class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 rotate-180"
+              fill="currentColor"
+              height="20"
+              viewBox="0 0 256 256"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"
+              />
+            </svg>
+          </button>
           <div
-            class="px-6 pb-6"
+            class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[1000px] opacity-100"
+            id="accordion-content-2"
           >
             <div
-              class="grid md:grid-cols-[1fr_2fr] gap-8 pt-2"
+              class="px-6 pb-6"
             >
               <div
-                class="flex items-start"
+                class="grid md:grid-cols-[1fr_2fr] gap-8 pt-2"
               >
-                <a
-                  aria-label="Openbank"
-                  class="block"
-                  href="https://openbank.es/"
-                  rel="noopener noreferrer"
-                  target="_blank"
+                <div
+                  class="flex items-start"
                 >
-                  <img
-                    alt="Openbank"
-                    class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
-                    decoding="async"
-                    loading="lazy"
-                    src="../../assets/experience/openbank.svg"
-                  />
-                </a>
-              </div>
-              <div
-                class="space-y-4 text-alvaro-muted leading-relaxed"
-              >
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
+                  <a
+                    aria-label="Openbank"
+                    class="block"
+                    href="https://openbank.es/"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
-                    Consulting Firm
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    - Knowmad Mood
-- Plexus
-                  </p>
+                    <img
+                      alt="Openbank"
+                      class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
+                      decoding="async"
+                      loading="lazy"
+                      src="../../assets/experience/openbank.svg"
+                    />
+                  </a>
                 </div>
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
-                  >
-                    Projects
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    - Onboarding
+                <div
+                  class="space-y-4 text-alvaro-muted leading-relaxed"
+                >
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Consulting Firm
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      - Knowmad Mood
+- Plexus
+                    </p>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Projects
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      - Onboarding
 - Customer
-                  </p>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -124,119 +134,126 @@ exports[`<Experience /> > should match the snapshot 1`] = `
         </div>
       </div>
       <div
-        class="border rounded-2xl overflow-hidden transition-colors duration-300 border-alvaro-border hover:border-alvaro-muted"
+        class="relative mb-6"
       >
-        <button
-          aria-controls="accordion-content-1"
-          aria-expanded="false"
-          class="w-full flex items-center justify-between p-6 text-left cursor-pointer"
-          type="button"
-        >
-          <div>
-            <span
-              class="text-xl font-semibold text-alvaro-white"
-            >
-              RSI
-            </span>
-            <p
-              class="text-sm text-alvaro-muted mt-1 font-mono tabular-nums"
-            >
-              October 2021 — April 2023
-            </p>
-          </div>
-          <svg
-            class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 "
-            fill="currentColor"
-            height="20"
-            viewBox="0 0 256 256"
-            width="20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"
-            />
-          </svg>
-        </button>
         <div
-          class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-0 opacity-0"
-          id="accordion-content-1"
+          class="absolute -left-[29px] top-[26px] w-2.5 h-2.5 rounded-full bg-alvaro-accent ring-[3px] ring-alvaro-base"
+        />
+        <div
+          class="border rounded-2xl overflow-hidden transition-colors duration-300 border-alvaro-border hover:border-alvaro-muted"
         >
+          <button
+            aria-controls="accordion-content-1"
+            aria-expanded="false"
+            class="w-full flex items-center justify-between p-6 text-left cursor-pointer"
+            type="button"
+          >
+            <div>
+              <span
+                class="text-xl font-semibold text-alvaro-white"
+              >
+                RSI
+              </span>
+              <p
+                class="text-sm text-alvaro-muted mt-1 font-mono tabular-nums"
+              >
+                October 2021 — April 2023
+              </p>
+            </div>
+            <svg
+              class="text-alvaro-muted transition-transform duration-300 shrink-0 ml-4 "
+              fill="currentColor"
+              height="20"
+              viewBox="0 0 256 256"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"
+              />
+            </svg>
+          </button>
           <div
-            class="px-6 pb-6"
+            class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-0 opacity-0"
+            id="accordion-content-1"
           >
             <div
-              class="grid md:grid-cols-[1fr_2fr] gap-8 pt-2"
+              class="px-6 pb-6"
             >
               <div
-                class="flex items-start"
+                class="grid md:grid-cols-[1fr_2fr] gap-8 pt-2"
               >
-                <a
-                  aria-label="RSI"
-                  class="block"
-                  href="https://grupocajarural.es/"
-                  rel="noopener noreferrer"
-                  target="_blank"
+                <div
+                  class="flex items-start"
                 >
-                  <img
-                    alt="RSI"
-                    class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
-                    decoding="async"
-                    loading="lazy"
-                    src="../../assets/experience/rsi.svg"
-                  />
-                </a>
-              </div>
-              <div
-                class="space-y-4 text-alvaro-muted leading-relaxed"
-              >
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
+                  <a
+                    aria-label="RSI"
+                    class="block"
+                    href="https://grupocajarural.es/"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
-                    Consulting Firm
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    - Devoteam
-                  </p>
+                    <img
+                      alt="RSI"
+                      class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
+                      decoding="async"
+                      loading="lazy"
+                      src="../../assets/experience/rsi.svg"
+                    />
+                  </a>
                 </div>
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
-                  >
-                    Projects
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    - Onboarding
+                <div
+                  class="space-y-4 text-alvaro-muted leading-relaxed"
+                >
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Consulting Firm
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      - Devoteam
+                    </p>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Projects
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      - Onboarding
 - Customer
-                  </p>
-                </div>
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
-                  >
-                    Tasks
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    - Web application development
-                  </p>
-                </div>
-                <div>
-                  <h4
-                    class="text-base font-medium text-alvaro-white mb-1"
-                  >
-                    Skills
-                  </h4>
-                  <p
-                    class="text-sm whitespace-pre-line"
-                  >
-                    vue.js, react.js
-                  </p>
+                    </p>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Tasks
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      - Web application development
+                    </p>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-base font-medium text-alvaro-white mb-1"
+                    >
+                      Skills
+                    </h4>
+                    <p
+                      class="text-sm whitespace-pre-line"
+                    >
+                      vue.js, react.js
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

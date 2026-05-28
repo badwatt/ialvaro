@@ -2,24 +2,24 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import {
   getBioText,
   loadImage,
+  loadImageToPng,
   toCircular,
   generateAndOpenCV,
   parseDescription,
 } from "src/utils/generateCV";
 import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
-// Mock registry — defined before vi.mock
 const mockRegistry = {
   addImage: vi.fn(),
+  addPage: vi.fn(),
   output: vi.fn().mockReturnValue(new Blob(["pdf"], { type: "application/pdf" })),
-  behavior: { addImageThrow: 0 },
+  addImageThrow: 0,
 };
 
 vi.mock("jspdf", () => {
   const addImageImpl = vi.fn().mockImplementation(() => {
     const callNum = (addImageImpl.mock.calls?.length ?? 0) + 1;
-    if (mockRegistry.behavior.addImageThrow === 1 && callNum === 1) throw new Error("sidebar");
-    if (mockRegistry.behavior.addImageThrow === 2 && callNum === 2) throw new Error("footer");
+    if (mockRegistry.addImageThrow === callNum) throw new Error("fail");
   });
 
   mockRegistry.addImage = addImageImpl;
@@ -39,7 +39,9 @@ vi.mock("jspdf", () => {
       rect: vi.fn(),
       roundedRect: vi.fn(),
       ellipse: vi.fn(),
+      circle: vi.fn(),
       addImage: addImageImpl,
+      addPage: mockRegistry.addPage,
       splitTextToSize: vi.fn().mockReturnValue(["line1", "line2"]),
       getTextWidth: vi.fn().mockReturnValue(50),
       output: mockRegistry.output,
@@ -49,7 +51,6 @@ vi.mock("jspdf", () => {
   return { jsPDF };
 });
 
-// ── Helpers ──
 function setupFetchMock(rejectUrl?: string) {
   global.fetch = vi.fn().mockImplementation((url: string) => {
     if (rejectUrl && url.includes(rejectUrl)) return Promise.reject(new Error("fail"));
@@ -75,6 +76,7 @@ function setupDOMMocks(imageBehavior: "load" | "error" = "load") {
     closePath: vi.fn(),
     clip: vi.fn(),
     drawImage: vi.fn(),
+    clearRect: vi.fn(),
   };
 
   vi.stubGlobal("document", {
@@ -140,6 +142,34 @@ describe("loadImage", () => {
   });
 });
 
+describe("loadImageToPng", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns null when document undefined", async () => {
+    vi.stubGlobal("document", undefined);
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when image fails to load", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("error");
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBeNull();
+  });
+
+  it("returns raster PNG on success", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+    const result = await loadImageToPng("/a.svg", 16, 16);
+    expect(result).toBe("data:image/png;base64,circular");
+  });
+});
+
 describe("toCircular", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -175,7 +205,7 @@ describe("toCircular", () => {
 
 describe("generateAndOpenCV", () => {
   beforeEach(() => {
-    mockRegistry.behavior.addImageThrow = 0;
+    mockRegistry.addImageThrow = 0;
     vi.clearAllMocks();
   });
 
@@ -206,7 +236,6 @@ describe("generateAndOpenCV", () => {
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
-    expect(mockRegistry.addImage).toHaveBeenCalledTimes(1);
     openSpy.mockRestore();
   });
 
@@ -220,7 +249,6 @@ describe("generateAndOpenCV", () => {
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
-    expect(mockRegistry.addImage).toHaveBeenCalledTimes(1);
     openSpy.mockRestore();
   });
 
@@ -228,7 +256,7 @@ describe("generateAndOpenCV", () => {
     setupFetchMock();
     setupFileReaderMock();
     setupDOMMocks("load");
-    mockRegistry.behavior.addImageThrow = 1;
+    mockRegistry.addImageThrow = 1;
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
@@ -238,21 +266,19 @@ describe("generateAndOpenCV", () => {
     openSpy.mockRestore();
   });
 
-  it("handles footer addImage error", async () => {
+  it("adds a second page when experience overflows", async () => {
     setupFetchMock();
     setupFileReaderMock();
     setupDOMMocks("load");
-    mockRegistry.behavior.addImageThrow = 2;
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+    const many = Array.from({ length: 8 }, () => testExperienceData[0]);
+    await generateAndOpenCV(many, testAboutData, testSkillsData);
 
-    expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
+    expect(mockRegistry.addPage).toHaveBeenCalled();
     openSpy.mockRestore();
   });
 });
-
 
 describe("parseDescription", () => {
   it("parses sections from markdown body", () => {

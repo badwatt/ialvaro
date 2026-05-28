@@ -24,6 +24,12 @@ const portfolioDocs = await getCollection("portfolio");
 const aboutDocs = await getCollection("about");
 const skillsDocs = await getCollection("skills");
 
+function parseDate(str: string): number {
+  if (str.toLowerCase() === "now") return Date.now();
+  const d = new Date(`${str} 01`);
+  return isNaN(d.getTime()) ? 0 : d.getTime();
+}
+
 const experienceData: ExperienceEntry[] = experienceDocs
   .map((e) => ({
     id: e.data.id,
@@ -34,7 +40,7 @@ const experienceData: ExperienceEntry[] = experienceDocs
     url: e.data.url,
     description: e.body?.trim() ?? "",
   }))
-  .sort((a, b) => Number(b.id) - Number(a.id));
+  .sort((a, b) => parseDate(b.date_from) - parseDate(a.date_from));
 
 const portfolioData: PortfolioEntry[] = portfolioDocs.map((e) => ({
   id: e.data.id,

@@ -52,7 +52,7 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
     <section id="experience" className="section-curve relative">
       <div id="experience-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Experience" />
-      <Accordion items={items} defaultOpenId={String(experienceData[0].id)} />
+      <Accordion items={items} defaultOpenId={String(experienceData[0].id)} timeline />
     </section>
   );
 };
