@@ -70,6 +70,15 @@ const styles = StyleSheet.create({
     width: 160,
     gap: 24,
   },
+  photo: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    marginBottom: 8,
+    alignSelf: "center",
+  },
   main: {
     flex: 1,
     gap: 24,
@@ -195,6 +204,7 @@ export const CVDocument = () => (
       <View style={styles.twoColumn}>
         {/* Sidebar */}
         <View style={styles.sidebar}>
+          <Image src="/images/profile/profile.png" style={styles.photo} />
           <View>
             <Text style={styles.sectionTitle}>About</Text>
             <Text style={styles.bio}>{bioText}</Text>
@@ -251,7 +261,7 @@ export const CVDocument = () => (
         <Text style={styles.footerText}>Generated from alvarogmacias.dev</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <Text style={styles.footerText}>{new Date().getFullYear()}</Text>
-          <Image src="/images/profile/profile.png" style={styles.footerPhoto} />
+          <Image src="/images/profile/profile_alt.png" style={styles.footerPhoto} />
         </View>
       </View>
     </Page>
