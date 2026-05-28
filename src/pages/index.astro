@@ -20,31 +20,28 @@ import { Contact } from "src/views/Contact";
 import type { ExperienceEntry, PortfolioEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import type { ImageMetadata } from "astro";
 
-const imageModules = import.meta.glob<ImageMetadata>(
-  "/src/assets/**/*.{png,jpg,svg,webp}",
-  { eager: true }
-);
-const imageMap: Record<string, string> = {};
-for (const [path, mod] of Object.entries(imageModules)) {
-  const key = path.replace("/src/assets", "");
-  imageMap[key] = mod.src;
-}
-function resolveImage(path: string): string {
-  return imageMap[path] ?? path;
-}
-
 const experienceDocs = await getCollection("experience");
 const portfolioDocs = await getCollection("portfolio");
 const aboutDocs = await getCollection("about");
 const skillsDocs = await getCollection("skills");
 
 const experienceData: ExperienceEntry[] = experienceDocs
-  .map((e) => ({ ...e.data, image: resolveImage(e.data.image), description: e.body.trim() }))
+  .map((e) => ({
+    id: e.data.id,
+    title: e.data.title,
+    image: e.data.image.src,
+    date_from: e.data.date_from,
+    date_to: e.data.date_to,
+    url: e.data.url,
+    description: e.body.trim(),
+  }))
   .sort((a, b) => Number(b.id) - Number(a.id));
 
 const portfolioData: PortfolioEntry[] = portfolioDocs.map((e) => ({
-  ...e.data,
-  image: resolveImage(e.data.image),
+  id: e.data.id,
+  title: e.data.title,
+  image: e.data.image.src,
+  url: e.data.url,
   description: e.body.trim(),
 }));
 
@@ -53,9 +50,21 @@ const aboutData: AboutEntry[] = aboutDocs.map((e) => ({
   bio: e.body.trim(),
 }));
 
+const skillImages = import.meta.glob<ImageMetadata>("/src/assets/skills/*.{svg,png}", {
+  eager: true,
+});
+const skillImageMap: Record<string, string> = {};
+for (const [path, mod] of Object.entries(skillImages)) {
+  const name = path.split("/").pop()!;
+  skillImageMap[name] = mod.src;
+}
+
 const skillsData: SkillEntry[] = skillsDocs.map((e) => ({
-  ...e.data,
-  image: resolveImage(e.data.image),
+  id: e.data.id,
+  title: e.data.title,
+  image: skillImageMap[e.data.image.split("/").pop()!] ?? e.data.image,
+  url: e.data.url,
+  featured: e.data.featured,
 }));
 const techStack = skillsData.map((s) => s.title);
 ---

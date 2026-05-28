@@ -1,7 +1,7 @@
 ---
 id: "1"
 title: "RSI"
-image: "/experience/rsi.svg"
+image: "../../assets/experience/rsi.svg"
 date_from: "October 2021"
 date_to: "April 2023"
 url: "https://grupocajarural.es/"

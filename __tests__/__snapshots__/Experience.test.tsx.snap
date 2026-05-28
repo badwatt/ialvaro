@@ -83,7 +83,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   <img
                     alt="Openbank"
                     class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
-                    src="/experience/openbank.svg"
+                    src="../../assets/experience/openbank.svg"
                   />
                 </a>
               </div>
@@ -178,7 +178,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   <img
                     alt="RSI"
                     class="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
-                    src="/experience/rsi.svg"
+                    src="../../assets/experience/rsi.svg"
                   />
                 </a>
               </div>

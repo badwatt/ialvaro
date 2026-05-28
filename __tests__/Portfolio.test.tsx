@@ -39,8 +39,8 @@ describe("<Portfolio />", () => {
     render(<Portfolio portfolioData={testPortfolioData} />);
     const img1 = screen.getByAltText("ialvaro") as HTMLImageElement;
     const img2 = screen.getByAltText("wrestic") as HTMLImageElement;
-    expect(img1.getAttribute("src")).toBe("images/readme/ialvaro.png");
-    expect(img2.getAttribute("src")).toBe("portfolio/wrestic/wrestic_mockup.png");
+    expect(img1.getAttribute("src")).toBe("../../assets/images/readme/ialvaro.png");
+    expect(img2.getAttribute("src")).toBe("../../assets/portfolio/wrestic/wrestic_mockup.png");
   });
 
   it("renders external links with correct attributes", () => {

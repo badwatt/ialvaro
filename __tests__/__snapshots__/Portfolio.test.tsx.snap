@@ -42,7 +42,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
             <img
               alt="ialvaro"
               class="object-contain max-h-40 transition-transform duration-700 group-hover:scale-105"
-              src="images/readme/ialvaro.png"
+              src="../../assets/images/readme/ialvaro.png"
             />
           </a>
         </div>
@@ -90,7 +90,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
             <img
               alt="wrestic"
               class="object-contain max-h-40 transition-transform duration-700 group-hover:scale-105"
-              src="portfolio/wrestic/wrestic_mockup.png"
+              src="../../assets/portfolio/wrestic/wrestic_mockup.png"
             />
           </a>
         </div>

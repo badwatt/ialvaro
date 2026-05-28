@@ -5,6 +5,7 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
+    "check": "astro check",
     "coverage": "vitest --coverage",
     "coverage:ui": "vitest --coverage --ui",
     "dev": "astro dev",
@@ -19,6 +20,7 @@
     "upgrade": "nlx @astrojs/upgrade"
   },
   "dependencies": {
+    "@astrojs/check": "0.9.9",
     "@astrojs/mdx": "6.0.1",
     "@astrojs/node": "10.1.2",
     "@astrojs/react": "5.0.6",
