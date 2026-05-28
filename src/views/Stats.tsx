@@ -1,8 +1,13 @@
 import { AnimatedCounter } from "src/components/AnimatedCounter";
-import { experienceData, portfolioData } from "src/utils/content";
 import skillsData from "src/data/skills.json";
+import type { ExperienceEntry, PortfolioEntry } from "src/utils/content";
 
-function getYearsExperience(): number {
+interface StatsProps {
+  experienceData: ExperienceEntry[];
+  portfolioData: PortfolioEntry[];
+}
+
+function getYearsExperience(experienceData: ExperienceEntry[]): number {
   const dates = experienceData.map((e) => new Date(`${e.date_from} 01`));
   const earliest = new Date(Math.min(...dates.map((d) => d.getTime())));
   const now = new Date();
@@ -11,35 +16,34 @@ function getYearsExperience(): number {
   return years;
 }
 
-const stats = [
-  {
-    value: getYearsExperience(),
-    suffix: "+",
-    label: "Years experience",
-    bar: 60,
-  },
-  {
-    value: portfolioData.length,
-    suffix: "+",
-    label: "Projects delivered",
-    bar: 80,
-  },
-  {
-    value: skillsData.length,
-    suffix: "",
-    label: "Technologies",
-    bar: 50,
-  },
-  {
-    value: 100,
-    suffix: "%",
-    label: "Commitment",
-    bar: 100,
-    accent: true,
-  },
-];
-
-export const Stats = () => {
+export const Stats = ({ experienceData, portfolioData }: StatsProps) => {
+  const stats = [
+    {
+      value: getYearsExperience(experienceData),
+      suffix: "+",
+      label: "Years experience",
+      bar: 60,
+    },
+    {
+      value: portfolioData.length,
+      suffix: "+",
+      label: "Projects delivered",
+      bar: 80,
+    },
+    {
+      value: skillsData.length,
+      suffix: "",
+      label: "Technologies",
+      bar: 50,
+    },
+    {
+      value: 100,
+      suffix: "%",
+      label: "Commitment",
+      bar: 100,
+      accent: true,
+    },
+  ];
   return (
     <section className="py-32 md:py-48">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">

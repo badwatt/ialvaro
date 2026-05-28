@@ -1,8 +1,12 @@
 import { Header } from "src/components/Header";
 import { SpotlightCard } from "src/components/SpotlightCard";
-import { portfolioData } from "src/utils/content";
+import type { PortfolioEntry } from "src/utils/content";
 
-export const Portfolio = () => {
+interface PortfolioProps {
+  portfolioData: PortfolioEntry[];
+}
+
+export const Portfolio = ({ portfolioData }: PortfolioProps) => {
   return (
     <section id="portfolio" className="section-curve relative">
       <div id="portfolio-nav" className="absolute top-0 left-0" aria-hidden="true" />

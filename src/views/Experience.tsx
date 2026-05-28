@@ -1,9 +1,13 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
-import { experienceData } from "src/utils/content";
 import { parseDescription } from "src/utils/generateCV";
+import type { ExperienceEntry } from "src/utils/content";
 
-export const Experience = () => {
+interface ExperienceProps {
+  experienceData: ExperienceEntry[];
+}
+
+export const Experience = ({ experienceData }: ExperienceProps) => {
   const items = experienceData.map((entry) => {
     const sections = parseDescription(entry.description);
     return {

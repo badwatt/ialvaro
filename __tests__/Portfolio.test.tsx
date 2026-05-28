@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { Portfolio } from "src/views/Portfolio";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mockIntersectionObserver } from "./mocks/IntersectionObserver.tsx";
+import { testPortfolioData } from "./fixtures";
 
 describe("<Portfolio />", () => {
   beforeEach(() => {
@@ -10,18 +11,18 @@ describe("<Portfolio />", () => {
   afterEach(cleanup);
 
   it("renders section with correct id", () => {
-    const { container } = render(<Portfolio />);
+    const { container } = render(<Portfolio portfolioData={testPortfolioData} />);
     expect(container.querySelector("#portfolio")).toBeDefined();
   });
 
   it("renders portfolio items from data", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     expect(screen.getByText("ialvaro")).toBeDefined();
     expect(screen.getByText("wrestic")).toBeDefined();
   });
 
   it("renders descriptions", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     expect(
       screen.getByText(/TypeScript, React.js, Astro.js, Tailwind & Framer Motion/i),
     ).toBeDefined();
@@ -29,13 +30,13 @@ describe("<Portfolio />", () => {
   });
 
   it("renders View project links", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     const links = screen.getAllByText("View project");
     expect(links.length).toBe(2);
   });
 
   it("renders images with correct src", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     const img1 = screen.getByAltText("ialvaro") as HTMLImageElement;
     const img2 = screen.getByAltText("wrestic") as HTMLImageElement;
     expect(img1.getAttribute("src")).toBe("images/readme/ialvaro.png");
@@ -43,7 +44,7 @@ describe("<Portfolio />", () => {
   });
 
   it("renders external links with correct attributes", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     const githubLink = screen.getByLabelText("ialvaro");
     expect(githubLink.getAttribute("href")).toBe("https://github.com/badwatt/ialvaro");
     expect(githubLink.getAttribute("target")).toBe("_blank");
@@ -53,12 +54,12 @@ describe("<Portfolio />", () => {
   });
 
   it("renders header title", () => {
-    render(<Portfolio />);
+    render(<Portfolio portfolioData={testPortfolioData} />);
     expect(screen.getByText("Portfolio")).toBeDefined();
   });
 
   it("matches snapshot", () => {
-    const { container } = render(<Portfolio />);
+    const { container } = render(<Portfolio portfolioData={testPortfolioData} />);
     expect(container).toMatchSnapshot();
   });
 });

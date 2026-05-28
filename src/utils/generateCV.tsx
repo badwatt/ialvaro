@@ -1,5 +1,5 @@
-import { experienceData, biographyData } from "src/utils/content";
 import skillsData from "src/data/skills.json";
+import type { ExperienceEntry, AboutEntry } from "src/utils/content";
 
 const C = {
   base: [8, 8, 15] as [number, number, number],
@@ -13,7 +13,7 @@ const C = {
 const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
 const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 
-export function getBioText(data = biographyData): string {
+export function getBioText(data: AboutEntry[]): string {
   return data.find((b) => b.id === "3")?.bio || data[0]?.bio || "";
 }
 
@@ -89,7 +89,10 @@ export function parseDescription(raw: string): { title: string; content: string 
   return sections;
 }
 
-export async function generateAndOpenCV(): Promise<void> {
+export async function generateAndOpenCV(
+  experienceData: ExperienceEntry[],
+  aboutData: AboutEntry[]
+): Promise<void> {
   const [{ jsPDF }, profileRaw, profileAltRaw] = await Promise.all([
     import("jspdf"),
     loadImage("/images/profile/profile.png").catch(() => ""),
@@ -165,7 +168,7 @@ export async function generateAndOpenCV(): Promise<void> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...C.muted);
-  const bioLines = doc.splitTextToSize(getBioText(), sidebarW);
+  const bioLines = doc.splitTextToSize(getBioText(aboutData), sidebarW);
   doc.text(bioLines, M, sy);
   sy += bioLines.length * 13 + 16;
 

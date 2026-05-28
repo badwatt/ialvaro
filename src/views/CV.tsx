@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { FileTextIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { generateAndOpenCV } from "src/utils/generateCV";
+import type { ExperienceEntry, AboutEntry } from "src/utils/content";
 
-export const CV = () => {
+interface CVProps {
+  experienceData: ExperienceEntry[];
+  aboutData: AboutEntry[];
+}
+
+export const CV = ({ experienceData, aboutData }: CVProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleOpen = async () => {
     setLoading(true);
     try {
-      await generateAndOpenCV();
+      await generateAndOpenCV(experienceData, aboutData);
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {

@@ -33,7 +33,7 @@ export default mergeConfig(
       },
       coverage: {
         include: ["src/**/*.{ts,tsx}"],
-        exclude: ["src/data/**", "src/env.d.ts", "src/utils/content.ts", ".astro/**"],
+        exclude: ["src/data/**", "src/env.d.ts", "src/utils/content.ts", "src/content.config.ts", ".astro/**"],
       },
     },
   }),

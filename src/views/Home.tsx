@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { ScrambleWobble } from "src/components/ScrambleWobble";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
 import { generateAndOpenCV } from "src/utils/generateCV";
+import type { ExperienceEntry, AboutEntry } from "src/utils/content";
 
-export const Home = () => {
+interface HomeProps {
+  experienceData: ExperienceEntry[];
+  aboutData: AboutEntry[];
+}
+
+export const Home = ({ experienceData, aboutData }: HomeProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -19,7 +25,7 @@ export const Home = () => {
   const handleOpenCV = async () => {
     setLoading(true);
     try {
-      await generateAndOpenCV();
+      await generateAndOpenCV(experienceData, aboutData);
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {

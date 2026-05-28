@@ -105,7 +105,7 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
           <p
             class="text-alvaro-muted leading-relaxed max-w-[60ch]"
           >
-            Wrestic is a backup tool built in Rust that provides a wrapper around Restic, a popular backup program.
+            Wrestic is a backup tool built in Rust.
           </p>
           <a
             class="inline-flex items-center gap-2 mt-6 text-sm font-medium text-alvaro-primary hover:underline underline-offset-4"

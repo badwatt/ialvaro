@@ -1,6 +1,7 @@
 import { cleanup, render, screen, waitFor, act } from "@testing-library/react";
 import { CV } from "src/views/CV";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { testExperienceData, testAboutData } from "./fixtures";
 
 vi.mock("src/utils/generateCV", () => ({
   generateAndOpenCV: vi.fn().mockResolvedValue(undefined),
@@ -13,24 +14,24 @@ describe("<CV />", () => {
   });
 
   it("renders heading", () => {
-    render(<CV />);
+    render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     expect(screen.getByText("Check out my CV")).toBeDefined();
   });
 
   it("renders section with correct id", () => {
-    const { container } = render(<CV />);
+    const { container } = render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     expect(container.querySelector("#cv")).toBeDefined();
   });
 
   it("renders open button", () => {
-    render(<CV />);
+    render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     const btn = screen.getByLabelText("Open CV");
     expect(btn.tagName.toLowerCase()).toBe("button");
     expect(btn.getAttribute("type")).toBe("button");
   });
 
   it("renders icon", () => {
-    const { container } = render(<CV />);
+    const { container } = render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     expect(container.querySelector("svg")).toBeDefined();
   });
 
@@ -39,7 +40,7 @@ describe("<CV />", () => {
     vi.mocked(generateAndOpenCV).mockImplementationOnce(
       () => new Promise((r) => setTimeout(r, 50))
     );
-    render(<CV />);
+    render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     const btn = screen.getByLabelText("Open CV");
     btn.click();
     expect(await screen.findByText("Generating CV...")).toBeDefined();
@@ -48,7 +49,7 @@ describe("<CV />", () => {
 
   it("opens CV via generateAndOpenCV", async () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
-    render(<CV />);
+    render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     act(() => {
       screen.getByLabelText("Open CV").click();
     });
@@ -61,7 +62,7 @@ describe("<CV />", () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    render(<CV />);
+    render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     act(() => {
       screen.getByLabelText("Open CV").click();
     });
@@ -72,7 +73,7 @@ describe("<CV />", () => {
   });
 
   it("matches snapshot", () => {
-    const { container } = render(<CV />);
+    const { container } = render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     expect(container).toMatchSnapshot();
   });
 });

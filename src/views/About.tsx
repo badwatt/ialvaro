@@ -1,12 +1,15 @@
 import { FloatingTags } from "src/components/FloatingTags";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
-import { biographyData } from "src/utils/content";
+import type { AboutEntry } from "src/utils/content";
 
 const profileTags = ["React", "TypeScript", "Node.js", "Full Stack", "UI/UX"];
 
-const selectedBio = biographyData[0];
+interface AboutProps {
+  aboutData: AboutEntry[];
+}
 
-export default function About() {
+export function About({ aboutData }: AboutProps) {
+  const selectedBio = aboutData[0];
   const { ref, isVisible } = useScrollReveal({ threshold: 0.15 });
 
   const paragraphs: string[] = selectedBio.bio.split("\n").filter(Boolean);

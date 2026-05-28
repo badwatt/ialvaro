@@ -219,14 +219,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   <p
                     class="text-sm whitespace-pre-line"
                   >
-                    - Web application development using Vue.js and React.js
-- REST API integration in front-end applications
-- Unit and integration test development
-- Code documentation
-- Translations using i18n
-- Modification and elaboration of login pages
-- Internal SSO access elaboration
-- Modification of CSS styles
+                    - Web application development
                   </p>
                 </div>
                 <div>
@@ -238,7 +231,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   <p
                     class="text-sm whitespace-pre-line"
                   >
-                    vue.js, react.js, typescript, javascript, jest.js, node.js, html, css, jsp, oracle db, inkscape, jira, git, dbeaver, postman, invision, overflow
+                    vue.js, react.js
                   </p>
                 </div>
               </div>
