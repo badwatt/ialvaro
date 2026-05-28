@@ -19,17 +19,31 @@ import { Contact } from "src/views/Contact";
 
 import type { ExperienceEntry, PortfolioEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
+const imageModules = import.meta.glob(
+  "/src/assets/**/*.{png,jpg,svg,webp}",
+  { eager: true }
+);
+const imageMap: Record<string, string> = {};
+for (const [path, mod] of Object.entries(imageModules)) {
+  const key = path.replace("/src/assets", "");
+  imageMap[key] = (mod as { default: string }).default;
+}
+function resolveImage(path: string): string {
+  return imageMap[path] ?? path;
+}
+
 const experienceDocs = await getCollection("experience");
 const portfolioDocs = await getCollection("portfolio");
 const aboutDocs = await getCollection("about");
 const skillsDocs = await getCollection("skills");
 
 const experienceData: ExperienceEntry[] = experienceDocs
-  .map((e) => ({ ...e.data, description: e.body.trim() }))
+  .map((e) => ({ ...e.data, image: resolveImage(e.data.image), description: e.body.trim() }))
   .sort((a, b) => Number(b.id) - Number(a.id));
 
 const portfolioData: PortfolioEntry[] = portfolioDocs.map((e) => ({
   ...e.data,
+  image: resolveImage(e.data.image),
   description: e.body.trim(),
 }));
 
@@ -38,7 +52,10 @@ const aboutData: AboutEntry[] = aboutDocs.map((e) => ({
   bio: e.body.trim(),
 }));
 
-const skillsData: SkillEntry[] = skillsDocs.map((e) => e.data);
+const skillsData: SkillEntry[] = skillsDocs.map((e) => ({
+  ...e.data,
+  image: resolveImage(e.data.image),
+}));
 const techStack = skillsData.map((s) => s.title);
 ---
 
