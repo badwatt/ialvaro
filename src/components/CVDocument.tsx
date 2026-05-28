@@ -5,6 +5,7 @@ import {
   View,
   StyleSheet,
   Link,
+  Image,
 } from "@react-pdf/renderer";
 import experienceData from "src/data/experience.json";
 import skillsData from "src/data/skills.json";
@@ -68,6 +69,15 @@ const styles = StyleSheet.create({
   sidebar: {
     width: 160,
     gap: 24,
+  },
+  photo: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    marginBottom: 8,
+    alignSelf: "center",
   },
   main: {
     flex: 1,
@@ -186,6 +196,7 @@ export const CVDocument = () => (
       <View style={styles.twoColumn}>
         {/* Sidebar */}
         <View style={styles.sidebar}>
+          <Image src="/images/profile/profile_alt.png" style={styles.photo} />
           <View>
             <Text style={styles.sectionTitle}>About</Text>
             <Text style={styles.bio}>{bioText}</Text>
