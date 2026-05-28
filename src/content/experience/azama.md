@@ -7,7 +7,7 @@ date_to: "October 2021"
 url: "https://azama.es/"
 ---
 
-# Consulting Firm
+# CEO Marketing
 
 • Incorporation of my company as sole proprietor
 • Management of sales teams

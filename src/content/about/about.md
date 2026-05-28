@@ -1,16 +1,17 @@
 ---
-email: "alvaro@example.com"
-location: "Madrid, Spain"
+email: "info@badwatt.com"
+location: "Asturias, Spain"
 languages:
   - language: "Spanish"
     level: "Native"
   - language: "English"
-    level: "Professional"
+    level: "C1"
 education:
-  - institution: "Universidad Complutense de Madrid"
-    degree: "Bachelor in Computer Science"
-    year: "2018"
+  - institution: "U.N.E.D."
+    degree: "Bachelor in Business Administration"
+    year: "2014"
 ---
+
 I feel very fortunate to have found what I am passionate about and to make it my job.
 I have also worked managing, training and leading marketing teams at a national level.
 If there is one thing that characterises me, it is that I am 100% involved in everything I do.
