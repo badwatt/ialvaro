@@ -92,9 +92,19 @@ describe("<Nav />", () => {
   });
 
   it("desktop link click calls scroller", () => {
+    const anchor = document.createElement("div");
+    anchor.id = "home-nav";
+    document.body.appendChild(anchor);
     render(<Nav />);
     const homeLink = screen.getByLabelText(/home-desktop/i);
     fireEvent.click(homeLink);
+    document.body.removeChild(anchor);
+  });
+
+  it("scroller falls back to section id when no anchor", () => {
+    render(<Nav />);
+    const aboutLink = screen.getByLabelText(/about-desktop/i);
+    fireEvent.click(aboutLink);
   });
 
   it("brand button has cursor-pointer", () => {

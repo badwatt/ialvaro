@@ -17,6 +17,11 @@ export const Nav = () => {
   const navRef = useRef<HTMLElement>(null);
 
   const scroller = (id: string) => {
+    const anchor = document.getElementById(`${id}-nav`);
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
