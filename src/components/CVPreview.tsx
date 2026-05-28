@@ -20,7 +20,7 @@ export const CVPreview = ({ url, isGenerating, onClose, onDownload }: Props) => 
   if (!url && !isGenerating) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-8">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-8">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-alvaro-dark/80 backdrop-blur-sm"
