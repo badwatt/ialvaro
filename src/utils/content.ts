@@ -36,8 +36,8 @@ const portfolioModules = import.meta.glob<MDXModule>(
   { eager: true }
 );
 
-const biographyModules = import.meta.glob<MDXModule>(
-  "/src/data/biography/*.md",
+const aboutModules = import.meta.glob<MDXModule>(
+  "/src/data/about/*.md",
   { eager: true }
 );
 
@@ -61,7 +61,7 @@ export const portfolioData: PortfolioEntry[] = Object.values(portfolioModules).m
   description: mod.rawContent().trim(),
 }));
 
-export const biographyData: BiographyEntry[] = Object.values(biographyModules).map((mod) => ({
+export const biographyData: BiographyEntry[] = Object.values(aboutModules).map((mod) => ({
   id: String(mod.frontmatter.id),
   bio: mod.rawContent().trim(),
 }));
