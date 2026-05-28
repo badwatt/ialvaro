@@ -19,7 +19,7 @@ export const Home = () => {
       id="home"
       className="relative min-h-[100dvh] grid md:grid-cols-[1.4fr_1fr] items-center justify-items-center md:justify-items-start gap-8 md:gap-16 px-4 md:px-0 overflow-hidden"
     >
-      <div id="home-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
+      <div id="home-nav" className="absolute top-0 left-0" aria-hidden="true" />
       {/* Atmospheric mesh background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="mesh-blob absolute top-0 -left-1/4 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full bg-alvaro-primary/6 blur-[140px]" />

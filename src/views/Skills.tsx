@@ -7,7 +7,7 @@ export const Skills = () => {
 
   return (
     <section id="skills" className="section-curve relative">
-      <div id="skills-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
+      <div id="skills-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Skills" />
       <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense gap-4 md:gap-6">
         {data.map(({ id, title, image, url, featured }, i) => (

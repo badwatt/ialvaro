@@ -8,7 +8,7 @@ exports[`<Skills /> > matches snapshot 1`] = `
   >
     <div
       aria-hidden="true"
-      class="absolute top-0 left-0 scroll-mt-[4rem]"
+      class="absolute top-0 left-0"
       id="skills-nav"
     />
     <div

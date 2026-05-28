@@ -5,7 +5,7 @@ import data from "src/data/portfolio.json";
 export const Portfolio = () => {
   return (
     <section id="portfolio" className="section-curve relative">
-      <div id="portfolio-nav" className="absolute top-0 left-0 scroll-mt-[4rem]" aria-hidden="true" />
+      <div id="portfolio-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Portfolio" />
       <div className="space-y-6">
         {data.map(({ id, title, image, url, description }, i) => (
