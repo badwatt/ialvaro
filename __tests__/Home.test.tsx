@@ -3,20 +3,6 @@ import { Home } from "src/views/Home";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createObserverMock } from "./helpers/observerMock";
 
-vi.mock("@react-pdf/renderer", async (importOriginal) => {
-  const actual = await importOriginal() as Record<string, unknown>;
-  return {
-    ...actual,
-    pdf: vi.fn().mockReturnValue({
-      toBlob: vi.fn().mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" })),
-    }),
-  };
-});
-
-vi.mock("src/components/CVPreview", () => ({
-  CVPreview: () => <div data-testid="cv-preview">CV Preview Mock</div>,
-}));
-
 describe("<Home />", () => {
   let observer: ReturnType<typeof createObserverMock>;
 
