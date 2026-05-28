@@ -33,12 +33,6 @@ describe("<About />", () => {
     expect(screen.getByText(/non-conformist/i)).toBeDefined();
   });
 
-  it("should render email and location", () => {
-    render(<About aboutData={testAboutData} />);
-    expect(screen.getByText("alvaro@example.com")).toBeDefined();
-    expect(screen.getByText("Madrid, Spain")).toBeDefined();
-  });
-
   it("should render languages", () => {
     render(<About aboutData={testAboutData} />);
     expect(screen.getByText("Spanish")).toBeDefined();

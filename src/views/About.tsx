@@ -108,20 +108,24 @@ export function About({ aboutData }: AboutProps) {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
           >
-            {entry.email && (
+            {entry.education && entry.education.length > 0 && (
               <div>
                 <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
-                  Email
+                  Education
                 </span>
-                <p className="text-alvaro-white text-sm mt-1">{entry.email}</p>
-              </div>
-            )}
-            {entry.location && (
-              <div>
-                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
-                  Location
-                </span>
-                <p className="text-alvaro-white text-sm mt-1">{entry.location}</p>
+                <div className="space-y-2 mt-2">
+                  {entry.education.map((edu) => (
+                    <div key={edu.institution + edu.degree}>
+                      <p className="text-alvaro-white text-sm">{edu.degree}</p>
+                      <p className="text-alvaro-muted text-xs">
+                        {edu.institution}
+                        {edu.year && (
+                          <span className="ml-1 text-alvaro-primary/50">· {edu.year}</span>
+                        )}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {entry.languages && entry.languages.length > 0 && (
@@ -138,24 +142,6 @@ export function About({ aboutData }: AboutProps) {
                       {lang.language}
                       <span className="text-alvaro-primary/60 ml-1.5">{lang.level}</span>
                     </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {entry.education && entry.education.length > 0 && (
-              <div>
-                <span className="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium">
-                  Education
-                </span>
-                <div className="space-y-2 mt-2">
-                  {entry.education.map((edu) => (
-                    <div key={edu.institution + edu.degree}>
-                      <p className="text-alvaro-white text-sm">{edu.degree}</p>
-                      <p className="text-alvaro-muted text-xs">
-                        {edu.institution}
-                        {edu.year && <span className="ml-1 text-alvaro-primary/50">· {edu.year}</span>}
-                      </p>
-                    </div>
                   ))}
                 </div>
               </div>

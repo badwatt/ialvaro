@@ -162,25 +162,30 @@ exports[`<About /> > matches snapshot 1`] = `
             <span
               class="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium"
             >
-              Email
+              Education
             </span>
-            <p
-              class="text-alvaro-white text-sm mt-1"
+            <div
+              class="space-y-2 mt-2"
             >
-              alvaro@example.com
-            </p>
-          </div>
-          <div>
-            <span
-              class="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium"
-            >
-              Location
-            </span>
-            <p
-              class="text-alvaro-white text-sm mt-1"
-            >
-              Madrid, Spain
-            </p>
+              <div>
+                <p
+                  class="text-alvaro-white text-sm"
+                >
+                  Bachelor in Computer Science
+                </p>
+                <p
+                  class="text-alvaro-muted text-xs"
+                >
+                  Universidad Complutense de Madrid
+                  <span
+                    class="ml-1 text-alvaro-primary/50"
+                  >
+                    · 
+                    2018
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
           <div>
             <span
@@ -211,35 +216,6 @@ exports[`<About /> > matches snapshot 1`] = `
                   Professional
                 </span>
               </span>
-            </div>
-          </div>
-          <div>
-            <span
-              class="text-[11px] tracking-[0.2em] uppercase text-alvaro-primary/60 font-medium"
-            >
-              Education
-            </span>
-            <div
-              class="space-y-2 mt-2"
-            >
-              <div>
-                <p
-                  class="text-alvaro-white text-sm"
-                >
-                  Bachelor in Computer Science
-                </p>
-                <p
-                  class="text-alvaro-muted text-xs"
-                >
-                  Universidad Complutense de Madrid
-                  <span
-                    class="ml-1 text-alvaro-primary/50"
-                  >
-                    · 
-                    2018
-                  </span>
-                </p>
-              </div>
             </div>
           </div>
         </div>
