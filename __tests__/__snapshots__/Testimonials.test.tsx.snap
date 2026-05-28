@@ -38,6 +38,8 @@ exports[`<Testimonials /> > matches snapshot 1`] = `
           <img
             alt="María Fernández"
             class="w-10 h-10 rounded-full object-cover border border-alvaro-border"
+            decoding="async"
+            loading="lazy"
             src="https://picsum.photos/seed/maria-fernandez/100/100"
           />
           <div>
@@ -71,6 +73,8 @@ exports[`<Testimonials /> > matches snapshot 1`] = `
           <img
             alt="Carlos Ruíz"
             class="w-10 h-10 rounded-full object-cover border border-alvaro-border"
+            decoding="async"
+            loading="lazy"
             src="https://picsum.photos/seed/carlos-ruiz/100/100"
           />
           <div>
@@ -104,6 +108,8 @@ exports[`<Testimonials /> > matches snapshot 1`] = `
           <img
             alt="Elena Torres"
             class="w-10 h-10 rounded-full object-cover border border-alvaro-border"
+            decoding="async"
+            loading="lazy"
             src="https://picsum.photos/seed/elena-torres/100/100"
           />
           <div>

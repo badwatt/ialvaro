@@ -191,6 +191,7 @@ exports[`<Home /> > matches snapshot 1`] = `
         <img
           alt="Alvaro Garcia Macias"
           class="relative w-80 h-80 object-cover rounded-3xl transition-all duration-700 group-hover:scale-[1.02]"
+          decoding="async"
           src="/images/profile/profile.png"
           style="transform: translateY(0px); will-change: transform; border: 1px solid rgba(91, 155, 213, 0.15);"
         />

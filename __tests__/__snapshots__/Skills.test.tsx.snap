@@ -41,6 +41,8 @@ exports[`<Skills /> > matches snapshot 1`] = `
         <img
           alt="react.js"
           class="object-contain transition-transform duration-500 group-hover:scale-110 w-32 h-32 md:w-48 md:h-48"
+          decoding="async"
+          loading="lazy"
           src="/skills/react.svg"
         />
         <h2
@@ -64,6 +66,8 @@ exports[`<Skills /> > matches snapshot 1`] = `
         <img
           alt="vue.js"
           class="object-contain transition-transform duration-500 group-hover:scale-110 w-24 h-24 md:w-32 md:h-32"
+          decoding="async"
+          loading="lazy"
           src="/skills/vue.svg"
         />
         <h2
@@ -87,6 +91,8 @@ exports[`<Skills /> > matches snapshot 1`] = `
         <img
           alt="typescript"
           class="object-contain transition-transform duration-500 group-hover:scale-110 w-32 h-32 md:w-48 md:h-48"
+          decoding="async"
+          loading="lazy"
           src="/skills/typescript.svg"
         />
         <h2

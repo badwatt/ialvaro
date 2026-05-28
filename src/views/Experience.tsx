@@ -27,6 +27,8 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
               <img
                 src={entry.image}
                 alt={entry.title}
+                loading="lazy"
+                decoding="async"
                 className="w-48 h-32 object-contain rounded-xl transition-transform duration-500 hover:scale-105"
               />
             </a>

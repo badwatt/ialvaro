@@ -107,6 +107,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
           <img
             src="/images/profile/profile.png"
             alt="Alvaro Garcia Macias"
+            decoding="async"
             className="relative w-80 h-80 object-cover rounded-3xl transition-all duration-700 group-hover:scale-[1.02]"
             style={{
               transform: `translateY(${parallax}px)`,

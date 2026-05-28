@@ -42,6 +42,8 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
             <img
               alt="ialvaro"
               class="object-contain max-h-40 transition-transform duration-700 group-hover:scale-105"
+              decoding="async"
+              loading="lazy"
               src="../../assets/images/readme/ialvaro.png"
             />
           </a>
@@ -90,6 +92,8 @@ exports[`<Portfolio /> > matches snapshot 1`] = `
             <img
               alt="wrestic"
               class="object-contain max-h-40 transition-transform duration-700 group-hover:scale-105"
+              decoding="async"
+              loading="lazy"
               src="../../assets/portfolio/wrestic/wrestic_mockup.png"
             />
           </a>

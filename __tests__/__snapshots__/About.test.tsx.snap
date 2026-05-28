@@ -39,6 +39,8 @@ exports[`<About /> > matches snapshot 1`] = `
           <img
             alt="Alvaro Garcia Macias"
             class="relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-3xl transition-all duration-700 opacity-0 scale-90"
+            decoding="async"
+            loading="lazy"
             src="/images/profile/profile_alt.png"
             style="border: 1px solid rgba(91, 155, 213, 0.12);"
           />

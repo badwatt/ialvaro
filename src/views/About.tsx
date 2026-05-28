@@ -38,6 +38,8 @@ export function About({ aboutData }: AboutProps) {
             <img
               src="/images/profile/profile_alt.png"
               alt="Alvaro Garcia Macias"
+              loading="lazy"
+              decoding="async"
               className={`relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-3xl transition-all duration-700 ${
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
               }`}

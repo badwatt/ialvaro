@@ -25,6 +25,8 @@ export const Portfolio = ({ portfolioData }: PortfolioProps) => {
                 <img
                   src={image}
                   alt={title}
+                  loading="lazy"
+                  decoding="async"
                   className="object-contain max-h-40 transition-transform duration-700 group-hover:scale-105"
                 />
               </a>
