@@ -12,15 +12,19 @@ vi.mock("@react-pdf/renderer", async (importOriginal) => {
   };
 });
 
+vi.mock("src/components/CVPreview", () => ({
+  CVPreview: () => <div data-testid="cv-preview">CV Preview Mock</div>,
+}));
+
 describe("<CV />", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
   });
 
-  it("renders download heading", () => {
+  it("renders preview heading", () => {
     render(<CV />);
-    expect(screen.getByText("Download my CV")).toBeDefined();
+    expect(screen.getByText("Preview my CV")).toBeDefined();
   });
 
   it("renders section with correct id", () => {
@@ -28,25 +32,25 @@ describe("<CV />", () => {
     expect(container.querySelector("#cv")).toBeDefined();
   });
 
-  it("renders download button", () => {
+  it("renders preview button", () => {
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Preview CV");
     expect(btn.tagName.toLowerCase()).toBe("button");
     expect(btn.getAttribute("type")).toBe("button");
   });
 
-  it("renders download icon", () => {
+  it("renders file icon", () => {
     const { container } = render(<CV />);
     expect(container.querySelector("svg")).toBeDefined();
   });
 
-  it("shows generating state on click", async () => {
+  it("opens preview modal on click", async () => {
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Preview CV");
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(screen.getByText("Generating CV...")).toBeDefined();
+      expect(screen.getByTestId("cv-preview")).toBeDefined();
     });
   });
 
@@ -58,7 +62,7 @@ describe("<CV />", () => {
 
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Preview CV");
     fireEvent.click(btn);
 
     await waitFor(() => {
