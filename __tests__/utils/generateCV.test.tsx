@@ -6,7 +6,7 @@ import {
   generateAndOpenCV,
   parseDescription,
 } from "src/utils/generateCV";
-import { testExperienceData, testAboutData } from "../fixtures";
+import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
 // Mock registry — defined before vi.mock
 const mockRegistry = {
@@ -189,7 +189,7 @@ describe("generateAndOpenCV", () => {
     setupDOMMocks("load");
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData);
+    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe("generateAndOpenCV", () => {
     setupDOMMocks("load");
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData);
+    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
@@ -216,7 +216,7 @@ describe("generateAndOpenCV", () => {
     setupDOMMocks("load");
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData);
+    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
@@ -231,7 +231,7 @@ describe("generateAndOpenCV", () => {
     mockRegistry.behavior.addImageThrow = 1;
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData);
+    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
@@ -245,7 +245,7 @@ describe("generateAndOpenCV", () => {
     mockRegistry.behavior.addImageThrow = 2;
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData);
+    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();

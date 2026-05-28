@@ -1,3 +1,9 @@
+export const testSkillsData = [
+  { id: "0", title: "react.js", image: "/skills/react.svg", url: "https://react.dev/", featured: true },
+  { id: "1", title: "vue.js", image: "/skills/vue.svg", url: "https://vuejs.org/" },
+  { id: "2", title: "typescript", image: "/skills/typescript.svg", url: "https://typescriptlang.org/", featured: true },
+];
+
 export const testExperienceData = [
   {
     id: "2",

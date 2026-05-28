@@ -1,10 +1,10 @@
 import { AnimatedCounter } from "src/components/AnimatedCounter";
-import skillsData from "src/data/skills.json";
-import type { ExperienceEntry, PortfolioEntry } from "src/utils/content";
+import type { ExperienceEntry, PortfolioEntry, SkillEntry } from "src/utils/content";
 
 interface StatsProps {
   experienceData: ExperienceEntry[];
   portfolioData: PortfolioEntry[];
+  skillsData: SkillEntry[];
 }
 
 function getYearsExperience(experienceData: ExperienceEntry[]): number {
@@ -16,7 +16,7 @@ function getYearsExperience(experienceData: ExperienceEntry[]): number {
   return years;
 }
 
-export const Stats = ({ experienceData, portfolioData }: StatsProps) => {
+export const Stats = ({ experienceData, portfolioData, skillsData }: StatsProps) => {
   const stats = [
     {
       value: getYearsExperience(experienceData),

@@ -30,4 +30,15 @@ const about = defineCollection({
   }),
 });
 
-export const collections = { experience, portfolio, about };
+const skills = defineCollection({
+  loader: glob({ pattern: "**/*.json", base: "./src/content/skills" }),
+  schema: z.object({
+    id: z.string(),
+    title: z.string(),
+    image: z.string(),
+    url: z.string(),
+    featured: z.boolean().optional(),
+  }),
+});
+
+export const collections = { experience, portfolio, about, skills };

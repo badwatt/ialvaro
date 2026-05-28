@@ -1,8 +1,12 @@
 import { Header } from "src/components/Header";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
-import data from "src/data/skills.json";
+import type { SkillEntry } from "src/utils/content";
 
-export const Skills = () => {
+interface SkillsProps {
+  skillsData: SkillEntry[];
+}
+
+export const Skills = ({ skillsData }: SkillsProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.05 });
 
   return (
@@ -10,7 +14,7 @@ export const Skills = () => {
       <div id="skills-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Skills" />
       <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense gap-4 md:gap-6">
-        {data.map(({ id, title, image, url, featured }, i) => (
+        {skillsData.map(({ id, title, image, url, featured }, i) => (
           <a
             key={id}
             href={url}

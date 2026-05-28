@@ -1,3 +1,11 @@
+export type SkillEntry = {
+  id: string;
+  title: string;
+  image: string;
+  url: string;
+  featured?: boolean;
+};
+
 export type ExperienceEntry = {
   id: string;
   title: string;

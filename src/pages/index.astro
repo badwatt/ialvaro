@@ -17,14 +17,12 @@ import { Testimonials } from "src/views/Testimonials";
 import { CV } from "src/views/CV";
 import { Contact } from "src/views/Contact";
 
-import skillsData from "src/data/skills.json";
-import type { ExperienceEntry, PortfolioEntry, AboutEntry } from "src/utils/content";
-
-const techStack = skillsData.map((s) => s.title);
+import type { ExperienceEntry, PortfolioEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
 const experienceDocs = await getCollection("experience");
 const portfolioDocs = await getCollection("portfolio");
 const aboutDocs = await getCollection("about");
+const skillsDocs = await getCollection("skills");
 
 const experienceData: ExperienceEntry[] = experienceDocs
   .map((e) => ({ ...e.data, description: e.body.trim() }))
@@ -39,21 +37,24 @@ const aboutData: AboutEntry[] = aboutDocs.map((e) => ({
   id: e.data.id,
   bio: e.body.trim(),
 }));
+
+const skillsData: SkillEntry[] = skillsDocs.map((e) => e.data);
+const techStack = skillsData.map((s) => s.title);
 ---
 
 <Layout>
   <LoadingScreen client:load />
   <ScrollProgress client:load />
   <CursorGlow client:load />
-  <Home client:load experienceData={experienceData} aboutData={aboutData} />
+  <Home client:load experienceData={experienceData} aboutData={aboutData} skillsData={skillsData} />
   <Marquee items={techStack} speed={35} />
   <About client:load aboutData={aboutData} />
-  <Stats client:load experienceData={experienceData} portfolioData={portfolioData} />
-  <Skills client:load />
+  <Stats client:load experienceData={experienceData} portfolioData={portfolioData} skillsData={skillsData} />
+  <Skills client:load skillsData={skillsData} />
   <Experience client:load experienceData={experienceData} />
   <Portfolio client:load portfolioData={portfolioData} />
   <Testimonials client:load />
-  <CV client:load experienceData={experienceData} aboutData={aboutData} />
+  <CV client:load experienceData={experienceData} aboutData={aboutData} skillsData={skillsData} />
   <Contact client:load />
   <Scrollup client:load />
 </Layout>

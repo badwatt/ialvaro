@@ -1,5 +1,4 @@
-import skillsData from "src/data/skills.json";
-import type { ExperienceEntry, AboutEntry } from "src/utils/content";
+import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
 const C = {
   base: [8, 8, 15] as [number, number, number],
@@ -10,8 +9,6 @@ const C = {
   surface: [18, 18, 29] as [number, number, number],
 };
 
-const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
-const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 
 export function getBioText(data: AboutEntry[]): string {
   return data.find((b) => b.id === "3")?.bio || data[0]?.bio || "";
@@ -88,7 +85,10 @@ export function parseDescription(raw: string): { title: string; content: string 
 export async function generateAndOpenCV(
   experienceData: ExperienceEntry[],
   aboutData: AboutEntry[],
+  skillsData: SkillEntry[]
 ): Promise<void> {
+  const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
+  const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
   const [{ jsPDF }, profileRaw, profileAltRaw] = await Promise.all([
     import("jspdf"),
     loadImage("/images/profile/profile.png").catch(() => ""),
