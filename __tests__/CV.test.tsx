@@ -18,9 +18,9 @@ describe("<CV />", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders download heading", () => {
+  it("renders heading", () => {
     render(<CV />);
-    expect(screen.getByText("Download my CV")).toBeDefined();
+    expect(screen.getByText("Check out my CV")).toBeDefined();
   });
 
   it("renders section with correct id", () => {
@@ -28,21 +28,34 @@ describe("<CV />", () => {
     expect(container.querySelector("#cv")).toBeDefined();
   });
 
-  it("renders download button", () => {
+  it("renders open button", () => {
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Open CV");
     expect(btn.tagName.toLowerCase()).toBe("button");
     expect(btn.getAttribute("type")).toBe("button");
   });
 
-  it("renders download icon", () => {
+  it("renders icon", () => {
     const { container } = render(<CV />);
     expect(container.querySelector("svg")).toBeDefined();
   });
 
+  it("opens CV in new tab on click", async () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(<CV />);
+    const btn = screen.getByLabelText("Open CV");
+    fireEvent.click(btn);
+
+    await waitFor(() => {
+      expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+    });
+
+    openSpy.mockRestore();
+  });
+
   it("shows generating state on click", async () => {
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Open CV");
     fireEvent.click(btn);
 
     await waitFor(() => {
@@ -58,7 +71,7 @@ describe("<CV />", () => {
 
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<CV />);
-    const btn = screen.getByLabelText("Download CV");
+    const btn = screen.getByLabelText("Open CV");
     fireEvent.click(btn);
 
     await waitFor(() => {

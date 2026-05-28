@@ -67,16 +67,16 @@ describe("<Home />", () => {
     expect(container).toMatchSnapshot();
   });
 
-  it("generates and downloads CV on button click", async () => {
-    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  it("generates and opens CV in new tab on button click", async () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<Home />);
     const btn = screen.getByText("CV");
     expect(btn.tagName.toLowerCase()).toBe("button");
     btn.click();
     await screen.findByText("Generating...");
     await screen.findByText("CV");
-    expect(clickSpy).toHaveBeenCalled();
-    clickSpy.mockRestore();
+    expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+    openSpy.mockRestore();
   });
 
   it("handles CV generation failure gracefully", async () => {

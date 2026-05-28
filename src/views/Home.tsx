@@ -17,18 +17,13 @@ export const Home = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleDownload = useCallback(async () => {
+  const handleOpenCV = useCallback(async () => {
     setDownloading(true);
     try {
       const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Alvaro_Garcia_Macias_CV_${new Date().toISOString().split("T")[0]}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {
@@ -93,7 +88,7 @@ export const Home = () => {
           </a>
           <button
             type="button"
-            onClick={handleDownload}
+            onClick={handleOpenCV}
             disabled={downloading}
             className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer disabled:opacity-60"
           >

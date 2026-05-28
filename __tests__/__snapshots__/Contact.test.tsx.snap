@@ -65,7 +65,9 @@ exports[`<Contact /> > matches snapshot 1`] = `
         <p
           class="text-alvaro-muted leading-relaxed max-w-[35ch]"
         >
-          Have a project or opportunity? Drop a message.
+          Have a project or opportunity?
+          <br />
+           Drop a message.
         </p>
       </div>
       <form

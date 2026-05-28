@@ -6,18 +6,13 @@ import { CVDocument } from "src/components/CVDocument";
 export const CV = () => {
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = useCallback(async () => {
+  const handleOpen = useCallback(async () => {
     setDownloading(true);
     try {
       const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Alvaro_Garcia_Macias_CV_${new Date().toISOString().split("T")[0]}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {
@@ -29,9 +24,9 @@ export const CV = () => {
     <section id="cv" className="section-curve mt-32 md:mt-48 px-4 md:px-0">
       <button
         type="button"
-        onClick={handleDownload}
+        onClick={handleOpen}
         disabled={downloading}
-        aria-label="Download CV"
+        aria-label="Open CV"
         className="w-full grid place-items-center p-12 md:p-20 rounded-3xl bg-alvaro-surface border border-alvaro-border hover:border-alvaro-primary/40 transition-all duration-500 group cursor-pointer active:scale-[0.99] relative overflow-hidden disabled:opacity-60"
       >
         {/* Background glow */}
@@ -42,7 +37,7 @@ export const CV = () => {
         <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-alvaro-primary/20 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
 
         <h2 className="relative z-10 text-4xl md:text-5xl tracking-[-0.03em] font-bold text-alvaro-white group-hover:text-alvaro-primary transition-colors duration-300">
-          {downloading ? "Generating CV..." : "Download my CV"}
+          {downloading ? "Generating CV..." : "Check out my CV"}
         </h2>
         <div className="relative z-10 mt-6 p-3 rounded-full bg-alvaro-primary/10 group-hover:bg-alvaro-primary/20 transition-all duration-300">
           {downloading ? (

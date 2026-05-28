@@ -84,7 +84,8 @@ export const Contact = () => {
               Get in touch
             </h2>
             <p className="text-alvaro-muted leading-relaxed max-w-[35ch]">
-              Have a project or opportunity? Drop a message.
+              Have a project or opportunity?
+              <br /> Drop a message.
             </p>
           </div>
           <form ref={form} onSubmit={sendEmail} className="grid gap-4">

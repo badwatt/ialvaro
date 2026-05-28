@@ -7,7 +7,7 @@ exports[`<CV /> > matches snapshot 1`] = `
     id="cv"
   >
     <button
-      aria-label="Download CV"
+      aria-label="Open CV"
       class="w-full grid place-items-center p-12 md:p-20 rounded-3xl bg-alvaro-surface border border-alvaro-border hover:border-alvaro-primary/40 transition-all duration-500 group cursor-pointer active:scale-[0.99] relative overflow-hidden disabled:opacity-60"
       type="button"
     >
@@ -23,7 +23,7 @@ exports[`<CV /> > matches snapshot 1`] = `
       <h2
         class="relative z-10 text-4xl md:text-5xl tracking-[-0.03em] font-bold text-alvaro-white group-hover:text-alvaro-primary transition-colors duration-300"
       >
-        Download my CV
+        Check out my CV
       </h2>
       <div
         class="relative z-10 mt-6 p-3 rounded-full bg-alvaro-primary/10 group-hover:bg-alvaro-primary/20 transition-all duration-300"
