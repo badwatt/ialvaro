@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FileTextIcon, SpinnerIcon } from "@phosphor-icons/react";
-import { pdf } from "@react-pdf/renderer";
-import { CVDocument } from "src/components/CVDocument";
+import { generateAndOpenCV } from "src/utils/generateCV";
 
 export const CV = () => {
   const [loading, setLoading] = useState(false);
@@ -9,10 +8,7 @@ export const CV = () => {
   const handleOpen = async () => {
     setLoading(true);
     try {
-      const blob = await pdf(<CVDocument domain={window.location.hostname} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      await generateAndOpenCV();
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {

@@ -1,16 +1,10 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { pdf } from "@react-pdf/renderer";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { CV } from "src/views/CV";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@react-pdf/renderer", async (importOriginal) => {
-  const actual = await importOriginal() as Record<string, unknown>;
-  const toBlobMock = vi.fn().mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" }));
-  return {
-    ...actual,
-    pdf: vi.fn().mockReturnValue({ toBlob: toBlobMock }),
-  };
-});
+vi.mock("src/utils/generateCV", () => ({
+  generateAndOpenCV: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe("<CV />", () => {
   afterEach(() => {
@@ -40,44 +34,36 @@ describe("<CV />", () => {
     expect(container.querySelector("svg")).toBeDefined();
   });
 
-  it("shows generating state on click", async () => {
+  it("shows generating state then returns to idle", async () => {
+    const { generateAndOpenCV } = await import("src/utils/generateCV");
+    vi.mocked(generateAndOpenCV).mockImplementationOnce(
+      () => new Promise((r) => setTimeout(r, 50))
+    );
     render(<CV />);
     const btn = screen.getByLabelText("Open CV");
-    fireEvent.click(btn);
-    expect(screen.getByText("Generating CV...")).toBeDefined();
-    await waitFor(() => {
-      expect(screen.getByText("Check out my CV")).toBeDefined();
-    });
+    btn.click();
+    expect(await screen.findByText("Generating CV...")).toBeDefined();
+    await screen.findByText("Check out my CV");
   });
 
-  it("opens CV in new tab on click", async () => {
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+  it("opens CV via generateAndOpenCV", async () => {
+    const { generateAndOpenCV } = await import("src/utils/generateCV");
     render(<CV />);
-    const btn = screen.getByLabelText("Open CV");
-    fireEvent.click(btn);
-
+    screen.getByLabelText("Open CV").click();
     await waitFor(() => {
-      expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+      expect(generateAndOpenCV).toHaveBeenCalled();
     });
-
-    openSpy.mockRestore();
   });
 
   it("handles PDF generation failure gracefully", async () => {
-    const pdfMock = vi.mocked(pdf);
-    pdfMock.mockReturnValue({
-      toBlob: vi.fn().mockRejectedValue(new Error("PDF fail")),
-    } as unknown as ReturnType<typeof pdf>);
-
+    const { generateAndOpenCV } = await import("src/utils/generateCV");
+    vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<CV />);
-    const btn = screen.getByLabelText("Open CV");
-    fireEvent.click(btn);
-
+    screen.getByLabelText("Open CV").click();
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
     });
-
     consoleSpy.mockRestore();
   });
 
