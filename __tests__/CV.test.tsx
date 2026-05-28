@@ -42,7 +42,9 @@ describe("<CV />", () => {
     );
     render(<CV experienceData={testExperienceData} aboutData={testAboutData} />);
     const btn = screen.getByLabelText("Open CV");
-    btn.click();
+    act(() => {
+      btn.click();
+    });
     expect(await screen.findByText("Generating CV...")).toBeDefined();
     await screen.findByText("Check out my CV");
   });
