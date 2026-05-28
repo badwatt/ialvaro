@@ -27,26 +27,28 @@ async function loadImage(url: string): Promise<string> {
 
 function toCircular(
   base64: string,
-  size: number
+  size: number,
+  scale = 4
 ): Promise<string | null> {
   if (typeof document === "undefined") return Promise.resolve(null);
+  const px = size * scale;
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = px;
+      canvas.height = px;
       const ctx = canvas.getContext("2d");
       if (!ctx) {
         resolve(null);
         return;
       }
       ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.arc(px / 2, px / 2, px / 2, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(img, 0, 0, size, size);
+      ctx.drawImage(img, 0, 0, px, px);
       resolve(canvas.toDataURL("image/png"));
     };
     img.onerror = () => resolve(null);
