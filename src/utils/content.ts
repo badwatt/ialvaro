@@ -5,10 +5,7 @@ export type ExperienceEntry = {
   date_from: string;
   date_to: string;
   url: string;
-  description: {
-    title: { one?: string; two?: string; three?: string; four?: string };
-    content: { one?: string; two?: string; three?: string; four?: string };
-  };
+  description: string;
 };
 
 export type PortfolioEntry = {
@@ -52,10 +49,7 @@ export const experienceData: ExperienceEntry[] = Object.values(experienceModules
     date_from: String(mod.frontmatter.date_from),
     date_to: String(mod.frontmatter.date_to),
     url: String(mod.frontmatter.url),
-    description: (mod.frontmatter.description as ExperienceEntry["description"]) ?? {
-      title: {},
-      content: {},
-    },
+    description: mod.rawContent().trim(),
   }))
   .sort((a, b) => Number(b.id) - Number(a.id));
 

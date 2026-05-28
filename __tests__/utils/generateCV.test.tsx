@@ -4,6 +4,7 @@ import {
   loadImage,
   toCircular,
   generateAndOpenCV,
+  parseDescription,
 } from "src/utils/generateCV";
 
 // Mock registry — defined before vi.mock
@@ -248,5 +249,25 @@ describe("generateAndOpenCV", () => {
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(openSpy).toHaveBeenCalled();
     openSpy.mockRestore();
+  });
+});
+
+
+describe("parseDescription", () => {
+  it("parses sections from markdown body", () => {
+    const result = parseDescription("# A\n\ncontent\n\n# B\n\nmore");
+    expect(result).toEqual([
+      { title: "A", content: "content" },
+      { title: "B", content: "more" },
+    ]);
+  });
+
+  it("skips lines before first heading", () => {
+    const result = parseDescription("intro\n# A\ncontent\n");
+    expect(result).toEqual([{ title: "A", content: "content" }]);
+  });
+
+  it("returns empty for no headings", () => {
+    expect(parseDescription("just text")).toEqual([]);
   });
 });

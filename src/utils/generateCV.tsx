@@ -58,6 +58,37 @@ export function toCircular(
   });
 }
 
+export function parseDescription(raw: string): { title: string; content: string }[] {
+  const sections: { title: string; content: string }[] = [];
+  const lines = raw.split("\n");
+  let currentTitle = "";
+  let currentContent: string[] = [];
+
+  for (const line of lines) {
+    if (line.startsWith("# ")) {
+      if (currentTitle) {
+        sections.push({
+          title: currentTitle,
+          content: currentContent.join("\n").trim(),
+        });
+      }
+      currentTitle = line.replace("# ", "").trim();
+      currentContent = [];
+    } else if (currentTitle) {
+      currentContent.push(line);
+    }
+  }
+
+  if (currentTitle) {
+    sections.push({
+      title: currentTitle,
+      content: currentContent.join("\n").trim(),
+    });
+  }
+
+  return sections;
+}
+
 export async function generateAndOpenCV(): Promise<void> {
   const [{ jsPDF }, profileRaw, profileAltRaw] = await Promise.all([
     import("jspdf"),
@@ -169,24 +200,17 @@ export async function generateAndOpenCV(): Promise<void> {
     doc.text(`${job.date_from} \u2014 ${job.date_to}`, mainX, my);
     my += 16;
 
-    const desc = job.description;
-    const sections = [
-      { t: desc.title.one, c: desc.content.one },
-      { t: desc.title.two, c: desc.content.two },
-      { t: desc.title.three, c: desc.content.three },
-      { t: desc.title.four, c: desc.content.four },
-    ].filter((s) => s.t && s.c);
-
+    const sections = parseDescription(job.description);
     for (const sec of sections) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...C.white);
-      doc.text(sec.t!, mainX, my);
+      doc.text(sec.title, mainX, my);
       my += 12;
 
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...C.muted);
-      const lines = doc.splitTextToSize(sec.c!, mainW);
+      const lines = doc.splitTextToSize(sec.content, mainW);
       doc.text(lines, mainX, my);
       my += lines.length * 11 + 6;
     }

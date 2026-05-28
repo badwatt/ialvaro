@@ -97,9 +97,10 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Consulting Firm
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
-                    Knowmad Mood & Plexus
+                    - Knowmad Mood
+- Plexus
                   </p>
                 </div>
                 <div>
@@ -109,7 +110,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Projects
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
                     - Onboarding
 - Customer
@@ -191,9 +192,9 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Consulting Firm
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
-                    Devoteam
+                    - Devoteam
                   </p>
                 </div>
                 <div>
@@ -203,7 +204,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Projects
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
                     - Onboarding
 - Customer
@@ -216,7 +217,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Tasks
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
                     - Web application development using Vue.js and React.js
 - REST API integration in front-end applications
@@ -235,25 +236,9 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                     Skills
                   </h4>
                   <p
-                    class="text-sm"
+                    class="text-sm whitespace-pre-line"
                   >
-                    vue.js
-react.js
-typescript
-javascript
-jest.js
-node.js
-html
-css
-jsp
-oracle db
-inkscape
-jira
-git
-dbeaver
-postman
-invision
-overflow
+                    vue.js, react.js, typescript, javascript, jest.js, node.js, html, css, jsp, oracle db, inkscape, jira, git, dbeaver, postman, invision, overflow
                   </p>
                 </div>
               </div>

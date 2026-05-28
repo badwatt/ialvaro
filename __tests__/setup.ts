@@ -9,10 +9,7 @@ vi.mock("src/utils/content", () => ({
       date_from: "June 2023",
       date_to: "now",
       url: "https://openbank.es/",
-      description: {
-        title: { one: "Consulting Firm", two: "Projects", three: "", four: "" },
-        content: { one: "Knowmad Mood & Plexus", two: "- Onboarding\n- Customer", three: "", four: "" },
-      },
+      description: "# Consulting Firm\n\n- Knowmad Mood\n- Plexus\n\n# Projects\n\n- Onboarding\n- Customer",
     },
     {
       id: "1",
@@ -21,15 +18,7 @@ vi.mock("src/utils/content", () => ({
       date_from: "October 2021",
       date_to: "April 2023",
       url: "https://grupocajarural.es/",
-      description: {
-        title: { one: "Consulting Firm", two: "Projects", three: "Tasks", four: "Skills" },
-        content: {
-          one: "Devoteam",
-          two: "- Onboarding\n- Customer",
-          three: "- Web application development using Vue.js and React.js\n- REST API integration in front-end applications\n- Unit and integration test development\n- Code documentation\n- Translations using i18n\n- Modification and elaboration of login pages\n- Internal SSO access elaboration\n- Modification of CSS styles",
-          four: "vue.js\nreact.js\ntypescript\njavascript\njest.js\nnode.js\nhtml\ncss\njsp\noracle db\ninkscape\njira\ngit\ndbeaver\npostman\ninvision\noverflow",
-        },
-      },
+      description: "# Consulting Firm\n\n- Devoteam\n\n# Projects\n\n- Onboarding\n- Customer\n\n# Tasks\n\n- Web application development using Vue.js and React.js\n- REST API integration in front-end applications\n- Unit and integration test development\n- Code documentation\n- Translations using i18n\n- Modification and elaboration of login pages\n- Internal SSO access elaboration\n- Modification of CSS styles\n\n# Skills\n\nvue.js, react.js, typescript, javascript, jest.js, node.js, html, css, jsp, oracle db, inkscape, jira, git, dbeaver, postman, invision, overflow",
     },
   ],
   portfolioData: [
