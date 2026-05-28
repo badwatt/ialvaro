@@ -348,15 +348,16 @@ export async function generateAndOpenCV(
     try { doc.addImage(linkedinIcon, "PNG", M, sy, ICON, ICON); } catch { /* noop */ }
   }
   doc.textWithLink("linkedin.com/in/badwatt", M + ICON + 4, sy + 8, { url: "https://linkedin.com/in/badwatt" });
-  sy += 34;
+  const socialBottom = sy + 12;
+  sy = socialBottom + 22;
 
   sy = sectionTitle(doc, "ABOUT", M, sy);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(...C.muted);
   const bio = doc.splitTextToSize(getBioText(aboutData), sidebarW - 8);
   doc.text(bio, M, sy);
-  sy += bio.length * 11 + 18;
+  sy = sy + (bio.length - 1) * 10 + 10 + 22;
 
   // Location
   if (aboutData[0]?.location) {
@@ -365,7 +366,7 @@ export async function generateAndOpenCV(
     doc.setFontSize(8.5);
     doc.setTextColor(...C.muted);
     doc.text(aboutData[0].location, M, sy);
-    sy += 14;
+    sy = sy + 11 + 22;
   }
 
   // Languages
@@ -382,7 +383,8 @@ export async function generateAndOpenCV(
       doc.text(`${lang.language} · ${lang.level}`, M + 6, sy + 1);
       sy += 18;
     }
-    sy += 4;
+    const langBottom = sy - 18 + 5;
+    sy = langBottom + 22;
   }
 
   // Education
@@ -393,7 +395,7 @@ export async function generateAndOpenCV(
       doc.setFontSize(8.5);
       doc.setTextColor(...C.white);
       doc.text(edu.degree, M, sy);
-      sy += 10;
+      sy += 12;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(...C.muted);
@@ -401,7 +403,8 @@ export async function generateAndOpenCV(
       doc.text(instText, M, sy);
       sy += 12;
     }
-    sy += 4;
+    const eduBottom = sy - 12 + 8;
+    sy = eduBottom + 22;
   }
 
   sy = sectionTitle(doc, "SKILLS", M, sy);
