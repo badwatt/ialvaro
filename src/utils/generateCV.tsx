@@ -27,11 +27,7 @@ export async function loadImage(url: string): Promise<string> {
   });
 }
 
-export function toCircular(
-  base64: string,
-  size: number,
-  scale = 4
-): Promise<string | null> {
+export function toCircular(base64: string, size: number, scale = 4): Promise<string | null> {
   if (typeof document === "undefined") return Promise.resolve(null);
   const px = size * scale;
   return new Promise((resolve) => {
@@ -91,7 +87,7 @@ export function parseDescription(raw: string): { title: string; content: string 
 
 export async function generateAndOpenCV(
   experienceData: ExperienceEntry[],
-  aboutData: AboutEntry[]
+  aboutData: AboutEntry[],
 ): Promise<void> {
   const [{ jsPDF }, profileRaw, profileAltRaw] = await Promise.all([
     import("jspdf"),
@@ -100,7 +96,7 @@ export async function generateAndOpenCV(
   ]);
 
   const CIRCULAR_SIZE = 80;
-  const CIRCULAR_SMALL = 20;
+  const CIRCULAR_SMALL = 12;
   const profileImg = profileRaw ? await toCircular(profileRaw, CIRCULAR_SIZE) : null;
   const profileAltImg = profileAltRaw ? await toCircular(profileAltRaw, CIRCULAR_SMALL) : null;
 
@@ -136,8 +132,8 @@ export async function generateAndOpenCV(
   doc.textWithLink("github.com/badwatt", M, y + 10, {
     url: "https://github.com/badwatt",
   });
-  doc.textWithLink("linkedin.com/in/alvaro-garcia-macias", M + 120, y + 10, {
-    url: "https://linkedin.com/in/alvaro-garcia-macias",
+  doc.textWithLink("linkedin.com/in/badwatt", M + 120, y + 10, {
+    url: "https://linkedin.com/in/badwatt",
   });
   y += 20;
 
@@ -156,7 +152,13 @@ export async function generateAndOpenCV(
       doc.addImage(profileImg, "PNG", imgX, sy, CIRCULAR_SIZE, CIRCULAR_SIZE);
       doc.setDrawColor(...C.primary);
       doc.setLineWidth(2);
-      doc.ellipse(imgX + CIRCULAR_SIZE / 2, sy + CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, CIRCULAR_SIZE / 2, "S");
+      doc.ellipse(
+        imgX + CIRCULAR_SIZE / 2,
+        sy + CIRCULAR_SIZE / 2,
+        CIRCULAR_SIZE / 2,
+        CIRCULAR_SIZE / 2,
+        "S",
+      );
       sy += CIRCULAR_SIZE + 24;
     } catch {
       // image add failed, skip
@@ -229,7 +231,6 @@ export async function generateAndOpenCV(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
-  doc.text(`Generated from ${window.location.hostname}`, M, footerY);
 
   const yearStr = String(new Date().getFullYear());
   const yearW = doc.getTextWidth(yearStr);
@@ -237,9 +238,11 @@ export async function generateAndOpenCV(
   const imgSize = CIRCULAR_SMALL;
   const imgX = W - M - imgSize;
   const yearX = imgX - gap - yearW;
+  const textY = footerY + imgSize / 4;
   const imgY = footerY - imgSize / 2;
 
-  doc.text(yearStr, yearX, footerY);
+  doc.text(`Generated from ${window.location.hostname}`, M, textY);
+  doc.text(yearStr, yearX, textY);
 
   if (profileAltImg) {
     try {
@@ -260,7 +263,7 @@ function drawTitle(
   label: string,
   x: number,
   y: number,
-  w: number
+  w: number,
 ): number {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -279,7 +282,7 @@ function drawTag(
   y: number,
   featured: boolean,
   baseX: number,
-  maxX: number
+  maxX: number,
 ): { x: number; y: number } {
   const tw = doc.getTextWidth(label) + 14;
   if (x + tw > baseX + maxX) {
