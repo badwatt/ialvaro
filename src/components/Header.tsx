@@ -9,8 +9,7 @@ export const Header = ({ title }: Props) => {
 
   return (
     <>
-      <div className="h-16 md:h-24" />
-      <div ref={ref} className="mb-8 md:mb-10 overflow-hidden">
+      <div ref={ref} className="mb-8 md:mb-10 mt-16 md:mt-13 overflow-hidden">
         <h1
           className={`text-4xl md:text-5xl tracking-tight leading-none font-bold text-alvaro-white transition-all duration-700 ease-out origin-left ${
             isVisible ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
