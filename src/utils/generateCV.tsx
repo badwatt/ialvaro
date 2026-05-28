@@ -230,13 +230,14 @@ export async function generateAndOpenCV(
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
   doc.text(`Generated from ${window.location.hostname}`, M, footerY);
-  doc.text(String(new Date().getFullYear()), W - M - 60, footerY);
+  doc.text(String(new Date().getFullYear()), W - M - 36, footerY);
 
   if (profileAltImg) {
     try {
-      const altX = W - M - 24;
-      const altY = footerY - 10;
-      doc.addImage(profileAltImg, "PNG", altX, altY, CIRCULAR_SMALL, CIRCULAR_SMALL);
+      const imgSize = CIRCULAR_SMALL;
+      const imgX = W - M - 24;
+      const imgY = footerY - imgSize;
+      doc.addImage(profileAltImg, "PNG", imgX, imgY, imgSize, imgSize);
     } catch {
       // skip small footer image
     }
