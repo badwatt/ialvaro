@@ -41,7 +41,7 @@ export default function About() {
             />
             <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-alvaro-primary/40 rounded-tr-lg" />
           </div>
-          <div className="hidden md:block">
+          <div className="md:block">
             <FloatingTags tags={profileTags} />
           </div>
         </div>

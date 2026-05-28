@@ -42,7 +42,7 @@ exports[`<About /> > matches snapshot 1`] = `
           />
         </div>
         <div
-          class="hidden md:block"
+          class="md:block"
         >
           <div
             class="absolute inset-0 pointer-events-none"

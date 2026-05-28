@@ -9,7 +9,7 @@ const getSiteName = () => {
 };
 
 const syncHash = (id: string) => {
-  const target = `#${id}`;
+  const target = id === "home" ? "#" : `#${id}`;
   if (window.location.hash !== target) {
     history.replaceState(null, "", target);
   }
