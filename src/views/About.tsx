@@ -14,7 +14,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32"
+      className="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32 scroll-mt-[4.5rem]"
     >
       {/* Atmospheric layers */}
       <div className="absolute inset-0 pointer-events-none">

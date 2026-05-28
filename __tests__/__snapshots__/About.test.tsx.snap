@@ -3,7 +3,7 @@
 exports[`<About /> > matches snapshot 1`] = `
 <div>
   <section
-    class="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32"
+    class="relative min-h-[100dvh] grid items-center overflow-hidden py-24 md:py-32 scroll-mt-[4.5rem]"
     id="about"
   >
     <div
