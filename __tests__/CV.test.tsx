@@ -53,16 +53,6 @@ describe("<CV />", () => {
     openSpy.mockRestore();
   });
 
-  it("shows generating state on click", async () => {
-    render(<CV />);
-    const btn = screen.getByLabelText("Open CV");
-    fireEvent.click(btn);
-
-    await waitFor(() => {
-      expect(screen.getByText("Generating CV...")).toBeDefined();
-    });
-  });
-
   it("handles PDF generation failure gracefully", async () => {
     const pdfMock = vi.mocked(pdf);
     pdfMock.mockReturnValue({

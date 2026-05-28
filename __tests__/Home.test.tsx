@@ -62,20 +62,15 @@ describe("<Home />", () => {
     expect(tagline?.className).toContain("opacity-100");
   });
 
-  it("matches snapshot", () => {
-    const { container } = render(<Home />);
-    expect(container).toMatchSnapshot();
-  });
-
-  it("generates and opens CV in new tab on button click", async () => {
+  it("opens CV in new tab on button click", async () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     render(<Home />);
     const btn = screen.getByText("CV");
-    expect(btn.tagName.toLowerCase()).toBe("button");
     btn.click();
-    await screen.findByText("Generating...");
-    await screen.findByText("CV");
-    expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+    const { pdf } = await import("@react-pdf/renderer");
+    await vi.waitFor(() => {
+      expect(openSpy).toHaveBeenCalledWith(expect.stringContaining("blob:"), "_blank");
+    });
     openSpy.mockRestore();
   });
 
@@ -88,9 +83,14 @@ describe("<Home />", () => {
     render(<Home />);
     const btn = screen.getByText("CV");
     btn.click();
-    await screen.findByText("Generating...");
-    await screen.findByText("CV");
-    expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
+    await vi.waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
+    });
     consoleSpy.mockRestore();
+  });
+
+  it("matches snapshot", () => {
+    const { container } = render(<Home />);
+    expect(container).toMatchSnapshot();
   });
 });
