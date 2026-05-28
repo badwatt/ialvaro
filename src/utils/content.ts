@@ -35,12 +35,12 @@ const experienceModules = import.meta.glob<MDXModule>(
 );
 
 const portfolioModules = import.meta.glob<MDXModule>(
-  "/src/data/portfolio/*.mdx",
+  "/src/data/portfolio/*.md",
   { eager: true }
 );
 
 const biographyModules = import.meta.glob<MDXModule>(
-  "/src/data/biography/*.mdx",
+  "/src/data/biography/*.md",
   { eager: true }
 );
 
