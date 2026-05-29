@@ -5,7 +5,7 @@ export interface UsePdfPagesOptions {
   src: string;
   containerRef: RefObject<HTMLDivElement | null>;
   getDocument: (src: string) => PDFDocumentLoadingTask;
-  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement) => Promise<void>;
+  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement, containerWidth: number) => Promise<void>;
 }
 
 export async function loadPdfPages(
@@ -17,6 +17,7 @@ export async function loadPdfPages(
 
   container.innerHTML = "";
   const total = pdf.numPages;
+  const containerWidth = container.clientWidth;
 
   for (let i = 1; i <= total; i++) {
     const page = await pdf.getPage(i);
@@ -26,7 +27,7 @@ export async function loadPdfPages(
     canvas.className = "max-w-full shadow-lg";
     wrapper.appendChild(canvas);
     container.appendChild(wrapper);
-    await renderPage(page, canvas);
+    await renderPage(page, canvas, containerWidth);
     page.cleanup();
   }
 }
@@ -46,7 +47,9 @@ export function usePdfPages({ src, containerRef, getDocument, renderPage }: UseP
 
     loadPdfPages(task, containerRef.current ?? document.createElement("div"), renderPage)
       .then(() => {
-        if (!destroyed) setLoading(false);
+        if (!destroyed) {
+          setLoading(false);
+        }
       })
       .catch(() => {
         if (!destroyed) {

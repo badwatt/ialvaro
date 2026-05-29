@@ -25,6 +25,25 @@ describe("renderPageToCanvas", () => {
     expect(renderSpy).toHaveBeenCalled();
   });
 
+  it("scales to container width when provided", async () => {
+    const canvas = document.createElement("canvas");
+    const scaleSpy = vi.fn();
+    const renderSpy = vi.fn().mockReturnValue({ promise: Promise.resolve() });
+    canvas.getContext = () => ({ scale: scaleSpy } as unknown as CanvasRenderingContext2D);
+
+    const page = {
+      getViewport: ({ scale }: { scale: number }) => ({ width: 200 * scale, height: 300 * scale }),
+      render: renderSpy,
+    } as unknown as import("pdfjs-dist/legacy/build/pdf.mjs").PDFPageProxy;
+
+    await renderPageToCanvas(page, canvas, 100);
+
+    expect(canvas.width).toBe(100);
+    expect(canvas.height).toBe(150);
+    expect(scaleSpy).toHaveBeenCalled();
+    expect(renderSpy).toHaveBeenCalled();
+  });
+
   it("returns early when getContext is null", async () => {
     const canvas = document.createElement("canvas");
     canvas.getContext = () => null;
