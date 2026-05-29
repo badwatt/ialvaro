@@ -13,7 +13,6 @@ import { Stats } from "src/views/Stats";
 import { Skills } from "src/views/Skills";
 import { Experience } from "src/views/Experience";
 import { Portfolio } from "src/views/Portfolio";
-import { Testimonials } from "src/views/Testimonials";
 import { CV } from "src/views/CV";
 import { Contact } from "src/views/Contact";
 
@@ -79,7 +78,6 @@ const techStack = skillsData.map((s) => s.title);
   <Skills client:load skillsData={skillsData} />
   <Experience client:load experienceData={experienceData} />
   <Portfolio client:load portfolioData={portfolioData} />
-  <Testimonials client:load />
   <CV client:load experienceData={experienceData} aboutData={aboutData} skillsData={skillsData} />
   <Contact client:load />
   <Scrollup client:load />
