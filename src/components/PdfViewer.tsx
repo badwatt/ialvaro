@@ -29,7 +29,7 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
+              className="cursor-pointer rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
               aria-label="Close preview"
             >
               <XIcon size={20} weight="bold" />
