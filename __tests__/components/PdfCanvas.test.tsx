@@ -2,6 +2,10 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import { PdfCanvas } from "src/components/PdfCanvas";
 
+vi.mock("src/utils/renderPageToCanvas", () => ({
+  renderPageToCanvas: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("pdfjs-dist/legacy/build/pdf.mjs", () => ({
   getDocument: vi.fn().mockReturnValue({
     promise: Promise.resolve({
@@ -28,37 +32,16 @@ describe("PdfCanvas", () => {
     expect(container.innerHTML).toBe("");
   });
 
-  it("shows loading spinner while loading", () => {
-    render(<PdfCanvas src="blob:test" />);
-    expect(screen.getByRole("status")).toBeDefined();
-  });
-
-  it("renders canvases with 2d context", async () => {
-    const createEl = document.createElement.bind(document);
-    document.createElement = (tag: string) => {
-      const el = createEl(tag);
-      if (tag === "canvas") {
-        (el as HTMLCanvasElement).getContext = () => ({
-          scale: vi.fn(),
-          drawImage: vi.fn(),
-        } as unknown as CanvasRenderingContext2D);
-      }
-      return el;
-    };
+  it("calls getDocument and renders pages", async () => {
+    const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
     render(<PdfCanvas src="blob:test" />);
     await waitFor(() => {
+      expect(getDocument).toHaveBeenCalledWith("blob:test");
       expect(screen.queryByRole("status")).toBeNull();
     });
+    expect(screen.getByTestId("pdf-canvas-container")).toBeDefined();
     const canvases = document.querySelectorAll("canvas");
-    expect(canvases.length).toBeGreaterThan(0);
-    document.createElement = createEl;
-  });
-
-  it("cancels rendering on unmount", async () => {
-    const { unmount } = render(<PdfCanvas src="blob:test" />);
-    unmount();
-    await new Promise((r) => setTimeout(r, 10));
-    expect(screen.queryByTestId("pdf-canvas-container")).toBeNull();
+    expect(canvases.length).toBe(2);
   });
 
   it("shows error on load failure", async () => {

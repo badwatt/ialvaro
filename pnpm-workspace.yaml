@@ -2,6 +2,7 @@ allowBuilds:
   esbuild: true
   sharp: true
   core-js: true
+  canvas: true
 minimumReleaseAgeExclude:
   - "@astrojs/*"
   - "astro"

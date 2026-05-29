@@ -1,9 +1,14 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { Modal, lockBodyScroll } from "src/components/Modal";
 
 describe("Modal", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
   afterEach(() => {
+    vi.useRealTimers();
     cleanup();
     document.body.style.overflow = "";
     vi.restoreAllMocks();
@@ -34,6 +39,16 @@ describe("Modal", () => {
       </Modal>,
     );
     expect(screen.getByTestId("content")).toBeDefined();
+  });
+
+  it("focuses panel after open", () => {
+    const focusSpy = vi.spyOn(HTMLElement.prototype, "focus").mockImplementation(() => {});
+    render(
+      <Modal isOpen={true} onClose={vi.fn()}>content</Modal>,
+    );
+    vi.runAllTimers();
+    expect(focusSpy).toHaveBeenCalled();
+    focusSpy.mockRestore();
   });
 
   it("blocks body scroll when open", () => {
@@ -96,6 +111,17 @@ describe("Modal", () => {
     );
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("ignores non-Escape keys", () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen={true} onClose={onClose}>
+        content
+      </Modal>,
+    );
+    fireEvent.keyDown(document, { key: "Enter" });
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it("does not listen to Escape after closing", () => {

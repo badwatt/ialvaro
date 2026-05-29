@@ -211,6 +211,36 @@ describe("<CV />", () => {
     revokeSpy.mockRestore();
   });
 
+  it("closes PdfViewer without revoking when url is empty", async () => {
+    const { generateCV } = await import("src/utils/generateCV");
+    vi.mocked(generateCV).mockResolvedValueOnce("");
+    const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    render(
+      <CV
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByLabelText("Open CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
+    });
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeDefined();
+    });
+    act(() => {
+      screen.getByLabelText("Close preview").click();
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+    expect(revokeSpy).not.toHaveBeenCalled();
+    revokeSpy.mockRestore();
+  });
+
   it("matches snapshot", () => {
     const { container } = render(
       <CV

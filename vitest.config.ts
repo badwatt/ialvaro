@@ -25,6 +25,7 @@ export default mergeConfig(
         ],
       },
       coverage: {
+        provider: "istanbul",
         include: ["src/**/*.{ts,tsx}"],
         exclude: [
           "src/data/**",
