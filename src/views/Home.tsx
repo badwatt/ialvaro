@@ -107,13 +107,13 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
         <div
           className={`flex gap-4 justify-center md:justify-start pt-2 transition-all duration-700 delay-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          } ${showCaptcha ? "flex-col md:flex-row items-center" : ""}`}
+          } ${showCaptcha ? "flex-col items-center" : ""}`}
         >
           <a
             href="#portfolio"
             className={[
               "group relative px-8 py-3.5 bg-alvaro-primary text-alvaro-dark font-semibold rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.97] hover:shadow-[0_0_30px_-5px_rgba(91,155,213,0.3)]",
-              showCaptcha ? "hidden md:inline-flex" : "",
+              showCaptcha ? "hidden" : "",
             ].join(" ")}
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
@@ -133,7 +133,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
             }
             if (loading) {
               return (
-                <div className="w-full flex justify-center md:block">
+                <div className="w-full flex justify-center">
                   <span className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl">
                     Generating...
                   </span>
@@ -141,7 +141,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
               );
             }
             return (
-              <div className="w-full flex justify-center md:block">
+              <div className="w-full flex justify-center">
                 <CapWidget
                   onVerified={(token) => {
                     handleOpenCV(token);
