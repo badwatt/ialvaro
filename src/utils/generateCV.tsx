@@ -383,7 +383,7 @@ export async function generateAndOpenCV(
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...C.muted);
-    doc.text("@", M + ICON / 2, sy + ICON - 1, { align: "center" });
+    doc.text("@", M + ICON / 2, sy + 9, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.textWithLink(aboutData[0].email, M + ICON + 4, sy + 8, {
