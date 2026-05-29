@@ -4,11 +4,7 @@ import { usePdfPages, loadPdfPages } from "src/hooks/usePdfPages";
 
 function TestComponent(props: Parameters<typeof usePdfPages>[0]) {
   const { loading, error } = usePdfPages(props);
-  return (
-    <div data-testid="state">
-      {error ?? (loading ? "loading" : "done")}
-    </div>
-  );
+  return <div data-testid="state">{error ?? (loading ? "loading" : "done")}</div>;
 }
 
 function createMockPdf(numPages = 2) {
@@ -114,8 +110,7 @@ describe("usePdfPages", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("state").textContent).toBe(
-        "Failed to load PDF preview.");
+      expect(screen.getByTestId("state").textContent).toBe("Failed to load PDF preview.");
     });
 
     expect(renderPage).not.toHaveBeenCalled();

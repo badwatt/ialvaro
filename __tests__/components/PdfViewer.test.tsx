@@ -4,7 +4,9 @@ import { PdfViewer } from "src/components/PdfViewer";
 
 vi.mock("src/components/PdfCanvas", () => ({
   PdfCanvas: ({ src }: { src: string }) => (
-    <div data-testid="pdf-canvas" data-src={src}>PDF Canvas</div>
+    <div data-testid="pdf-canvas" data-src={src}>
+      PDF Canvas
+    </div>
   ),
 }));
 

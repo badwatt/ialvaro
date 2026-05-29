@@ -1,11 +1,19 @@
 import { useEffect, useState, type RefObject } from "react";
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
+import type {
+  PDFDocumentLoadingTask,
+  PDFDocumentProxy,
+  PDFPageProxy,
+} from "pdfjs-dist/legacy/build/pdf.mjs";
 
 export interface UsePdfPagesOptions {
   src: string;
   containerRef: RefObject<HTMLDivElement | null>;
   getDocument: (src: string) => PDFDocumentLoadingTask;
-  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement, containerWidth: number) => Promise<void>;
+  renderPage: (
+    page: PDFPageProxy,
+    canvas: HTMLCanvasElement,
+    containerWidth: number,
+  ) => Promise<void>;
 }
 
 export async function loadPdfPages(

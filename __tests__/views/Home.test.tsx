@@ -35,7 +35,7 @@ describe("<Home />", () => {
   let observer: ReturnType<typeof createObserverMock>;
 
   beforeEach(() => {
-    const toaster = document.querySelector('[data-rht-toaster]');
+    const toaster = document.querySelector("[data-rht-toaster]");
     if (toaster) toaster.remove();
     observer = createObserverMock();
     setupFetchMock();
@@ -222,7 +222,6 @@ describe("<Home />", () => {
     });
   });
 
-  
   it("closes PdfViewer and revokes blob url", async () => {
     const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     render(

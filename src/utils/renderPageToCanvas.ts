@@ -7,9 +7,7 @@ export async function renderPageToCanvas(
 ) {
   const dpr = window.devicePixelRatio || 1;
   const base = page.getViewport({ scale: 1 });
-  const scale = containerWidth && containerWidth > 0
-    ? containerWidth / base.width
-    : 1.5;
+  const scale = containerWidth && containerWidth > 0 ? containerWidth / base.width : 1.5;
   const viewport = page.getViewport({ scale });
 
   canvas.width = viewport.width * dpr;

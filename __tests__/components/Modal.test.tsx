@@ -44,7 +44,9 @@ describe("Modal", () => {
   it("focuses panel after open", () => {
     const focusSpy = vi.spyOn(HTMLElement.prototype, "focus").mockImplementation(() => {});
     render(
-      <Modal isOpen={true} onClose={vi.fn()}>content</Modal>,
+      <Modal isOpen={true} onClose={vi.fn()}>
+        content
+      </Modal>,
     );
     vi.runAllTimers();
     expect(focusSpy).toHaveBeenCalled();
@@ -220,7 +222,9 @@ describe("Modal", () => {
   it("does not call onClose when panel itself clicked", () => {
     const onClose = vi.fn();
     render(
-      <Modal isOpen={true} onClose={onClose}><div>content</div></Modal>,
+      <Modal isOpen={true} onClose={onClose}>
+        <div>content</div>
+      </Modal>,
     );
     fireEvent.click(screen.getByRole("dialog"));
     expect(onClose).not.toHaveBeenCalled();

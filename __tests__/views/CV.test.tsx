@@ -32,7 +32,7 @@ function setupFetchMock(ok = true) {
 
 describe("<CV />", () => {
   beforeEach(() => {
-    const toaster = document.querySelector('[data-rht-toaster]');
+    const toaster = document.querySelector("[data-rht-toaster]");
     if (toaster) toaster.remove();
     setupFetchMock();
   });
@@ -182,7 +182,6 @@ describe("<CV />", () => {
     });
   });
 
-  
   it("closes PdfViewer and revokes blob url", async () => {
     const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
     render(

@@ -10,7 +10,7 @@ describe("renderPageToCanvas", () => {
     const canvas = document.createElement("canvas");
     const scaleSpy = vi.fn();
     const renderSpy = vi.fn().mockReturnValue({ promise: Promise.resolve() });
-    (canvas as any).getContext = () => ({ scale: scaleSpy } as unknown as CanvasRenderingContext2D);
+    (canvas as any).getContext = () => ({ scale: scaleSpy }) as unknown as CanvasRenderingContext2D;
 
     const page = {
       getViewport: () => ({ width: 100, height: 150 }),
@@ -29,7 +29,7 @@ describe("renderPageToCanvas", () => {
     const canvas = document.createElement("canvas");
     const scaleSpy = vi.fn();
     const renderSpy = vi.fn().mockReturnValue({ promise: Promise.resolve() });
-    (canvas as any).getContext = () => ({ scale: scaleSpy } as unknown as CanvasRenderingContext2D);
+    (canvas as any).getContext = () => ({ scale: scaleSpy }) as unknown as CanvasRenderingContext2D;
 
     const page = {
       getViewport: ({ scale }: { scale: number }) => ({ width: 200 * scale, height: 300 * scale }),
@@ -61,7 +61,7 @@ describe("renderPageToCanvas", () => {
     const orig = window.devicePixelRatio;
     vi.stubGlobal("devicePixelRatio", undefined);
     const canvas = document.createElement("canvas");
-    (canvas as any).getContext = () => ({ scale: vi.fn() } as unknown as CanvasRenderingContext2D);
+    (canvas as any).getContext = () => ({ scale: vi.fn() }) as unknown as CanvasRenderingContext2D;
 
     const page = {
       getViewport: () => ({ width: 50, height: 50 }),

@@ -10,11 +10,12 @@ vi.mock("pdfjs-dist/legacy/build/pdf.mjs", () => ({
   getDocument: vi.fn().mockReturnValue({
     promise: Promise.resolve({
       numPages: 2,
-      getPage: () => Promise.resolve({
-        getViewport: () => ({ width: 595, height: 842 }),
-        render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
-        cleanup: vi.fn(),
-      }),
+      getPage: () =>
+        Promise.resolve({
+          getViewport: () => ({ width: 595, height: 842 }),
+          render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
+          cleanup: vi.fn(),
+        }),
     }),
     destroy: vi.fn(),
   }),

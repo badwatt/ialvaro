@@ -22,11 +22,7 @@ export function PdfCanvas({ src }: PdfCanvasProps) {
   if (!src) return null;
 
   if (error) {
-    return (
-      <div className="grid h-full place-items-center text-alvaro-muted">
-        {error}
-      </div>
-    );
+    return <div className="grid h-full place-items-center text-alvaro-muted">{error}</div>;
   }
 
   return (
