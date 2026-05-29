@@ -162,7 +162,7 @@ describe("<CV />", () => {
     consoleSpy.mockRestore();
   });
 
-  it("shows captcha toast when verification fails", async () => {
+  it("shows captcha toast and does not open modal when verification fails", async () => {
     setupFetchMock(false);
     render(
       <CV
@@ -180,6 +180,7 @@ describe("<CV />", () => {
     await waitFor(() => {
       expect(screen.getByText(/Captcha verification failed/i)).toBeDefined();
     });
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("closes PdfViewer and revokes blob url", async () => {

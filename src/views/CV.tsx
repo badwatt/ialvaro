@@ -20,6 +20,7 @@ export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
 
   const handleOpen = async (token: string) => {
     setLoading(true);
+    let verified = false;
     try {
       const verifyRes = await fetch("/api/cap/verify", {
         method: "POST",
@@ -28,10 +29,9 @@ export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
       });
       if (!verifyRes.ok) {
         toast.error("Captcha verification failed. Please try again.");
-        setShowCaptcha(false);
-        setLoading(false);
         return;
       }
+      verified = true;
       const url = await generateCV(experienceData, aboutData, skillsData);
       setPdfUrl(url);
       setShowViewer(true);
