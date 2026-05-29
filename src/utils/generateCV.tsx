@@ -382,11 +382,10 @@ export async function generateAndOpenCV(
   if (aboutData[0]?.email) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.setTextColor(...C.primary);
-    doc.text("@", M + 3.5, sy + 9);
+    doc.setTextColor(...C.muted);
+    doc.text("@", M + ICON / 2, sy + ICON - 1, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.setTextColor(...C.muted);
     doc.textWithLink(aboutData[0].email, M + ICON + 4, sy + 8, {
       url: `mailto:${aboutData[0].email}`,
     });
