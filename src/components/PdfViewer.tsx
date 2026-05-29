@@ -1,4 +1,4 @@
-import { X, Download } from "@phosphor-icons/react";
+import { XIcon, DownloadIcon } from "@phosphor-icons/react";
 import { Modal } from "./Modal";
 import { PdfCanvas } from "./PdfCanvas";
 
@@ -24,7 +24,7 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
               className="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
               aria-label="Download CV"
             >
-              <Download size={20} weight="bold" />
+              <DownloadIcon size={20} weight="bold" />
             </a>
             <button
               type="button"
@@ -32,7 +32,7 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
               className="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
               aria-label="Close preview"
             >
-              <X size={20} weight="bold" />
+              <XIcon size={20} weight="bold" />
             </button>
           </div>
         </header>
