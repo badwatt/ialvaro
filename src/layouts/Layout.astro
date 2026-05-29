@@ -1,6 +1,5 @@
 ---
-import "@fontsource-variable/outfit";
-import "@fontsource-variable/jetbrains-mono";
+import { Font } from "astro:assets";
 import "src/styles/globals.css";
 import { Nav } from "src/components/Nav";
 import { Footer } from "src/components/Footer";
@@ -23,6 +22,8 @@ import { DynamicTitle } from "src/utils/DynamicTitle";
 		<meta property="og:type" content="website" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		<Font cssVariable="--font-outfit" />
+		<Font cssVariable="--font-jetbrains" />
 		<DynamicTitle client:load />
 		<script is:inline>
 			const t = localStorage.getItem('theme');

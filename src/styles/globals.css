@@ -9,6 +9,8 @@
   --color-alvaro-primary: #5b9bd5;
   --color-alvaro-dark: #08080f;
   --color-alvaro-accent: #e0556a;
+  --font-sans: var(--font-outfit), sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
 }
 
 /* Light theme */
@@ -31,7 +33,7 @@
 
 * {
   -webkit-tap-highlight-color: transparent;
-  font-family: "Outfit Variable", "Outfit", sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
