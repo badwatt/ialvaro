@@ -21,5 +21,5 @@ export async function renderPageToCanvas(
   if (!ctx) return;
   ctx.scale(dpr, dpr);
 
-  await page.render({ canvasContext: ctx, viewport }).promise;
+  await page.render({ canvasContext: ctx, canvas, viewport }).promise;
 }

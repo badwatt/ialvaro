@@ -197,7 +197,7 @@ describe("usePdfPages", () => {
 describe("loadPdfPages", () => {
   it("renders zero pages", async () => {
     const pdf = { numPages: 0, getPage: vi.fn() };
-    const task = createMockTask(pdf as any);
+    const task = createMockTask(pdf as any) as any;
     const renderPage = vi.fn().mockResolvedValue(undefined);
     const container = document.createElement("div");
 
@@ -209,7 +209,7 @@ describe("loadPdfPages", () => {
 
   it("renders all pages into container", async () => {
     const pdf = createMockPdf(3);
-    const task = createMockTask(pdf);
+    const task = createMockTask(pdf) as any;
     const renderPage = vi.fn().mockResolvedValue(undefined);
     const container = document.createElement("div");
 
@@ -224,7 +224,7 @@ describe("loadPdfPages", () => {
 
   it("clears previous container content", async () => {
     const pdf = createMockPdf(1);
-    const task = createMockTask(pdf);
+    const task = createMockTask(pdf) as any;
     const container = document.createElement("div");
     container.appendChild(document.createElement("span"));
 
