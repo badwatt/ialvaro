@@ -157,10 +157,10 @@ exports[`<Home /> > matches snapshot 1`] = `
         Building interfaces that move.
       </p>
       <div
-        class="flex gap-4 justify-center md:justify-start pt-2 transition-all duration-700 delay-700 opacity-0 translate-y-4 "
+        class="flex gap-4 justify-center md:justify-start pt-2 transition-all duration-700 delay-700 opacity-0 translate-y-4"
       >
         <a
-          class="group relative px-8 py-3.5 bg-alvaro-primary text-alvaro-dark font-semibold rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.97] hover:shadow-[0_0_30px_-5px_rgba(91,155,213,0.3)] "
+          class="group relative px-8 py-3.5 bg-alvaro-primary text-alvaro-dark font-semibold rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.97] hover:shadow-[0_0_30px_-5px_rgba(91,155,213,0.3)]"
           href="#portfolio"
         >
           <span
