@@ -35,15 +35,17 @@ const about = defineCollection({
       z.object({
         language: z.string(),
         level: z.string(),
-      })
+      }),
     ),
-    education: z.array(
-      z.object({
-        institution: z.string(),
-        degree: z.string(),
-        year: z.string().optional(),
-      })
-    ).optional(),
+    education: z
+      .array(
+        z.object({
+          institution: z.string(),
+          degree: z.string(),
+          year: z.string().optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 

@@ -8,35 +8,83 @@ vi.mock("src/utils/generateCV", () => ({
   generateAndOpenCV: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("src/components/CapWidget", () => {
+  const React = require("react");
+  return {
+    CapWidget: ({ onVerified }: { onVerified?: (token: string) => void }) => {
+      return React.createElement(
+        "button",
+        { type: "button", onClick: () => onVerified?.("test-token") },
+        "Verify",
+      );
+    },
+  };
+});
+
+function setupFetchMock(ok = true) {
+  global.fetch = vi.fn().mockImplementation((url: string) => {
+    if (url === "/api/cap/verify") {
+      return Promise.resolve({ ok, json: () => Promise.resolve({ ok }) });
+    }
+    return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+  });
+}
+
 describe("<Home />", () => {
   let observer: ReturnType<typeof createObserverMock>;
 
   beforeEach(() => {
     observer = createObserverMock();
+    setupFetchMock();
+    vi.clearAllMocks();
   });
   afterEach(cleanup);
 
   it("should render hero name with scramble wobble", () => {
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     expect(screen.getByLabelText("ALVARO")).toBeDefined();
     expect(screen.getByLabelText("GARCIA")).toBeDefined();
     expect(screen.getByLabelText("MACIAS")).toBeDefined();
   });
 
   it("should render CTAs", () => {
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     expect(screen.getByText("View work")).toBeDefined();
     expect(screen.getByText("CV")).toBeDefined();
   });
 
   it("should render tagline", () => {
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     expect(screen.getByText("Full Stack Developer")).toBeDefined();
     expect(screen.getByText(/Building interfaces that move/i)).toBeDefined();
   });
 
   it("updates parallax on scroll", () => {
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     vi.spyOn(window, "scrollY", "get").mockReturnValue(500);
     act(() => {
       window.dispatchEvent(new Event("scroll"));
@@ -47,7 +95,13 @@ describe("<Home />", () => {
   });
 
   it("reveals tagline when visible", () => {
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     const tagline = screen.getByText(/Building interfaces that move/i).closest("p");
     expect(tagline?.className).toContain("opacity-0");
     act(() => {
@@ -56,11 +110,36 @@ describe("<Home />", () => {
     expect(tagline?.className).toContain("opacity-100");
   });
 
-  it("opens CV via generateAndOpenCV", async () => {
-    const { generateAndOpenCV } = await import("src/utils/generateCV");
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+  it("shows captcha widget after clicking CV", () => {
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    expect(screen.getByText("CV")).toBeDefined();
     act(() => {
       screen.getByText("CV").click();
+    });
+    expect(screen.queryByText("CV")).toBeNull();
+    expect(screen.getByText("Verify")).toBeDefined();
+  });
+
+  it("opens CV via generateAndOpenCV after captcha resolves", async () => {
+    const { generateAndOpenCV } = await import("src/utils/generateCV");
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
     });
     await waitFor(() => {
       expect(generateAndOpenCV).toHaveBeenCalled();
@@ -70,11 +149,20 @@ describe("<Home />", () => {
   it("shows generating state while loading", async () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     vi.mocked(generateAndOpenCV).mockImplementationOnce(
-      () => new Promise((r) => setTimeout(r, 50))
+      () => new Promise((r) => setTimeout(r, 50)),
     );
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
     });
     expect(await screen.findByText("Generating...")).toBeDefined();
     await screen.findByText("CV");
@@ -84,9 +172,18 @@ describe("<Home />", () => {
     const { generateAndOpenCV } = await import("src/utils/generateCV");
     vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
     });
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
@@ -94,8 +191,34 @@ describe("<Home />", () => {
     consoleSpy.mockRestore();
   });
 
+  it("shows captcha toast when verification fails", async () => {
+    setupFetchMock(false);
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
+    });
+    await waitFor(() => {
+      expect(screen.getByText(/Captcha verification failed/i)).toBeDefined();
+    });
+  });
+
   it("matches snapshot", () => {
-    const { container } = render(<Home experienceData={testExperienceData} aboutData={testAboutData} skillsData={testSkillsData} />);
+    const { container } = render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
     expect(container).toMatchSnapshot();
   });
 });

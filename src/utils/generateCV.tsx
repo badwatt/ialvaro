@@ -34,7 +34,11 @@ export async function loadImage(url: string): Promise<string> {
   });
 }
 
-export async function loadImageToPng(url: string, width: number, height: number): Promise<string | null> {
+export async function loadImageToPng(
+  url: string,
+  width: number,
+  height: number,
+): Promise<string | null> {
   if (typeof document === "undefined") return Promise.resolve(null);
   try {
     const base64 = await loadImage(url);
@@ -47,7 +51,10 @@ export async function loadImageToPng(url: string, width: number, height: number)
         canvas.width = width * 4;
         canvas.height = height * 4;
         const ctx = canvas.getContext("2d");
-        if (!ctx) { resolve(null); return; }
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         resolve(canvas.toDataURL("image/png"));
@@ -71,7 +78,10 @@ export function toCircular(base64: string, size: number, scale = 4): Promise<str
       canvas.width = px;
       canvas.height = px;
       const ctx = canvas.getContext("2d");
-      if (!ctx) { resolve(null); return; }
+      if (!ctx) {
+        resolve(null);
+        return;
+      }
       ctx.beginPath();
       ctx.arc(px / 2, px / 2, px / 2, 0, Math.PI * 2);
       ctx.closePath();
@@ -91,14 +101,16 @@ export function parseDescription(raw: string): { title: string; content: string 
   let currentContent: string[] = [];
   for (const line of lines) {
     if (line.startsWith("# ")) {
-      if (currentTitle) sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
+      if (currentTitle)
+        sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
       currentTitle = line.replace("# ", "").trim();
       currentContent = [];
     } else if (currentTitle) {
       currentContent.push(line);
     }
   }
-  if (currentTitle) sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
+  if (currentTitle)
+    sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
   return sections;
 }
 
@@ -113,9 +125,20 @@ function sectionTitle(doc: any, label: string, x: number, y: number): number {
   return y + 18;
 }
 
-function tag(doc: any, label: string, x: number, y: number, featured: boolean, baseX: number, maxX: number): { x: number; y: number } {
+function tag(
+  doc: any,
+  label: string,
+  x: number,
+  y: number,
+  featured: boolean,
+  baseX: number,
+  maxX: number,
+): { x: number; y: number } {
   const tw = doc.getTextWidth(label) + 16;
-  if (x + tw > baseX + maxX) { x = baseX; y += 22; }
+  if (x + tw > baseX + maxX) {
+    x = baseX;
+    y += 22;
+  }
   if (featured) {
     doc.setFillColor(...C.accent);
     doc.roundedRect(x, y - 10, tw, 15, 2, 2, "F");
@@ -147,7 +170,15 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   return h;
 }
 
-function drawJob(doc: any, job: ExperienceEntry, x: number, w: number, timelineX: number, startY: number, logo: string | null): number {
+function drawJob(
+  doc: any,
+  job: ExperienceEntry,
+  x: number,
+  w: number,
+  timelineX: number,
+  startY: number,
+  logo: string | null,
+): number {
   const sections = parseDescription(job.description);
   const cardH = measureExperience(doc, job, w);
   const LOGO = 16;
@@ -171,7 +202,9 @@ function drawJob(doc: any, job: ExperienceEntry, x: number, w: number, timelineX
   if (logo) {
     try {
       doc.addImage(logo, "PNG", x, y - LOGO + 2, LOGO, LOGO);
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
@@ -240,7 +273,11 @@ function drawFooter(doc: any, profileAltImg: string | null) {
   doc.text(yearStr, yearX, textY);
 
   if (profileAltImg) {
-    try { doc.addImage(profileAltImg, "PNG", imgX, imgY, imgSize, imgSize); } catch { /* noop */ }
+    try {
+      doc.addImage(profileAltImg, "PNG", imgX, imgY, imgSize, imgSize);
+    } catch {
+      /* noop */
+    }
   }
 }
 
@@ -256,7 +293,9 @@ export async function generateAndOpenCV(
   aboutData: AboutEntry[],
   skillsData: SkillEntry[],
 ): Promise<void> {
-  const sortedExperience = [...experienceData].sort((a, b) => parseDate(b.date_from) - parseDate(a.date_from));
+  const sortedExperience = [...experienceData].sort(
+    (a, b) => parseDate(b.date_from) - parseDate(a.date_from),
+  );
   const featuredSkills = skillsData.filter((s) => s.featured).map((s) => s.title);
   const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 
@@ -286,7 +325,10 @@ export async function generateAndOpenCV(
   const LOGO = 16;
   const expLogos: (string | null)[] = [];
   for (const raw of expRaws) {
-    if (!raw) { expLogos.push(null); continue; }
+    if (!raw) {
+      expLogos.push(null);
+      continue;
+    }
     const logo = await loadImageToPng(raw, LOGO, LOGO);
     expLogos.push(logo);
   }
@@ -331,23 +373,37 @@ export async function generateAndOpenCV(
       doc.setLineWidth(1.5);
       doc.ellipse(imgX + PROFILE / 2, sy + PROFILE / 2, PROFILE / 2, PROFILE / 2, "S");
       sy += PROFILE + 24;
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }
 
   // Social links
   if (githubIcon) {
-    try { doc.addImage(githubIcon, "PNG", M, sy, ICON, ICON); } catch { /* noop */ }
+    try {
+      doc.addImage(githubIcon, "PNG", M, sy, ICON, ICON);
+    } catch {
+      /* noop */
+    }
   }
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
-  doc.textWithLink("github.com/badwatt", M + ICON + 4, sy + 8, { url: "https://github.com/badwatt" });
+  doc.textWithLink("github.com/badwatt", M + ICON + 4, sy + 8, {
+    url: "https://github.com/badwatt",
+  });
   sy += 16;
 
   if (linkedinIcon) {
-    try { doc.addImage(linkedinIcon, "PNG", M, sy, ICON, ICON); } catch { /* noop */ }
+    try {
+      doc.addImage(linkedinIcon, "PNG", M, sy, ICON, ICON);
+    } catch {
+      /* noop */
+    }
   }
-  doc.textWithLink("linkedin.com/in/badwatt", M + ICON + 4, sy + 8, { url: "https://linkedin.com/in/badwatt" });
+  doc.textWithLink("linkedin.com/in/badwatt", M + ICON + 4, sy + 8, {
+    url: "https://linkedin.com/in/badwatt",
+  });
   const socialBottom = sy + 12;
   sy = socialBottom + 22;
 
@@ -410,10 +466,14 @@ export async function generateAndOpenCV(
   sy = sectionTitle(doc, "SKILLS", M, sy);
   let tx = M;
   for (const s of featuredSkills) {
-    const r = tag(doc, s, tx, sy, true, M, sidebarW); tx = r.x; sy = r.y;
+    const r = tag(doc, s, tx, sy, true, M, sidebarW);
+    tx = r.x;
+    sy = r.y;
   }
   for (const s of otherSkills) {
-    const r = tag(doc, s, tx, sy, false, M, sidebarW); tx = r.x; sy = r.y;
+    const r = tag(doc, s, tx, sy, false, M, sidebarW);
+    tx = r.x;
+    sy = r.y;
   }
   sy += 20;
 

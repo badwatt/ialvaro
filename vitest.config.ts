@@ -33,7 +33,15 @@ export default mergeConfig(
       },
       coverage: {
         include: ["src/**/*.{ts,tsx}"],
-        exclude: ["src/data/**", "src/env.d.ts", "src/utils/content.ts", "src/content.config.ts", ".astro/**"],
+        exclude: [
+          "src/data/**",
+          "src/env.d.ts",
+          "src/utils/content.ts",
+          "src/content.config.ts",
+          "src/config/cap.ts",
+          "src/components/CapWidget.tsx",
+          ".astro/**",
+        ],
       },
     },
   }),

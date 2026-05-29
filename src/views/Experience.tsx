@@ -36,9 +36,7 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
           <div className="space-y-4 text-alvaro-muted leading-relaxed">
             {sections.map((sec, i) => (
               <div key={i}>
-                <h4 className="text-base font-medium text-alvaro-white mb-1">
-                  {sec.title}
-                </h4>
+                <h4 className="text-base font-medium text-alvaro-white mb-1">{sec.title}</h4>
                 <p className="text-sm whitespace-pre-line">{sec.content}</p>
               </div>
             ))}

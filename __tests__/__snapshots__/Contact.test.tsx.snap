@@ -45,6 +45,37 @@ exports[`<Contact /> > matches snapshot 1`] = `
             class="go3958317564"
             role="status"
           >
+            Captcha verification failed. Please try again.
+          </div>
+        </div>
+      </div>
+      <div
+        class="go4109123758"
+        style="left: 0px; right: 0px; display: flex; position: absolute; transition: all 230ms cubic-bezier(.21,1.02,.73,1); transform: translateY(0px); bottom: 0px; justify-content: flex-end;"
+      >
+        <div
+          class="go2072408551"
+          style="opacity: 0; background: var(--color-alvaro-surface); color: var(--color-alvaro-white); border: 1px solid; border-width: var(--color-alvaro-border); border-style: var(--color-alvaro-border); border-color: var(--color-alvaro-border);"
+        >
+          <div
+            class="go685806154"
+          >
+            <div
+              class="go1858758034"
+            />
+            <div
+              class="go1579819456"
+            >
+              <div
+                class="go2534082608"
+              />
+            </div>
+          </div>
+          <div
+            aria-live="polite"
+            class="go3958317564"
+            role="status"
+          >
             Message failed to send. Please try again.
           </div>
         </div>
@@ -152,8 +183,8 @@ exports[`<Contact /> > matches snapshot 1`] = `
         </div>
         <button
           aria-label="submit"
-          class="flex items-center justify-center gap-2 p-4 mt-2 rounded-lg bg-alvaro-primary text-alvaro-dark font-medium cursor-pointer hover:opacity-90 transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-          type="submit"
+          class="flex items-center justify-center gap-2 p-4 mt-2 rounded-lg bg-alvaro-primary text-alvaro-dark font-medium cursor-pointer hover:opacity-90 transition-all duration-200 active:scale-[0.98]"
+          type="button"
         >
           Send message
           <svg

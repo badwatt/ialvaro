@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ScrambleWobble } from "src/components/ScrambleWobble";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
 import { generateAndOpenCV } from "src/utils/generateCV";
+import { CapWidget } from "src/components/CapWidget";
+import toast, { Toaster } from "react-hot-toast";
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
 interface HomeProps {
@@ -13,6 +15,7 @@ interface HomeProps {
 export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -23,14 +26,26 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleOpenCV = async () => {
+  const handleOpenCV = async (token: string) => {
     setLoading(true);
     try {
+      const verifyRes = await fetch("/api/cap/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (!verifyRes.ok) {
+        toast.error("Captcha verification failed. Please try again.");
+        setShowCaptcha(false);
+        setLoading(false);
+        return;
+      }
       await generateAndOpenCV(experienceData, aboutData, skillsData);
     } catch (err) {
       console.error("CV generation failed:", err);
     } finally {
       setLoading(false);
+      setShowCaptcha(false);
     }
   };
 
@@ -39,6 +54,16 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
       id="home"
       className="relative min-h-[100dvh] grid md:grid-cols-[1.4fr_1fr] items-center justify-items-center md:justify-items-start gap-8 md:gap-16 px-4 md:px-0 overflow-hidden"
     >
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: "var(--color-alvaro-surface)",
+            color: "var(--color-alvaro-white)",
+            border: "1px solid var(--color-alvaro-border)",
+          },
+        }}
+      />
       <div id="home-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="mesh-blob absolute top-0 -left-1/4 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full bg-alvaro-primary/6 blur-[140px]" />
@@ -85,14 +110,33 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <span className="relative">View work</span>
           </a>
-          <button
-            type="button"
-            onClick={handleOpenCV}
-            disabled={loading}
-            className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer disabled:opacity-60"
-          >
-            {loading ? "Generating..." : "CV"}
-          </button>
+          {(() => {
+            if (!showCaptcha) {
+              return (
+                <button
+                  type="button"
+                  onClick={() => setShowCaptcha(true)}
+                  className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer"
+                >
+                  CV
+                </button>
+              );
+            }
+            if (loading) {
+              return (
+                <span className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl">
+                  Generating...
+                </span>
+              );
+            }
+            return (
+              <CapWidget
+                onVerified={(token) => {
+                  handleOpenCV(token);
+                }}
+              />
+            );
+          })()}
         </div>
       </div>
 

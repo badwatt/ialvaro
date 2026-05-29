@@ -93,19 +93,25 @@ function setupDOMMocks(imageBehavior: "load" | "error" = "load") {
   });
 
   if (imageBehavior === "load") {
-    vi.stubGlobal("Image", class {
-      onload: (() => void) | null = null;
-      constructor() {
-        setTimeout(() => this.onload?.(), 0);
-      }
-    });
+    vi.stubGlobal(
+      "Image",
+      class {
+        onload: (() => void) | null = null;
+        constructor() {
+          setTimeout(() => this.onload?.(), 0);
+        }
+      },
+    );
   } else {
-    vi.stubGlobal("Image", class {
-      onerror: (() => void) | null = null;
-      constructor() {
-        setTimeout(() => this.onerror?.(), 0);
-      }
-    });
+    vi.stubGlobal(
+      "Image",
+      class {
+        onerror: (() => void) | null = null;
+        constructor() {
+          setTimeout(() => this.onerror?.(), 0);
+        }
+      },
+    );
   }
 }
 
@@ -136,21 +142,27 @@ function setupDOMMocksNullCtx() {
       return null;
     },
   });
-  vi.stubGlobal("Image", class {
-    onload: (() => void) | null = null;
-    constructor() {
-      setTimeout(() => this.onload?.(), 0);
-    }
-  });
+  vi.stubGlobal(
+    "Image",
+    class {
+      onload: (() => void) | null = null;
+      constructor() {
+        setTimeout(() => this.onload?.(), 0);
+      }
+    },
+  );
 }
 
 function stubImageToLoad() {
-  vi.stubGlobal("Image", class {
-    onload: (() => void) | null = null;
-    constructor() {
-      setTimeout(() => this.onload?.(), 0);
-    }
-  });
+  vi.stubGlobal(
+    "Image",
+    class {
+      onload: (() => void) | null = null;
+      constructor() {
+        setTimeout(() => this.onload?.(), 0);
+      }
+    },
+  );
 }
 
 // ── Tests ──
@@ -355,12 +367,14 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const minimalAbout = [{
-      email: "a@b.com",
-      languages: [],
-      education: [{ institution: "Uni", degree: "BS" }],
-      bio: "short bio",
-    }];
+    const minimalAbout = [
+      {
+        email: "a@b.com",
+        languages: [],
+        education: [{ institution: "Uni", degree: "BS" }],
+        bio: "short bio",
+      },
+    ];
     const exp = [
       {
         id: "3",
@@ -395,12 +409,14 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const noEduAbout = [{
-      email: "a@b.com",
-      languages: [],
-      education: [],
-      bio: "short bio",
-    }];
+    const noEduAbout = [
+      {
+        email: "a@b.com",
+        languages: [],
+        education: [],
+        bio: "short bio",
+      },
+    ];
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     await generateAndOpenCV(testExperienceData, noEduAbout, testSkillsData);

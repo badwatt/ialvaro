@@ -1,13 +1,14 @@
 import { type ChangeEvent, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
-import { Spinner } from "src/components/Spinner";
+import { CapWidget } from "src/components/CapWidget";
 import { PaperPlaneTiltIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import toast, { Toaster } from "react-hot-toast";
 
 export const Contact = () => {
-  const form = useRef(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
+  const [_isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [data, setData] = useState({
     name: "",
@@ -41,15 +42,29 @@ export const Contact = () => {
     }
   };
 
-  const sendEmail = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleClickSend = () => {
     if (!validate()) return;
+    setShowCaptcha(true);
+  };
+
+  const doSubmit = async (token: string) => {
     setIsSubmitting(true);
     try {
+      const verifyRes = await fetch("/api/cap/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (!verifyRes.ok) {
+        toast.error("Captcha verification failed. Please try again.");
+        setShowCaptcha(false);
+        setIsSubmitting(false);
+        return;
+      }
       await emailjs.sendForm(
         import.meta.env.PUBLIC_SERVICE_ID,
         import.meta.env.PUBLIC_TEMPLATE_ID,
-        form.current as unknown as HTMLFormElement,
+        form.current!,
         import.meta.env.PUBLIC_PUBLIC_KEY,
       );
       setIsSubmitted(true);
@@ -88,7 +103,7 @@ export const Contact = () => {
               <br /> Drop a message.
             </p>
           </div>
-          <form ref={form} onSubmit={sendEmail} className="grid gap-4">
+          <form ref={form} className="grid gap-4">
             <div className="grid gap-2">
               <label htmlFor="contact-name" className="text-sm font-medium text-alvaro-muted">
                 Name
@@ -168,21 +183,25 @@ export const Contact = () => {
               )}
             </div>
 
-            <button
-              className="flex items-center justify-center gap-2 p-4 mt-2 rounded-lg bg-alvaro-primary text-alvaro-dark font-medium cursor-pointer hover:opacity-90 transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-              type="submit"
-              aria-label="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Spinner />
-              ) : (
-                <>
-                  Send message
-                  <PaperPlaneTiltIcon size={20} weight="bold" />
-                </>
-              )}
-            </button>
+            {showCaptcha && (
+              <CapWidget
+                onVerified={(token) => {
+                  doSubmit(token);
+                }}
+              />
+            )}
+
+            {!showCaptcha && (
+              <button
+                type="button"
+                onClick={handleClickSend}
+                aria-label="submit"
+                className="flex items-center justify-center gap-2 p-4 mt-2 rounded-lg bg-alvaro-primary text-alvaro-dark font-medium cursor-pointer hover:opacity-90 transition-all duration-200 active:scale-[0.98]"
+              >
+                Send message
+                <PaperPlaneTiltIcon size={20} weight="bold" />
+              </button>
+            )}
           </form>
         </section>
       ) : (

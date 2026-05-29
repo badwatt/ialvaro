@@ -1,7 +1,19 @@
 export const testSkillsData = [
-  { id: "0", title: "react.js", image: "/skills/react.svg", url: "https://react.dev/", featured: true },
+  {
+    id: "0",
+    title: "react.js",
+    image: "/skills/react.svg",
+    url: "https://react.dev/",
+    featured: true,
+  },
   { id: "1", title: "vue.js", image: "/skills/vue.svg", url: "https://vuejs.org/" },
-  { id: "2", title: "typescript", image: "/skills/typescript.svg", url: "https://typescriptlang.org/", featured: true },
+  {
+    id: "2",
+    title: "typescript",
+    image: "/skills/typescript.svg",
+    url: "https://typescriptlang.org/",
+    featured: true,
+  },
 ];
 
 export const testExperienceData = [
@@ -12,7 +24,8 @@ export const testExperienceData = [
     date_from: "June 2023",
     date_to: "now",
     url: "https://openbank.es/",
-    description: "# Consulting Firm\n\n- Knowmad Mood\n- Plexus\n\n# Projects\n\n- Onboarding\n- Customer",
+    description:
+      "# Consulting Firm\n\n- Knowmad Mood\n- Plexus\n\n# Projects\n\n- Onboarding\n- Customer",
   },
   {
     id: "1",
@@ -21,7 +34,8 @@ export const testExperienceData = [
     date_from: "October 2021",
     date_to: "April 2023",
     url: "https://grupocajarural.es/",
-    description: "# Consulting Firm\n\n- Devoteam\n\n# Projects\n\n- Onboarding\n- Customer\n\n# Tasks\n\n- Web application development\n\n# Skills\n\nvue.js, react.js",
+    description:
+      "# Consulting Firm\n\n- Devoteam\n\n# Projects\n\n- Onboarding\n- Customer\n\n# Tasks\n\n- Web application development\n\n# Skills\n\nvue.js, react.js",
   },
 ];
 
@@ -51,7 +65,11 @@ export const testAboutData = [
       { language: "English", level: "Professional" },
     ],
     education: [
-      { institution: "Universidad Complutense de Madrid", degree: "Bachelor in Computer Science", year: "2018" },
+      {
+        institution: "Universidad Complutense de Madrid",
+        degree: "Bachelor in Computer Science",
+        year: "2018",
+      },
     ],
     bio: "I feel very fortunate to have found what I am passionate about and to make it my job.\nI have also worked managing, training and leading marketing teams at a national level.\nIf there is one thing that characterises me, it is that I am 100% involved in everything I do.\nI am hard-working, perfectionist and non-conformist.\nI have a direct and creative working style. And I put all the energy I get from working in what I am so enthusiastic about.",
   },

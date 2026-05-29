@@ -19,9 +19,7 @@ export const Accordion = ({ items, defaultOpenId, timeline }: Props) => {
 
   return (
     <div className={timeline ? "relative pl-10" : "space-y-3"}>
-      {timeline && (
-        <div className="absolute left-4 top-6 bottom-6 w-px bg-alvaro-border" />
-      )}
+      {timeline && <div className="absolute left-4 top-6 bottom-6 w-px bg-alvaro-border" />}
       {items.map((item) => {
         const isOpen = openId === item.id;
         const card = (
