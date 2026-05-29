@@ -428,6 +428,29 @@ describe("generateAndOpenCV", () => {
     openSpy.mockRestore();
   });
 
+  it("handles missing email", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const noEmailAbout = [
+      {
+        email: "",
+        location: "",
+        languages: [],
+        education: [],
+        bio: "short bio",
+      },
+    ];
+
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    await generateAndOpenCV(testExperienceData, noEmailAbout, testSkillsData);
+
+    expect(mockRegistry.output).toHaveBeenCalledWith("blob");
+    expect(openSpy).toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
   it("adds a second page when experience overflows", async () => {
     setupFetchMock();
     setupFileReaderMock();
