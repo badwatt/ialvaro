@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import { PdfCanvas } from "src/components/PdfCanvas";
 
-vi.mock("pdfjs-dist", () => ({
+vi.mock("pdfjs-dist/legacy/build/pdf.mjs", () => ({
   getDocument: vi.fn().mockReturnValue({
     promise: Promise.resolve({
       numPages: 2,
@@ -62,7 +62,7 @@ describe("PdfCanvas", () => {
   });
 
   it("shows error on load failure", async () => {
-    const { getDocument } = await import("pdfjs-dist");
+    const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
     vi.mocked(getDocument).mockReturnValueOnce({
       promise: Promise.reject(new Error("fail")),
       destroy: vi.fn(),
