@@ -1,8 +1,8 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { Skills } from "src/views/Skills";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createObserverMock } from "./helpers/observerMock";
-import { testSkillsData } from "./fixtures";
+import { createObserverMock } from "../helpers/observerMock";
+import { testSkillsData } from "../fixtures";
 
 describe("<Skills />", () => {
   let observer: ReturnType<typeof createObserverMock>;

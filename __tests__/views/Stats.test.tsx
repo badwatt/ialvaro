@@ -1,8 +1,8 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { Stats } from "src/views/Stats";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mockIntersectionObserver } from "./mocks/IntersectionObserver.tsx";
-import { testExperienceData, testPortfolioData, testSkillsData } from "./fixtures";
+import { mockIntersectionObserver } from "../mocks/IntersectionObserver.tsx";
+import { testExperienceData, testPortfolioData, testSkillsData } from "../fixtures";
 
 describe("<Stats />", () => {
   beforeEach(() => {

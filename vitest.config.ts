@@ -8,15 +8,8 @@ export default mergeConfig(
     test: {
       globals: true,
       environment: "happy-dom",
+      include: ["__tests__/**/*.test.{ts,tsx}"],
       setupFiles: ["__tests__/setup.ts"],
-      projects: [
-        {
-          extends: true,
-          test: {
-            environment: "happy-dom",
-          },
-        },
-      ],
       alias: {
         src: path.resolve(__dirname, "./src"),
       },

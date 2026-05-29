@@ -1,8 +1,8 @@
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { Home } from "src/views/Home";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createObserverMock } from "./helpers/observerMock";
-import { testExperienceData, testAboutData, testSkillsData } from "./fixtures";
+import { createObserverMock } from "../helpers/observerMock";
+import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
 vi.mock("src/utils/generateCV", () => ({
   generateAndOpenCV: vi.fn().mockResolvedValue(undefined),

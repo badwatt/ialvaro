@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor, act } from "@testing-library/react";
 import { CV } from "src/views/CV";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { testExperienceData, testAboutData, testSkillsData } from "./fixtures";
+import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
 vi.mock("src/utils/generateCV", () => ({
   generateAndOpenCV: vi.fn().mockResolvedValue(undefined),
