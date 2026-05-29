@@ -185,11 +185,11 @@ describe("parseDate", () => {
 
 describe("getBioText", () => {
   it("uses id 3 bio when present", () => {
-    expect(getBioText([{ id: "3", bio: "test" }])).toBe("test");
+    expect(getBioText([{ email: "", location: "", languages: [], bio: "test" }])).toBe("test");
   });
 
   it("falls back to first bio when id 3 missing", () => {
-    expect(getBioText([{ id: "1", bio: "fb" }])).toBe("fb");
+    expect(getBioText([{ email: "", location: "", languages: [], bio: "fb" }])).toBe("fb");
   });
 
   it("falls back to empty string when no data", () => {
@@ -370,6 +370,7 @@ describe("generateAndOpenCV", () => {
     const minimalAbout = [
       {
         email: "a@b.com",
+        location: "",
         languages: [],
         education: [{ institution: "Uni", degree: "BS" }],
         bio: "short bio",
@@ -412,6 +413,7 @@ describe("generateAndOpenCV", () => {
     const noEduAbout = [
       {
         email: "a@b.com",
+        location: "",
         languages: [],
         education: [],
         bio: "short bio",

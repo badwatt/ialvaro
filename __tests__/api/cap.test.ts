@@ -22,7 +22,9 @@ describe("POST /api/cap/verify", () => {
     global.fetch = vi.fn().mockResolvedValue({
       json: () => Promise.resolve({ success: true }),
     });
-    const res = await POST({ request: createMockRequest({ token: "tok" }) });
+    const res = await POST({
+      request: createMockRequest({ token: "tok" }),
+    } as unknown as Parameters<typeof POST>[0]);
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
   });
@@ -31,7 +33,9 @@ describe("POST /api/cap/verify", () => {
     global.fetch = vi.fn().mockResolvedValue({
       json: () => Promise.resolve({ success: false }),
     });
-    const res = await POST({ request: createMockRequest({ token: "tok" }) });
+    const res = await POST({
+      request: createMockRequest({ token: "tok" }),
+    } as unknown as Parameters<typeof POST>[0]);
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ ok: false });
   });
