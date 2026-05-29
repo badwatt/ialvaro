@@ -1,0 +1,82 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PdfViewer > snapshot 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-alvaro-base/80 backdrop-blur-md transition-opacity duration-300"
+    data-testid="modal-backdrop"
+  >
+    <div
+      aria-label="CV preview"
+      aria-modal="true"
+      class="relative z-[61] overflow-hidden bg-alvaro-surface outline-none h-full w-full rounded-none md:h-[85vh] md:w-[90vw] md:rounded-3xl md:border md:border-alvaro-border md:shadow-2xl md:shadow-alvaro-primary/10 "
+      data-testid="modal-panel"
+      role="dialog"
+      tabindex="-1"
+    >
+      <div
+        class="flex h-full flex-col"
+      >
+        <header
+          class="flex shrink-0 items-center justify-between border-b border-alvaro-border px-6 py-4"
+        >
+          <h3
+            class="text-sm font-semibold uppercase tracking-wide text-alvaro-white"
+          >
+            CV Preview
+          </h3>
+          <div
+            class="flex items-center gap-3"
+          >
+            <a
+              aria-label="Download CV"
+              class="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
+              download="cv.pdf"
+              href="blob:test"
+            >
+              <svg
+                fill="currentColor"
+                height="20"
+                viewBox="0 0 256 256"
+                width="20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M71.51,88.49a12,12,0,0,1,17-17L116,99V24a12,12,0,0,1,24,0V99l27.51-27.52a12,12,0,0,1,17,17l-48,48a12,12,0,0,1-17,0ZM224,116H188a12,12,0,0,0,0,24h32v56H36V140H68a12,12,0,0,0,0-24H32a20,20,0,0,0-20,20v64a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V136A20,20,0,0,0,224,116Zm-20,52a16,16,0,1,0-16,16A16,16,0,0,0,204,168Z"
+                />
+              </svg>
+            </a>
+            <button
+              aria-label="Close preview"
+              class="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
+              type="button"
+            >
+              <svg
+                fill="currentColor"
+                height="20"
+                viewBox="0 0 256 256"
+                width="20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"
+                />
+              </svg>
+            </button>
+          </div>
+        </header>
+        <div
+          class="relative min-h-0 flex-1 overflow-hidden"
+        >
+          <div
+            data-src="blob:test"
+            data-testid="pdf-canvas"
+          >
+            PDF Canvas
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

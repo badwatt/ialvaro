@@ -2,9 +2,10 @@ import { cleanup, render, screen, waitFor, act } from "@testing-library/react";
 import { CV } from "src/views/CV";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
+import toast from "react-hot-toast";
 
 vi.mock("src/utils/generateCV", () => ({
-  generateAndOpenCV: vi.fn().mockResolvedValue(undefined),
+  generateCV: vi.fn().mockResolvedValue("blob:test"),
 }));
 
 vi.mock("src/components/CapWidget", () => {
@@ -31,11 +32,14 @@ function setupFetchMock(ok = true) {
 
 describe("<CV />", () => {
   beforeEach(() => {
+    const toaster = document.querySelector('[data-rht-toaster]');
+    if (toaster) toaster.remove();
     setupFetchMock();
   });
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    toast.remove();
   });
 
   it("renders heading", () => {
@@ -89,10 +93,10 @@ describe("<CV />", () => {
     expect(screen.getByText("Verify")).toBeDefined();
   });
 
-  it("shows generating state then returns to idle", async () => {
-    const { generateAndOpenCV } = await import("src/utils/generateCV");
-    vi.mocked(generateAndOpenCV).mockImplementationOnce(
-      () => new Promise((r) => setTimeout(r, 50)),
+  it("shows generating state then opens PdfViewer", async () => {
+    const { generateCV } = await import("src/utils/generateCV");
+    vi.mocked(generateCV).mockImplementationOnce(
+      () => new Promise((r) => setTimeout(() => r("blob:test"), 50)),
     );
     render(
       <CV
@@ -108,11 +112,13 @@ describe("<CV />", () => {
       screen.getByText("Verify").click();
     });
     expect(await screen.findByText("Generating CV...")).toBeDefined();
-    await screen.findByText("Check out my CV");
+    await waitFor(() => {
+      expect(screen.getByTestId("pdf-canvas-container")).toBeDefined();
+    });
   });
 
-  it("opens CV via generateAndOpenCV after captcha resolves", async () => {
-    const { generateAndOpenCV } = await import("src/utils/generateCV");
+  it("opens PdfViewer via generateCV after captcha resolves", async () => {
+    const { generateCV } = await import("src/utils/generateCV");
     render(
       <CV
         experienceData={testExperienceData}
@@ -127,13 +133,14 @@ describe("<CV />", () => {
       screen.getByText("Verify").click();
     });
     await waitFor(() => {
-      expect(generateAndOpenCV).toHaveBeenCalled();
+      expect(generateCV).toHaveBeenCalled();
+      expect(screen.getByRole("dialog")).toBeDefined();
     });
   });
 
   it("handles PDF generation failure gracefully", async () => {
-    const { generateAndOpenCV } = await import("src/utils/generateCV");
-    vi.mocked(generateAndOpenCV).mockRejectedValueOnce(new Error("fail"));
+    const { generateCV } = await import("src/utils/generateCV");
+    vi.mocked(generateCV).mockRejectedValueOnce(new Error("fail"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(
       <CV
@@ -151,6 +158,7 @@ describe("<CV />", () => {
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith("CV generation failed:", expect.any(Error));
     });
+    expect(screen.queryByRole("dialog")).toBeNull();
     consoleSpy.mockRestore();
   });
 
@@ -172,6 +180,35 @@ describe("<CV />", () => {
     await waitFor(() => {
       expect(screen.getByText(/Captcha verification failed/i)).toBeDefined();
     });
+  });
+
+  
+  it("closes PdfViewer and revokes blob url", async () => {
+    const revokeSpy = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    render(
+      <CV
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByLabelText("Open CV").click();
+    });
+    act(() => {
+      screen.getByText("Verify").click();
+    });
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeDefined();
+    });
+    act(() => {
+      screen.getByLabelText("Close preview").click();
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+    expect(revokeSpy).toHaveBeenCalledWith("blob:test");
+    revokeSpy.mockRestore();
   });
 
   it("matches snapshot", () => {

@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "type": "module",
   "scripts": {
+  "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs",
     "astro": "astro",
     "build": "astro build",
     "check": "astro check",
@@ -29,6 +30,7 @@
     "@tailwindcss/vite": "4.3.0",
     "astro": "6.4.2",
     "jspdf": "4.2.1",
+    "pdfjs-dist": "5.7.284",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-hot-toast": "2.6.0"

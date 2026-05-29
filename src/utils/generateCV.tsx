@@ -288,11 +288,11 @@ function startPage(doc: any, W: number) {
   doc.rect(0, 0, W, 3, "F");
 }
 
-export async function generateAndOpenCV(
+export async function generateCV(
   experienceData: ExperienceEntry[],
   aboutData: AboutEntry[],
   skillsData: SkillEntry[],
-): Promise<void> {
+): Promise<string> {
   const sortedExperience = [...experienceData].sort(
     (a, b) => parseDate(b.date_from) - parseDate(a.date_from),
   );
@@ -524,5 +524,5 @@ export async function generateAndOpenCV(
 
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);
-  window.open(url, "_blank");
+  return url;
 }

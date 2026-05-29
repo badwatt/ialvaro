@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ScrambleWobble } from "src/components/ScrambleWobble";
 import { useScrollReveal } from "src/hooks/useScrollReveal";
-import { generateAndOpenCV } from "src/utils/generateCV";
+import { generateCV } from "src/utils/generateCV";
+import { PdfViewer } from "src/components/PdfViewer";
 import { CapWidget } from "src/components/CapWidget";
 import toast, { Toaster } from "react-hot-toast";
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
@@ -17,6 +18,8 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
   const [parallax, setParallax] = useState(0);
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [showViewer, setShowViewer] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,9 +43,12 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
         setLoading(false);
         return;
       }
-      await generateAndOpenCV(experienceData, aboutData, skillsData);
+      const url = await generateCV(experienceData, aboutData, skillsData);
+      setPdfUrl(url);
+      setShowViewer(true);
     } catch (err) {
       console.error("CV generation failed:", err);
+      toast.error("CV generation failed. Please try again.");
     } finally {
       setLoading(false);
       setShowCaptcha(false);
@@ -167,6 +173,15 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
         <span className="text-[10px] tracking-[0.2em] uppercase text-alvaro-muted/40">Scroll</span>
         <div className="w-px h-8 bg-gradient-to-b from-alvaro-primary/40 to-transparent" />
       </div>
+      <PdfViewer
+        src={pdfUrl ?? ""}
+        isOpen={showViewer}
+        onClose={() => {
+          if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+          setPdfUrl(null);
+          setShowViewer(false);
+        }}
+      />
     </section>
   );
 };

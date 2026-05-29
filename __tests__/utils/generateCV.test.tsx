@@ -4,7 +4,7 @@ import {
   loadImage,
   loadImageToPng,
   toCircular,
-  generateAndOpenCV,
+  generateCV,
   parseDescription,
   parseDate,
 } from "src/utils/generateCV";
@@ -299,7 +299,7 @@ describe("toCircular", () => {
   });
 });
 
-describe("generateAndOpenCV", () => {
+describe("generateCV", () => {
   beforeEach(() => {
     mockRegistry.addImageThrow = 0;
     vi.clearAllMocks();
@@ -314,12 +314,12 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles missing profile image", async () => {
@@ -327,12 +327,12 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles missing alt image", async () => {
@@ -340,12 +340,12 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles sidebar addImage error", async () => {
@@ -354,18 +354,20 @@ describe("generateAndOpenCV", () => {
     setupDOMMocks("load");
     mockRegistry.addImageThrow = 1;
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, testAboutData, testSkillsData);
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles missing all images and minimal about data", async () => {
     setupFetchMockAllReject();
     setupFileReaderMock();
     setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
 
     const minimalAbout = [
       {
@@ -397,18 +399,19 @@ describe("generateAndOpenCV", () => {
       },
     ];
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(exp, minimalAbout, testSkillsData);
+    const url = await generateCV(exp, minimalAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles empty education array", async () => {
     setupFetchMock();
     setupFileReaderMock();
     setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
 
     const noEduAbout = [
       {
@@ -420,18 +423,19 @@ describe("generateAndOpenCV", () => {
       },
     ];
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, noEduAbout, testSkillsData);
+    const url = await generateCV(testExperienceData, noEduAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("handles missing email", async () => {
     setupFetchMock();
     setupFileReaderMock();
     setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
 
     const noEmailAbout = [
       {
@@ -443,12 +447,11 @@ describe("generateAndOpenCV", () => {
       },
     ];
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
-    await generateAndOpenCV(testExperienceData, noEmailAbout, testSkillsData);
+    const url = await generateCV(testExperienceData, noEmailAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
-    expect(openSpy).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 
   it("adds a second page when experience overflows", async () => {
@@ -456,12 +459,13 @@ describe("generateAndOpenCV", () => {
     setupFileReaderMock();
     setupDOMMocks("load");
 
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     const many = Array.from({ length: 8 }, () => testExperienceData[0]);
-    await generateAndOpenCV(many, testAboutData, testSkillsData);
+    const url = await generateCV(many, testAboutData, testSkillsData);
 
     expect(mockRegistry.addPage).toHaveBeenCalled();
-    openSpy.mockRestore();
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
   });
 });
 

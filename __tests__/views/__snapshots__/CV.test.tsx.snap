@@ -9,39 +9,7 @@ exports[`<CV /> > matches snapshot 1`] = `
     <div
       data-rht-toaster=""
       style="position: fixed; z-index: 9999; top: 16px; left: 16px; right: 16px; bottom: 16px; pointer-events: none;"
-    >
-      <div
-        class="go4109123758"
-        style="left: 0px; right: 0px; display: flex; position: absolute; transition: all 230ms cubic-bezier(.21,1.02,.73,1); transform: translateY(0px); bottom: 0px; justify-content: flex-end;"
-      >
-        <div
-          class="go2072408551"
-          style="opacity: 0; background: var(--color-alvaro-surface); color: var(--color-alvaro-white); border: 1px solid; border-width: var(--color-alvaro-border); border-style: var(--color-alvaro-border); border-color: var(--color-alvaro-border);"
-        >
-          <div
-            class="go685806154"
-          >
-            <div
-              class="go1858758034"
-            />
-            <div
-              class="go1579819456"
-            >
-              <div
-                class="go2534082608"
-              />
-            </div>
-          </div>
-          <div
-            aria-live="polite"
-            class="go3958317564"
-            role="status"
-          >
-            Captcha verification failed. Please try again.
-          </div>
-        </div>
-      </div>
-    </div>
+    />
     <button
       aria-label="Open CV"
       class="w-full grid place-items-center p-12 md:p-20 rounded-3xl bg-alvaro-surface border border-alvaro-border hover:border-alvaro-primary/40 transition-all duration-500 group cursor-pointer active:scale-[0.99] relative overflow-hidden"

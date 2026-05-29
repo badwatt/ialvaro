@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FileTextIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { CapWidget } from "src/components/CapWidget";
-import { generateAndOpenCV } from "src/utils/generateCV";
+import { PdfViewer } from "src/components/PdfViewer";
+import { generateCV } from "src/utils/generateCV";
 import toast, { Toaster } from "react-hot-toast";
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
@@ -14,6 +15,8 @@ interface CVProps {
 export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [showViewer, setShowViewer] = useState(false);
 
   const handleOpen = async (token: string) => {
     setLoading(true);
@@ -29,9 +32,12 @@ export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
         setLoading(false);
         return;
       }
-      await generateAndOpenCV(experienceData, aboutData, skillsData);
+      const url = await generateCV(experienceData, aboutData, skillsData);
+      setPdfUrl(url);
+      setShowViewer(true);
     } catch (err) {
       console.error("CV generation failed:", err);
+      toast.error("CV generation failed. Please try again.");
     } finally {
       setLoading(false);
       setShowCaptcha(false);
@@ -97,6 +103,15 @@ export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
           </div>
         );
       })()}
+      <PdfViewer
+        src={pdfUrl ?? ""}
+        isOpen={showViewer}
+        onClose={() => {
+          if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+          setPdfUrl(null);
+          setShowViewer(false);
+        }}
+      />
     </section>
   );
 };
