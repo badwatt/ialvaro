@@ -13,17 +13,25 @@ interface PdfCanvasProps {
 }
 
 export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const pinchRef = useRef<{ startDist: number; startZoom: number } | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const pinchRef = useRef<{
+    startDist: number;
+    startZoom: number;
+    centerX: number;
+    centerY: number;
+    scrollLeft: number;
+    scrollTop: number;
+  } | null>(null);
   const { loading, error } = usePdfPages({
     src,
-    containerRef,
+    containerRef: canvasRef,
     getDocument: pdfjsLib.getDocument,
     renderPage: renderPageToCanvas,
   });
 
   useEffect(() => {
-    const container = containerRef.current;
+    const container = canvasRef.current;
     if (!container) return;
     const canvases = container.querySelectorAll("canvas");
     canvases.forEach((canvas) => {
@@ -33,12 +41,21 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (e.touches.length === 2 && onZoomChange) {
+      if (e.touches.length === 2 && onZoomChange && wrapperRef.current) {
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY,
         );
-        pinchRef.current = { startDist: dist, startZoom: zoom };
+        const wrapper = wrapperRef.current;
+        const rect = wrapper.getBoundingClientRect();
+        pinchRef.current = {
+          startDist: dist,
+          startZoom: zoom,
+          centerX: (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left,
+          centerY: (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top,
+          scrollLeft: wrapper.scrollLeft,
+          scrollTop: wrapper.scrollTop,
+        };
       }
     },
     [zoom, onZoomChange],
@@ -46,7 +63,7 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (e.touches.length === 2 && pinchRef.current && onZoomChange) {
+      if (e.touches.length === 2 && pinchRef.current && onZoomChange && wrapperRef.current) {
         e.preventDefault();
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
@@ -57,6 +74,16 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
           Math.max(pinchRef.current.startZoom * ratio, 0.5),
           3,
         );
+
+        const wrapper = wrapperRef.current;
+        const zoomRatio = newZoom / pinchRef.current.startZoom;
+        wrapper.scrollLeft =
+          (pinchRef.current.scrollLeft + pinchRef.current.centerX) * zoomRatio -
+          pinchRef.current.centerX;
+        wrapper.scrollTop =
+          (pinchRef.current.scrollTop + pinchRef.current.centerY) * zoomRatio -
+          pinchRef.current.centerY;
+
         onZoomChange(newZoom);
       }
     },
@@ -79,6 +106,7 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
 
   return (
     <div
+      ref={wrapperRef}
       className="relative h-full overflow-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -90,7 +118,7 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
         </div>
       )}
       <div
-        ref={containerRef}
+        ref={canvasRef}
         className="min-h-full pb-8 w-full"
         data-testid="pdf-canvas-container"
       />
