@@ -1,21 +1,16 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { render, screen, waitFor, cleanup, fireEvent } from "@testing-library/react";
 import { PdfCanvas } from "src/components/PdfCanvas";
-
-vi.mock("src/utils/renderPageToCanvas", () => ({
-  renderPageToCanvas: vi.fn().mockResolvedValue(undefined),
-}));
 
 vi.mock("pdfjs-dist/legacy/build/pdf.mjs", () => ({
   getDocument: vi.fn().mockReturnValue({
     promise: Promise.resolve({
       numPages: 2,
-      getPage: () =>
-        Promise.resolve({
-          getViewport: () => ({ width: 595, height: 842 }),
-          render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
-          cleanup: vi.fn(),
-        }),
+      getPage: () => Promise.resolve({
+        getViewport: () => ({ width: 595, height: 842 }),
+        render: vi.fn().mockReturnValue({ promise: Promise.resolve() }),
+        cleanup: vi.fn(),
+      }),
     }),
     destroy: vi.fn(),
   }),
@@ -55,5 +50,44 @@ describe("PdfCanvas", () => {
     await waitFor(() => {
       expect(screen.getByText("Failed to load PDF preview.")).toBeDefined();
     });
+  });
+
+  it("applies zoom transform style", async () => {
+    render(<PdfCanvas src="blob:test" zoom={1.5} />);
+    await waitFor(() => {
+      expect(screen.queryByRole("status")).toBeNull();
+    });
+    const container = screen.getByTestId("pdf-canvas-container");
+    expect(container.style.transform).toBe("scale(1.5)");
+    expect(container.style.transformOrigin).toBe("top center");
+  });
+
+  it("handles pinch zoom via touch events", async () => {
+    const onZoomChange = vi.fn();
+    render(<PdfCanvas src="blob:test" zoom={1} onZoomChange={onZoomChange} />);
+    await waitFor(() => {
+      expect(screen.queryByRole("status")).toBeNull();
+    });
+
+    const wrapper = screen.getByTestId("pdf-canvas-container").parentElement!;
+
+    fireEvent.touchStart(wrapper, {
+      touches: [
+        { clientX: 0, clientY: 0 },
+        { clientX: 100, clientY: 0 },
+      ],
+    });
+
+    fireEvent.touchMove(wrapper, {
+      touches: [
+        { clientX: 0, clientY: 0 },
+        { clientX: 200, clientY: 0 },
+      ],
+    });
+
+    expect(onZoomChange).toHaveBeenCalled();
+    const lastZoom = onZoomChange.mock.calls[onZoomChange.mock.calls.length - 1][0];
+    expect(lastZoom).toBeGreaterThan(1);
+    expect(lastZoom).toBeLessThanOrEqual(3);
   });
 });

@@ -28,6 +28,50 @@ exports[`PdfViewer > snapshot 1`] = `
           <div
             class="flex items-center gap-3"
           >
+            <div
+              class="hidden md:flex items-center gap-1"
+            >
+              <button
+                aria-label="Zoom out"
+                class="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary cursor-pointer"
+                type="button"
+              >
+                <svg
+                  fill="currentColor"
+                  height="20"
+                  viewBox="0 0 256 256"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M156,112a12,12,0,0,1-12,12H80a12,12,0,0,1,0-24h64A12,12,0,0,1,156,112Zm76.49,120.49a12,12,0,0,1-17,0L168,185a92.12,92.12,0,1,1,17-17l47.54,47.53A12,12,0,0,1,232.49,232.49ZM112,180a68,68,0,1,0-68-68A68.08,68.08,0,0,0,112,180Z"
+                  />
+                </svg>
+              </button>
+              <span
+                class="text-xs text-alvaro-muted w-10 text-center"
+              >
+                100
+                %
+              </span>
+              <button
+                aria-label="Zoom in"
+                class="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary cursor-pointer"
+                type="button"
+              >
+                <svg
+                  fill="currentColor"
+                  height="20"
+                  viewBox="0 0 256 256"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M156,112a12,12,0,0,1-12,12H124v20a12,12,0,0,1-24,0V124H80a12,12,0,0,1,0-24h20V80a12,12,0,0,1,24,0v20h20A12,12,0,0,1,156,112Zm76.49,120.49a12,12,0,0,1-17,0L168,185a92.12,92.12,0,1,1,17-17l47.54,47.53A12,12,0,0,1,232.49,232.49ZM112,180a68,68,0,1,0-68-68A68.08,68.08,0,0,0,112,180Z"
+                  />
+                </svg>
+              </button>
+            </div>
             <a
               aria-label="Download CV"
               class="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary"
@@ -71,6 +115,7 @@ exports[`PdfViewer > snapshot 1`] = `
           <div
             data-src="blob:test"
             data-testid="pdf-canvas"
+            data-zoom="1"
           >
             PDF Canvas
           </div>

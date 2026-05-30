@@ -3,10 +3,8 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { PdfViewer } from "src/components/PdfViewer";
 
 vi.mock("src/components/PdfCanvas", () => ({
-  PdfCanvas: ({ src }: { src: string }) => (
-    <div data-testid="pdf-canvas" data-src={src}>
-      PDF Canvas
-    </div>
+  PdfCanvas: ({ src, zoom }: { src: string; zoom?: number }) => (
+    <div data-testid="pdf-canvas" data-src={src} data-zoom={zoom}>PDF Canvas</div>
   ),
 }));
 
@@ -33,6 +31,45 @@ describe("PdfViewer", () => {
     expect(screen.getByText("CV Preview")).toBeDefined();
     expect(screen.getByLabelText("Close preview")).toBeDefined();
     expect(screen.getByLabelText("Download CV")).toBeDefined();
+  });
+
+  it("shows zoom controls", () => {
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    expect(screen.getByLabelText("Zoom in")).toBeDefined();
+    expect(screen.getByLabelText("Zoom out")).toBeDefined();
+    expect(screen.getByText("100%")).toBeDefined();
+  });
+
+  it("zooms in when button clicked", () => {
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByLabelText("Zoom in"));
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("1.2");
+    fireEvent.click(screen.getByLabelText("Zoom in"));
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("1.4");
+  });
+
+  it("zooms out when button clicked", () => {
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByLabelText("Zoom out"));
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("0.8");
+    fireEvent.click(screen.getByLabelText("Zoom out"));
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("0.6");
+  });
+
+  it("caps zoom at 0.5 minimum", () => {
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    for (let i = 0; i < 10; i++) {
+      fireEvent.click(screen.getByLabelText("Zoom out"));
+    }
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("0.5");
+  });
+
+  it("caps zoom at 3 maximum", () => {
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    for (let i = 0; i < 20; i++) {
+      fireEvent.click(screen.getByLabelText("Zoom in"));
+    }
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("3");
   });
 
   it("calls onClose when close button clicked", () => {

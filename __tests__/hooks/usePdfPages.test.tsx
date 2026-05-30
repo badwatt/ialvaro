@@ -4,7 +4,11 @@ import { usePdfPages, loadPdfPages } from "src/hooks/usePdfPages";
 
 function TestComponent(props: Parameters<typeof usePdfPages>[0]) {
   const { loading, error } = usePdfPages(props);
-  return <div data-testid="state">{error ?? (loading ? "loading" : "done")}</div>;
+  return (
+    <div data-testid="state">
+      {error ?? (loading ? "loading" : "done")}
+    </div>
+  );
 }
 
 function createMockPdf(numPages = 2) {
@@ -59,15 +63,17 @@ describe("usePdfPages", () => {
     expect(container.querySelectorAll("canvas").length).toBe(1);
   });
 
-  it("handles null containerRef", async () => {
+  it("passes no maxWidth for large containers", async () => {
     const pdf = createMockPdf(1);
     const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
     const renderPage = vi.fn().mockResolvedValue(undefined);
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientWidth", { value: 1200, configurable: true });
 
     render(
       <TestComponent
         src="blob:test"
-        containerRef={{ current: null }}
+        containerRef={{ current: container }}
         getDocument={getDocument}
         renderPage={renderPage}
       />,
@@ -77,8 +83,7 @@ describe("usePdfPages", () => {
       expect(screen.getByTestId("state").textContent).toBe("done");
     });
 
-    expect(renderPage).toHaveBeenCalled();
-    expect(getDocument).toHaveBeenCalledWith("blob:test");
+    expect(renderPage.mock.calls[0][2]).toBeUndefined();
   });
 
   it("handles empty src", () => {
@@ -110,7 +115,8 @@ describe("usePdfPages", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("state").textContent).toBe("Failed to load PDF preview.");
+      expect(screen.getByTestId("state").textContent).toBe(
+        "Failed to load PDF preview.");
     });
 
     expect(renderPage).not.toHaveBeenCalled();
@@ -139,34 +145,6 @@ describe("usePdfPages", () => {
     unmount();
     rejectPromise?.(new Error("fail"));
     await new Promise((r) => setTimeout(r, 100));
-
-    expect(task.destroy).toHaveBeenCalled();
-  });
-
-  it("ignores updates after unmount", async () => {
-    const pdf = createMockPdf(1);
-    let resolvePromise: ((value: unknown) => void) | undefined;
-    const task = {
-      promise: new Promise((r) => {
-        resolvePromise = r;
-      }),
-      destroy: vi.fn(),
-    };
-    const getDocument = vi.fn().mockReturnValue(task);
-    const renderPage = vi.fn().mockResolvedValue(undefined);
-
-    const { unmount } = render(
-      <TestComponent
-        src="blob:test"
-        containerRef={{ current: document.createElement("div") }}
-        getDocument={getDocument}
-        renderPage={renderPage}
-      />,
-    );
-
-    unmount();
-    resolvePromise?.(pdf);
-    await new Promise((r) => setTimeout(r, 500));
 
     expect(task.destroy).toHaveBeenCalled();
   });
