@@ -11,6 +11,7 @@ describe("Modal", () => {
     vi.useRealTimers();
     cleanup();
     document.body.style.overflow = "";
+    document.body.style.touchAction = "";
     vi.restoreAllMocks();
   });
 
@@ -18,8 +19,10 @@ describe("Modal", () => {
     document.body.style.overflow = "auto";
     const unlock = lockBodyScroll();
     expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.touchAction).toBe("none");
     unlock();
     expect(document.body.style.overflow).toBe("auto");
+    expect(document.body.style.touchAction).toBe("");
   });
 
   it("renders nothing when closed", () => {
@@ -60,6 +63,7 @@ describe("Modal", () => {
       </Modal>,
     );
     expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.touchAction).toBe("none");
   });
 
   it("restores body scroll when closed", () => {
@@ -69,12 +73,14 @@ describe("Modal", () => {
       </Modal>,
     );
     expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.touchAction).toBe("none");
     rerender(
       <Modal isOpen={false} onClose={vi.fn()}>
         content
       </Modal>,
     );
     expect(document.body.style.overflow).toBe("");
+    expect(document.body.style.touchAction).toBe("");
   });
 
   it("restores body scroll on unmount", () => {
@@ -84,8 +90,10 @@ describe("Modal", () => {
       </Modal>,
     );
     expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.touchAction).toBe("none");
     unmount();
     expect(document.body.style.overflow).toBe("");
+    expect(document.body.style.touchAction).toBe("");
   });
 
   it("restores previous overflow value on close", () => {
