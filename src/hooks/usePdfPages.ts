@@ -23,7 +23,7 @@ export async function loadPdfPages(
     const wrapper = document.createElement("div");
     wrapper.className = "py-4";
     const canvas = document.createElement("canvas");
-    canvas.className = "w-full h-auto shadow-lg";
+    canvas.className = "w-full h-auto shadow-lg mx-auto";
     wrapper.appendChild(canvas);
     container.appendChild(wrapper);
     await renderPage(page, canvas);
