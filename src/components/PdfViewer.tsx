@@ -1,4 +1,4 @@
-import { XIcon, DownloadIcon, MagnifyingGlassPlus, MagnifyingGlassMinus } from "@phosphor-icons/react";
+import { XIcon, DownloadIcon, MagnifyingGlassPlusIcon, MagnifyingGlassMinusIcon } from "@phosphor-icons/react";
 import { Modal } from "./Modal";
 import { PdfCanvas } from "./PdfCanvas";
 import { useZoom } from "src/hooks/useZoom";
@@ -28,7 +28,7 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
                 className="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary cursor-pointer"
                 aria-label="Zoom out"
               >
-                <MagnifyingGlassMinus size={20} weight="bold" />
+                <MagnifyingGlassMinusIcon size={20} weight="bold" />
               </button>
               <span className="text-xs text-alvaro-muted w-10 text-center">
                 {Math.round(zoom * 100)}%
@@ -39,7 +39,7 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
                 className="rounded-full border border-alvaro-border bg-alvaro-surface p-2 text-alvaro-muted transition-all duration-300 hover:border-alvaro-primary/40 hover:text-alvaro-primary cursor-pointer"
                 aria-label="Zoom in"
               >
-                <MagnifyingGlassPlus size={20} weight="bold" />
+                <MagnifyingGlassPlusIcon size={20} weight="bold" />
               </button>
             </div>
             <a

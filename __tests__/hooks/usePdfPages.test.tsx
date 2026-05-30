@@ -62,6 +62,27 @@ describe("usePdfPages", () => {
     expect(container.querySelectorAll("canvas").length).toBe(1);
   });
 
+  it("handles null containerRef", async () => {
+    const pdf = createMockPdf(1);
+    const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
+    const renderPage = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TestComponent
+        src="blob:test"
+        containerRef={{ current: null }}
+        getDocument={getDocument}
+        renderPage={renderPage}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("state").textContent).toBe("done");
+    });
+
+    expect(renderPage).toHaveBeenCalled();
+  });
+
   it("handles empty src", () => {
     render(
       <TestComponent
@@ -98,6 +119,37 @@ describe("usePdfPages", () => {
     expect(renderPage).not.toHaveBeenCalled();
   });
 
+  it("ignores success after src change", async () => {
+    const pdf = createMockPdf(1);
+    const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
+    const renderPage = vi.fn().mockImplementation(
+      () => new Promise((r) => setTimeout(r, 200)),
+    );
+    const container = document.createElement("div");
+
+    const { rerender } = render(
+      <TestComponent
+        src="blob:test"
+        containerRef={{ current: container }}
+        getDocument={getDocument}
+        renderPage={renderPage}
+      />,
+    );
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    rerender(
+      <TestComponent
+        src=""
+        containerRef={{ current: container }}
+        getDocument={getDocument}
+        renderPage={renderPage}
+      />,
+    );
+
+    await new Promise((r) => setTimeout(r, 300));
+  });
+
   it("ignores error after unmount", async () => {
     let rejectPromise: ((reason: unknown) => void) | undefined;
     const task = {
@@ -119,6 +171,7 @@ describe("usePdfPages", () => {
     );
 
     unmount();
+    await new Promise((r) => setTimeout(r, 0));
     rejectPromise?.(new Error("fail"));
     await new Promise((r) => setTimeout(r, 100));
 
