@@ -21,7 +21,7 @@ export async function loadPdfPages(
   for (let i = 1; i <= total; i++) {
     const page = await pdf.getPage(i);
     const wrapper = document.createElement("div");
-    wrapper.className = "flex justify-center py-4";
+    wrapper.className = "py-4";
     const canvas = document.createElement("canvas");
     canvas.className = "w-full h-auto shadow-lg";
     wrapper.appendChild(canvas);
