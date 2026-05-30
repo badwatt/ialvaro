@@ -1,7 +1,7 @@
 import { XIcon, DownloadIcon, MagnifyingGlassPlus, MagnifyingGlassMinus } from "@phosphor-icons/react";
-import { useState } from "react";
 import { Modal } from "./Modal";
 import { PdfCanvas } from "./PdfCanvas";
+import { useZoom } from "src/hooks/useZoom";
 
 export interface PdfViewerProps {
   src: string;
@@ -11,10 +11,7 @@ export interface PdfViewerProps {
 }
 
 export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfViewerProps) {
-  const [zoom, setZoom] = useState(1);
-
-  const zoomIn = () => setZoom((z) => Math.min(Number((z + 0.2).toFixed(2)), 3));
-  const zoomOut = () => setZoom((z) => Math.max(Number((z - 0.2).toFixed(2)), 0.5));
+  const { zoom, setZoom, zoomIn, zoomOut } = useZoom();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} ariaLabel="CV preview">
@@ -33,7 +30,9 @@ export function PdfViewer({ src, isOpen, onClose, fileName = "cv.pdf" }: PdfView
               >
                 <MagnifyingGlassMinus size={20} weight="bold" />
               </button>
-              <span className="text-xs text-alvaro-muted w-10 text-center">{Math.round(zoom * 100)}%</span>
+              <span className="text-xs text-alvaro-muted w-10 text-center">
+                {Math.round(zoom * 100)}%
+              </span>
               <button
                 type="button"
                 onClick={zoomIn}

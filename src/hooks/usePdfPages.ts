@@ -8,6 +8,18 @@ export interface UsePdfPagesOptions {
   renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement) => Promise<void>;
 }
 
+const PAGE_WRAPPER_CLASS = "py-4";
+const CANVAS_CLASS = "w-full h-auto shadow-lg mx-auto";
+
+function createPageElement() {
+  const wrapper = document.createElement("div");
+  wrapper.className = PAGE_WRAPPER_CLASS;
+  const canvas = document.createElement("canvas");
+  canvas.className = CANVAS_CLASS;
+  wrapper.appendChild(canvas);
+  return { wrapper, canvas };
+}
+
 export async function loadPdfPages(
   task: PDFDocumentLoadingTask,
   container: HTMLDivElement,
@@ -16,15 +28,10 @@ export async function loadPdfPages(
   const pdf: PDFDocumentProxy = await task.promise;
 
   container.innerHTML = "";
-  const total = pdf.numPages;
 
-  for (let i = 1; i <= total; i++) {
+  for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
-    const wrapper = document.createElement("div");
-    wrapper.className = "py-4";
-    const canvas = document.createElement("canvas");
-    canvas.className = "w-full h-auto shadow-lg mx-auto";
-    wrapper.appendChild(canvas);
+    const { wrapper, canvas } = createPageElement();
     container.appendChild(wrapper);
     await renderPage(page, canvas);
     page.cleanup();
@@ -46,9 +53,7 @@ export function usePdfPages({ src, containerRef, getDocument, renderPage }: UseP
 
     loadPdfPages(task, containerRef.current ?? document.createElement("div"), renderPage)
       .then(() => {
-        if (!destroyed) {
-          setLoading(false);
-        }
+        if (!destroyed) setLoading(false);
       })
       .catch(() => {
         if (!destroyed) {
