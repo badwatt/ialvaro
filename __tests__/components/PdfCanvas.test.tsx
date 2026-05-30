@@ -52,14 +52,16 @@ describe("PdfCanvas", () => {
     });
   });
 
-  it("applies zoom transform style", async () => {
+  it("applies zoom to canvas width", async () => {
     render(<PdfCanvas src="blob:test" zoom={1.5} />);
     await waitFor(() => {
       expect(screen.queryByRole("status")).toBeNull();
     });
-    const container = screen.getByTestId("pdf-canvas-container");
-    expect(container.style.transform).toBe("scale(1.5)");
-    expect(container.style.transformOrigin).toBe("top center");
+    const canvases = document.querySelectorAll("canvas");
+    expect(canvases.length).toBeGreaterThan(0);
+    canvases.forEach((canvas) => {
+      expect(canvas.style.width).toBe("150%");
+    });
   });
 
   it("handles pinch zoom via touch events", async () => {

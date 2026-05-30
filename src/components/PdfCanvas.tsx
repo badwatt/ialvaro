@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { usePdfPages } from "src/hooks/usePdfPages";
 import { renderPageToCanvas } from "src/utils/renderPageToCanvas";
@@ -21,6 +21,15 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
     getDocument: pdfjsLib.getDocument,
     renderPage: renderPageToCanvas,
   });
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const canvases = container.querySelectorAll("canvas");
+    canvases.forEach((canvas) => {
+      (canvas as HTMLCanvasElement).style.width = `${zoom * 100}%`;
+    });
+  }, [zoom, loading]);
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
@@ -82,12 +91,8 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
       )}
       <div
         ref={containerRef}
-        className="min-h-full pb-8 inline-block"
+        className="min-h-full pb-8 w-full"
         data-testid="pdf-canvas-container"
-        style={{
-          transform: `scale(${zoom})`,
-          transformOrigin: "top center",
-        }}
       />
     </div>
   );

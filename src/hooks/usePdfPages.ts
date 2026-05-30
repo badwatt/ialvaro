@@ -5,7 +5,7 @@ export interface UsePdfPagesOptions {
   src: string;
   containerRef: RefObject<HTMLDivElement | null>;
   getDocument: (src: string) => PDFDocumentLoadingTask;
-  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement, maxWidth?: number) => Promise<void>;
+  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement) => Promise<void>;
 }
 
 export async function loadPdfPages(
@@ -17,17 +17,16 @@ export async function loadPdfPages(
 
   container.innerHTML = "";
   const total = pdf.numPages;
-  const maxWidth = container.clientWidth < 900 ? container.clientWidth : undefined;
 
   for (let i = 1; i <= total; i++) {
     const page = await pdf.getPage(i);
     const wrapper = document.createElement("div");
     wrapper.className = "flex justify-center py-4";
     const canvas = document.createElement("canvas");
-    canvas.className = "max-w-full shadow-lg";
+    canvas.className = "w-full h-auto shadow-lg";
     wrapper.appendChild(canvas);
     container.appendChild(wrapper);
-    await renderPage(page, canvas, maxWidth);
+    await renderPage(page, canvas);
     page.cleanup();
   }
 }

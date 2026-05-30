@@ -39,7 +39,6 @@ describe("usePdfPages", () => {
     const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
     const renderPage = vi.fn().mockResolvedValue(undefined);
     const container = document.createElement("div");
-    Object.defineProperty(container, "clientWidth", { value: 400, configurable: true });
 
     render(
       <TestComponent
@@ -58,32 +57,9 @@ describe("usePdfPages", () => {
 
     expect(getDocument).toHaveBeenCalledWith("blob:test");
     expect(renderPage).toHaveBeenCalled();
-    expect(renderPage.mock.calls[0][2]).toBe(400);
+    expect(renderPage).toHaveBeenCalledTimes(1);
     expect(pdf.getPage).toHaveBeenCalledWith(1);
     expect(container.querySelectorAll("canvas").length).toBe(1);
-  });
-
-  it("passes no maxWidth for large containers", async () => {
-    const pdf = createMockPdf(1);
-    const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
-    const renderPage = vi.fn().mockResolvedValue(undefined);
-    const container = document.createElement("div");
-    Object.defineProperty(container, "clientWidth", { value: 1200, configurable: true });
-
-    render(
-      <TestComponent
-        src="blob:test"
-        containerRef={{ current: container }}
-        getDocument={getDocument}
-        renderPage={renderPage}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("state").textContent).toBe("done");
-    });
-
-    expect(renderPage.mock.calls[0][2]).toBeUndefined();
   });
 
   it("handles empty src", () => {

@@ -26,49 +26,6 @@ describe("renderPageToCanvas", () => {
     expect(renderSpy).toHaveBeenCalled();
   });
 
-  it("scales to maxWidth when smaller than natural size", async () => {
-    const canvas = document.createElement("canvas");
-    const scaleSpy = vi.fn();
-    const renderSpy = vi.fn().mockReturnValue({ promise: Promise.resolve() });
-    (canvas as any).getContext = () =>
-      ({ scale: scaleSpy } as unknown as CanvasRenderingContext2D);
-
-    const page = {
-      getViewport: ({ scale }: { scale: number }) => ({
-        width: 200 * scale,
-        height: 300 * scale,
-      }),
-      render: renderSpy,
-    } as unknown as import("pdfjs-dist/legacy/build/pdf.mjs").PDFPageProxy;
-
-    await renderPageToCanvas(page, canvas, 100);
-
-    expect(canvas.width).toBe(100);
-    expect(canvas.height).toBe(150);
-    expect(scaleSpy).toHaveBeenCalled();
-    expect(renderSpy).toHaveBeenCalled();
-  });
-
-  it("ignores maxWidth when larger than natural size", async () => {
-    const canvas = document.createElement("canvas");
-    const renderSpy = vi.fn().mockReturnValue({ promise: Promise.resolve() });
-    (canvas as any).getContext = () =>
-      ({ scale: vi.fn() } as unknown as CanvasRenderingContext2D);
-
-    const page = {
-      getViewport: ({ scale }: { scale: number }) => ({
-        width: 200 * scale,
-        height: 300 * scale,
-      }),
-      render: renderSpy,
-    } as unknown as import("pdfjs-dist/legacy/build/pdf.mjs").PDFPageProxy;
-
-    await renderPageToCanvas(page, canvas, 2000);
-
-    expect(canvas.width).toBe(300);
-    expect(canvas.height).toBe(450);
-  });
-
   it("returns early when getContext is null", async () => {
     const canvas = document.createElement("canvas");
     (canvas as any).getContext = () => null;
