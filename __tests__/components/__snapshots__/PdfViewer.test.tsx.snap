@@ -3,13 +3,13 @@
 exports[`PdfViewer > snapshot 1`] = `
 <div>
   <div
-    class="fixed inset-0 z-[60] flex items-center justify-center bg-alvaro-base/80 backdrop-blur-md transition-opacity duration-300"
+    class="fixed inset-0 z-[70] flex items-center justify-center bg-alvaro-base/80 backdrop-blur-md transition-opacity duration-300"
     data-testid="modal-backdrop"
   >
     <div
       aria-label="CV preview"
       aria-modal="true"
-      class="relative z-[61] overflow-hidden bg-alvaro-surface outline-none h-full w-full rounded-none md:h-[85vh] md:w-[90vw] md:rounded-3xl md:border md:border-alvaro-border md:shadow-2xl md:shadow-alvaro-primary/10 "
+      class="relative z-[71] overflow-hidden bg-alvaro-surface outline-none h-full w-full rounded-none md:h-[85vh] md:w-[90vw] md:rounded-3xl md:border md:border-alvaro-border md:shadow-2xl md:shadow-alvaro-primary/10 "
       data-testid="modal-panel"
       role="dialog"
       tabindex="-1"
