@@ -51,7 +51,7 @@ exports[`PdfViewer > snapshot 1`] = `
               <span
                 class="text-xs text-alvaro-muted w-10 text-center"
               >
-                100
+                50
                 %
               </span>
               <button
@@ -115,7 +115,7 @@ exports[`PdfViewer > snapshot 1`] = `
           <div
             data-src="blob:test"
             data-testid="pdf-canvas"
-            data-zoom="1"
+            data-zoom="0.5"
           >
             PDF Canvas
           </div>

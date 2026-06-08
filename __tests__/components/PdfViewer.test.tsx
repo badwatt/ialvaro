@@ -4,14 +4,29 @@ import { PdfViewer } from "src/components/PdfViewer";
 
 vi.mock("src/components/PdfCanvas", () => ({
   PdfCanvas: ({ src, zoom }: { src: string; zoom?: number }) => (
-    <div data-testid="pdf-canvas" data-src={src} data-zoom={zoom}>PDF Canvas</div>
+    <div data-testid="pdf-canvas" data-src={src} data-zoom={zoom}>
+      PDF Canvas
+    </div>
   ),
 }));
+
+function mockMatchMedia(matches: boolean) {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockReturnValue({
+      matches,
+      media: "",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }),
+  );
+}
 
 describe("PdfViewer", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("renders nothing when closed", () => {
@@ -37,10 +52,24 @@ describe("PdfViewer", () => {
     render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     expect(screen.getByLabelText("Zoom in")).toBeDefined();
     expect(screen.getByLabelText("Zoom out")).toBeDefined();
+  });
+
+  it("defaults to 50% zoom on desktop", () => {
+    mockMatchMedia(true);
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
+    expect(screen.getByText("50%")).toBeDefined();
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("0.5");
+  });
+
+  it("defaults to 100% zoom on mobile", () => {
+    mockMatchMedia(false);
+    render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     expect(screen.getByText("100%")).toBeDefined();
+    expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("1");
   });
 
   it("zooms in when button clicked", () => {
+    mockMatchMedia(false);
     render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     fireEvent.click(screen.getByLabelText("Zoom in"));
     expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("1.2");
@@ -49,6 +78,7 @@ describe("PdfViewer", () => {
   });
 
   it("zooms out when button clicked", () => {
+    mockMatchMedia(false);
     render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     fireEvent.click(screen.getByLabelText("Zoom out"));
     expect(screen.getByTestId("pdf-canvas").getAttribute("data-zoom")).toBe("0.8");
@@ -57,6 +87,7 @@ describe("PdfViewer", () => {
   });
 
   it("caps zoom at 0.5 minimum", () => {
+    mockMatchMedia(false);
     render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     for (let i = 0; i < 10; i++) {
       fireEvent.click(screen.getByLabelText("Zoom out"));
@@ -65,6 +96,7 @@ describe("PdfViewer", () => {
   });
 
   it("caps zoom at 3 maximum", () => {
+    mockMatchMedia(false);
     render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     for (let i = 0; i < 20; i++) {
       fireEvent.click(screen.getByLabelText("Zoom in"));
@@ -112,6 +144,7 @@ describe("PdfViewer", () => {
   });
 
   it("snapshot", () => {
+    mockMatchMedia(true);
     const { container } = render(<PdfViewer src="blob:test" isOpen={true} onClose={vi.fn()} />);
     expect(container).toMatchSnapshot();
   });

@@ -41,11 +41,7 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
   if (!src) return null;
 
   if (error) {
-    return (
-      <div className="grid h-full place-items-center text-alvaro-muted">
-        {error}
-      </div>
-    );
+    return <div className="grid h-full place-items-center text-alvaro-muted">{error}</div>;
   }
 
   return (
@@ -61,11 +57,7 @@ export function PdfCanvas({ src, zoom = 1, onZoomChange }: PdfCanvasProps) {
           <Spinner />
         </div>
       )}
-      <div
-        ref={canvasRef}
-        className="min-h-full pb-8 w-full"
-        data-testid="pdf-canvas-container"
-      />
+      <div ref={canvasRef} className="min-h-full pb-8 w-full" data-testid="pdf-canvas-container" />
     </div>
   );
 }

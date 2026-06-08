@@ -4,11 +4,7 @@ import { usePdfPages, loadPdfPages } from "src/hooks/usePdfPages";
 
 function TestComponent(props: Parameters<typeof usePdfPages>[0]) {
   const { loading, error } = usePdfPages(props);
-  return (
-    <div data-testid="state">
-      {error ?? (loading ? "loading" : "done")}
-    </div>
-  );
+  return <div data-testid="state">{error ?? (loading ? "loading" : "done")}</div>;
 }
 
 function createMockPdf(numPages = 2) {
@@ -112,8 +108,7 @@ describe("usePdfPages", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("state").textContent).toBe(
-        "Failed to load PDF preview.");
+      expect(screen.getByTestId("state").textContent).toBe("Failed to load PDF preview.");
     });
 
     expect(renderPage).not.toHaveBeenCalled();
@@ -122,9 +117,7 @@ describe("usePdfPages", () => {
   it("ignores success after src change", async () => {
     const pdf = createMockPdf(1);
     const getDocument = vi.fn().mockReturnValue(createMockTask(pdf));
-    const renderPage = vi.fn().mockImplementation(
-      () => new Promise((r) => setTimeout(r, 200)),
-    );
+    const renderPage = vi.fn().mockImplementation(() => new Promise((r) => setTimeout(r, 200)));
     const container = document.createElement("div");
 
     const { rerender } = render(
@@ -222,6 +215,18 @@ describe("loadPdfPages", () => {
     expect(pdf.getPage).toHaveBeenCalledWith(1);
     expect(pdf.getPage).toHaveBeenCalledWith(2);
     expect(pdf.getPage).toHaveBeenCalledWith(3);
+  });
+
+  it("passes container width to renderPage for crisp scaling", async () => {
+    const pdf = createMockPdf(1);
+    const task = createMockTask(pdf) as any;
+    const renderPage = vi.fn().mockResolvedValue(undefined);
+    const container = document.createElement("div");
+    Object.defineProperty(container, "clientWidth", { value: 720, configurable: true });
+
+    await loadPdfPages(task, container, renderPage);
+
+    expect(renderPage).toHaveBeenCalledWith(expect.anything(), expect.anything(), 720);
   });
 
   it("clears previous container content", async () => {

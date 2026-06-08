@@ -1,11 +1,19 @@
 import { useEffect, useState, type RefObject } from "react";
-import type { PDFDocumentLoadingTask, PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
+import type {
+  PDFDocumentLoadingTask,
+  PDFDocumentProxy,
+  PDFPageProxy,
+} from "pdfjs-dist/legacy/build/pdf.mjs";
 
 export interface UsePdfPagesOptions {
   src: string;
   containerRef: RefObject<HTMLDivElement | null>;
   getDocument: (src: string) => PDFDocumentLoadingTask;
-  renderPage: (page: PDFPageProxy, canvas: HTMLCanvasElement) => Promise<void>;
+  renderPage: (
+    page: PDFPageProxy,
+    canvas: HTMLCanvasElement,
+    containerWidth?: number,
+  ) => Promise<void>;
 }
 
 const PAGE_WRAPPER_CLASS = "py-4";
@@ -29,11 +37,15 @@ export async function loadPdfPages(
 
   container.innerHTML = "";
 
+  // Use container's CSS width so canvas buffer matches displayed size × DPR.
+  // Falls back to 0 (PDF_SCALE path) when container not yet laid out.
+  const containerWidth = container.clientWidth;
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const { wrapper, canvas } = createPageElement();
     container.appendChild(wrapper);
-    await renderPage(page, canvas);
+    await renderPage(page, canvas, containerWidth);
     page.cleanup();
   }
 }

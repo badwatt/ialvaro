@@ -53,10 +53,7 @@ export function usePinchZoom(
       );
 
       const ratio = dist / pinchRef.current.startDist;
-      const newZoom = Math.min(
-        Math.max(pinchRef.current.startZoom * ratio, ZOOM_MIN),
-        ZOOM_MAX,
-      );
+      const newZoom = Math.min(Math.max(pinchRef.current.startZoom * ratio, ZOOM_MIN), ZOOM_MAX);
 
       const container = containerRef.current;
       const zoomRatio = newZoom / pinchRef.current.startZoom;

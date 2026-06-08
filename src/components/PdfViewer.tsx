@@ -1,4 +1,9 @@
-import { XIcon, DownloadIcon, MagnifyingGlassPlusIcon, MagnifyingGlassMinusIcon } from "@phosphor-icons/react";
+import {
+  XIcon,
+  DownloadIcon,
+  MagnifyingGlassPlusIcon,
+  MagnifyingGlassMinusIcon,
+} from "@phosphor-icons/react";
 import { Modal } from "./Modal";
 import { PdfCanvas } from "./PdfCanvas";
 import { useZoom } from "src/hooks/useZoom";
