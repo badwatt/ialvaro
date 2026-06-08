@@ -44,7 +44,6 @@ describe("useZoom", () => {
 
   it("getResponsiveDefaultZoom returns mobile when window is undefined", () => {
     const origWindow = (globalThis as any).window;
-    // @ts-expect-error - simulate SSR
     delete (globalThis as any).window;
     try {
       expect(getResponsiveDefaultZoom()).toBe(1);
