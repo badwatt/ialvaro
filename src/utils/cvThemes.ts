@@ -87,3 +87,18 @@ export function getThemeById(id: CVThemeId): CVTheme {
 export function rgbToCss([r, g, b]: RGB): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
+
+// W3C relative luminance. 0 = black, 1 = white.
+export function relativeLuminance([r, g, b]: RGB): number {
+  const toLinear = (v: number) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+// Pick between a light or dark asset URL based on the theme's base luminance.
+// Used to swap icon variants so they stay visible on both light and dark CVs.
+export function pickAssetByLuminance(base: RGB, lightUrl: string, darkUrl: string): string {
+  return relativeLuminance(base) > 0.5 ? darkUrl : lightUrl;
+}

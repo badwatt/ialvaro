@@ -1,5 +1,5 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
-import type { CVTheme, CVThemeColors } from "src/utils/cvThemes";
+import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
 
 const PAGE_W = 595;
 const PAGE_H = 842;
@@ -317,11 +317,21 @@ export async function generateCV(
   const otherSkills = skillsData.filter((s) => !s.featured).map((s) => s.title);
 
   const expImages = sortedExperience.map((e) => e.image);
+  const githubUrl = pickAssetByLuminance(
+    theme.colors.base,
+    "/social/github.svg",
+    "/social/github_dark.svg",
+  );
+  const linkedinUrl = pickAssetByLuminance(
+    theme.colors.base,
+    "/social/linkedin.svg",
+    "/social/linkedin_dark.svg",
+  );
   const allImages = [
     "/images/profile/profile.png",
     "/images/profile/profile_alt.png",
-    "/social/github.svg",
-    "/social/linkedin.svg",
+    githubUrl,
+    linkedinUrl,
     ...expImages,
   ];
 
@@ -399,10 +409,11 @@ export async function generateCV(
   if (aboutData[0]?.email) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.setTextColor(...C.muted);
+    doc.setTextColor(...C.white);
     doc.text("@", M + ICON / 2, sy + 9, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+    doc.setTextColor(...C.muted);
     doc.textWithLink(aboutData[0].email, M + ICON + 4, sy + 8, {
       url: `mailto:${aboutData[0].email}`,
     });

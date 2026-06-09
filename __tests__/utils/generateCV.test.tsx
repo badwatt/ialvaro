@@ -8,7 +8,12 @@ import {
   parseDescription,
   parseDate,
 } from "src/utils/generateCV";
-import { CV_THEMES, getThemeById } from "src/utils/cvThemes";
+import {
+  CV_THEMES,
+  getThemeById,
+  pickAssetByLuminance,
+  relativeLuminance,
+} from "src/utils/cvThemes";
 import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
 
 const TEST_THEME = getThemeById("default");
@@ -521,6 +526,48 @@ describe("generateCV", () => {
     expect(url).toBe("blob:test");
     urlSpy.mockRestore();
   });
+
+  it("fetches light icon variants for dark themes", async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve({ blob: () => Promise.resolve(new Blob(["img"])) }),
+      );
+    global.fetch = fetchSpy;
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
+
+    const fetched = fetchSpy.mock.calls.map((c) => c[0] as string);
+    expect(fetched).toContain("/social/github.svg");
+    expect(fetched).toContain("/social/linkedin.svg");
+    expect(fetched).not.toContain("/social/github_dark.svg");
+    expect(fetched).not.toContain("/social/linkedin_dark.svg");
+    urlSpy.mockRestore();
+  });
+
+  it("fetches dark icon variants for the white theme", async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve({ blob: () => Promise.resolve(new Blob(["img"])) }),
+      );
+    global.fetch = fetchSpy;
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    await generateCV(WHITE_THEME, testExperienceData, testAboutData, testSkillsData);
+
+    const fetched = fetchSpy.mock.calls.map((c) => c[0] as string);
+    expect(fetched).toContain("/social/github_dark.svg");
+    expect(fetched).toContain("/social/linkedin_dark.svg");
+    expect(fetched).not.toContain("/social/github.svg");
+    expect(fetched).not.toContain("/social/linkedin.svg");
+    urlSpy.mockRestore();
+  });
 });
 
 describe("cvThemes", () => {
@@ -553,6 +600,36 @@ describe("cvThemes", () => {
         }
       }
     }
+  });
+
+  it("relativeLuminance is 0 for black and 1 for white", () => {
+    expect(relativeLuminance([0, 0, 0])).toBe(0);
+    expect(relativeLuminance([255, 255, 255])).toBe(1);
+  });
+
+  it("pickAssetByLuminance returns darkUrl for light bases and lightUrl for dark bases", () => {
+    const dark = pickAssetByLuminance([8, 8, 15], "light.svg", "dark.svg");
+    const light = pickAssetByLuminance([255, 255, 255], "light.svg", "dark.svg");
+    expect(dark).toBe("light.svg");
+    expect(light).toBe("dark.svg");
+  });
+
+  it("pickAssetByLuminance picks dark variants for the white theme base", () => {
+    const url = pickAssetByLuminance(
+      getThemeById("white").colors.base,
+      "/social/github.svg",
+      "/social/github_dark.svg",
+    );
+    expect(url).toBe("/social/github_dark.svg");
+  });
+
+  it("pickAssetByLuminance picks light variants for the default theme base", () => {
+    const url = pickAssetByLuminance(
+      getThemeById("default").colors.base,
+      "/social/github.svg",
+      "/social/github_dark.svg",
+    );
+    expect(url).toBe("/social/github.svg");
   });
 });
 
