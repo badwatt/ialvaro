@@ -459,7 +459,7 @@ export function drawJob(
 
   // Dot
   doc.setFillColor(...C.accent);
-  doc.circle(timelineX, startY + 6, 3.5, "F");
+  // doc.circle(timelineX, startY + 6, 3.5, "F");
 
   // Left accent bar: only when there is a single period. With multiple
   // periods each chip draws its own colored bar; drawing a card-wide
@@ -495,29 +495,36 @@ export function drawJob(
 
   for (let i = 0; i < subgroups.length; i++) {
     // Render each period as a clear sub-block inside the card. No
-    // chip bg, no chip border, no accent bar: the parent card's own
-    // outline is enough. The sub-header (title + subtitle) is drawn
-    // larger and in the primary color so it reads as a label, distinct
-    // from the in-body headings (h1/h2 inside the body) which are
-    // drawn in white. Each period is separated from the next by a
-    // clear vertical gap.
+    // chip bg, no chip border, no chip accent bar: the parent card's
+    // own outline is enough. The sub-header (title + subtitle) is the
+    // visual marker for the period: a small primary-colored square
+    // before the title, the title itself in the primary color, then
+    // the italic subtitle on the next line. This trio reads as a
+    // distinct section label without nesting boxes-within-boxes.
     const meta = extractPeriodTitle(subgroups[i], i);
+    const subHeaderY = y;
 
-    // Sub-header: title in primary color, bold 11pt.
+    // Sub-header marker: a 4pt square in the primary color, vertically
+    // centered with the title baseline. Sits 6pt to the left of the
+    // title so it has its own visual slot.
+    doc.setFillColor(...C.primary);
+    doc.rect(x - 6, subHeaderY - 4, 4, 4, "F");
+
+    // Sub-header: title in primary color, bold 12pt.
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
+    doc.setFontSize(12);
     doc.setTextColor(...C.primary);
-    doc.text(meta.title, x, y);
+    doc.text(meta.title, x, subHeaderY);
 
     // Subtitle on its own line below the title, italic muted.
     if (meta.subtitle) {
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, x, y + 11);
+      doc.text(meta.subtitle, x, subHeaderY + 12);
     }
 
-    y += 22;
+    y = subHeaderY + 24;
 
     // Body content with the title and subtitle stripped.
     y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
