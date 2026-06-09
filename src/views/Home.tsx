@@ -5,6 +5,7 @@ import { generateCV } from "src/utils/generateCV";
 import { PdfViewer } from "src/components/PdfViewer";
 import { CapWidget } from "src/components/CapWidget";
 import { CVThemePicker } from "src/components/CVThemePicker";
+import { Modal } from "src/components/Modal";
 import { getThemeById, type CVTheme } from "src/utils/cvThemes";
 import toast, { Toaster } from "react-hot-toast";
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
@@ -18,8 +19,9 @@ interface HomeProps {
 export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
-  const [cvStep, setCvStep] = useState<"idle" | "themes" | "captcha" | "loading">("idle");
+  const [cvStep, setCvStep] = useState<"idle" | "captcha" | "loading">("idle");
   const [theme, setTheme] = useState<CVTheme>(getThemeById("default"));
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showViewer, setShowViewer] = useState(false);
 
@@ -113,18 +115,17 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
             <span className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl">
               Generating...
             </span>
-          ) : cvStep === "themes" ? (
-            <div className="w-full max-w-2xl">
-              <CVThemePicker
-                selectedId={theme.id}
-                onSelect={(t) => {
-                  setTheme(t);
-                  setCvStep("captcha");
-                }}
-              />
-            </div>
           ) : cvStep === "captcha" ? (
-            <CapWidget onVerified={handleOpenCV} />
+            <div className="flex flex-col items-center gap-3">
+              <CapWidget onVerified={handleOpenCV} />
+              <button
+                type="button"
+                onClick={() => setIsThemeModalOpen(true)}
+                className="text-xs text-alvaro-muted hover:text-alvaro-primary transition-colors duration-300 cursor-pointer"
+              >
+                Change palette
+              </button>
+            </div>
           ) : (
             <>
               <a
@@ -136,7 +137,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
               </a>
               <button
                 type="button"
-                onClick={() => setCvStep("themes")}
+                onClick={() => setIsThemeModalOpen(true)}
                 className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer"
               >
                 CV
@@ -182,6 +183,21 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
           setShowViewer(false);
         }}
       />
+      <Modal
+        isOpen={isThemeModalOpen}
+        onClose={() => setIsThemeModalOpen(false)}
+        ariaLabel="Choose CV palette"
+        className="md:h-auto md:max-h-[85vh] md:max-w-3xl"
+      >
+        <CVThemePicker
+          selectedId={theme.id}
+          onSelect={(t) => {
+            setTheme(t);
+            setIsThemeModalOpen(false);
+            setCvStep("captcha");
+          }}
+        />
+      </Modal>
     </section>
   );
 };

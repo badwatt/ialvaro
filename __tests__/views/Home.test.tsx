@@ -117,7 +117,7 @@ describe("<Home />", () => {
     expect(tagline?.className).toContain("opacity-100");
   });
 
-  it("shows theme picker after clicking CV", () => {
+  it("shows theme picker in a modal after clicking CV", () => {
     render(
       <Home
         experienceData={testExperienceData}
@@ -125,13 +125,75 @@ describe("<Home />", () => {
         skillsData={testSkillsData}
       />,
     );
-    expect(screen.getByText("CV")).toBeDefined();
+    expect(screen.queryByText("Pick a palette")).toBeNull();
     act(() => {
       screen.getByText("CV").click();
     });
-    expect(screen.queryByText("View work")).toBeNull();
+    expect(screen.getByTestId("modal-panel")).toBeDefined();
     expect(screen.getByText("Pick a palette")).toBeDefined();
+    // buttons stay visible behind the modal
+    expect(screen.getByText("View work")).toBeDefined();
     expect(screen.queryByText("Verify")).toBeNull();
+  });
+
+  it("closes the theme modal when backdrop is clicked", () => {
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByText("CV").click();
+    });
+    expect(screen.getByTestId("modal-panel")).toBeDefined();
+    act(() => {
+      screen.getByTestId("modal-backdrop").click();
+    });
+    expect(screen.queryByTestId("modal-panel")).toBeNull();
+    expect(screen.queryByText("Pick a palette")).toBeNull();
+    expect(screen.queryByText("Verify")).toBeNull();
+  });
+
+  it("picking a theme closes modal and shows captcha", () => {
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Catppuccin Mocha theme").click();
+    });
+    expect(screen.queryByTestId("modal-panel")).toBeNull();
+    expect(screen.getByText("Verify")).toBeDefined();
+    expect(screen.getByText("Change palette")).toBeDefined();
+  });
+
+  it("'Change palette' reopens the theme modal with the chosen theme preselected", () => {
+    render(
+      <Home
+        experienceData={testExperienceData}
+        aboutData={testAboutData}
+        skillsData={testSkillsData}
+      />,
+    );
+    act(() => {
+      screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Emerald theme").click();
+    });
+    act(() => {
+      screen.getByText("Change palette").click();
+    });
+    const emerald = screen.getByLabelText("Select Emerald theme");
+    expect(emerald.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("opens PdfViewer via generateCV after captcha resolves", async () => {
