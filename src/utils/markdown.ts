@@ -42,3 +42,45 @@ export function parseExperienceSubgroups(text: string): string[] {
   }
   return groups.map((g) => g.join("\n").trim()).filter((g) => g.length > 0);
 }
+
+// Extract a human-friendly title and optional subtitle for a sub-period
+// body. The title is the first `#` (h1) heading in the body, the subtitle
+// is the first blockquote's text. Falls back to the first list item when
+// no h1 is present, then to `Period N`.
+export function extractPeriodTitle(
+  body: string,
+  index: number,
+): { title: string; subtitle?: string } {
+  const tokens = marked.lexer(normalizeMarkers(body));
+  let title: string | undefined;
+  let subtitle: string | undefined;
+  // First pass: the first h1 (`#`) heading is the canonical period title.
+  for (const t of tokens) {
+    if (t.type === "heading" && (t as Tokens.Heading).depth === 1) {
+      title = (t as Tokens.Heading).text.split("\n")[0]?.trim();
+      break;
+    }
+  }
+  // Second pass: fall back to the first list item if no h1 was found.
+  if (!title) {
+    for (const t of tokens) {
+      if (t.type === "list") {
+        const firstItem = (t as Tokens.List).items[0];
+        title = firstItem?.text.split("\n")[0]?.trim();
+        break;
+      }
+    }
+  }
+  // Subtitle: the first blockquote's text (typically a duration like
+  // "1 year 3 months").
+  for (const t of tokens) {
+    if (t.type === "blockquote") {
+      subtitle = (t as Tokens.Blockquote).text.split("\n")[0]?.trim();
+      break;
+    }
+  }
+  return {
+    title: title ?? `Period ${index + 1}`,
+    subtitle: subtitle || undefined,
+  };
+}

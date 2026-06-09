@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { tokenize, tokenizeInline, parseExperienceSubgroups } from "src/utils/markdown";
+import {
+  tokenize,
+  tokenizeInline,
+  parseExperienceSubgroups,
+  extractPeriodTitle,
+} from "src/utils/markdown";
 
 describe("tokenize", () => {
   it("returns an empty-ish array for empty input", () => {
@@ -47,6 +52,30 @@ describe("tokenizeInline", () => {
     const tokens = tokenizeInline("- one");
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens[0].type).toBe("text");
+  });
+});
+
+describe("extractPeriodTitle", () => {
+  it("uses the first `#` heading as the title", () => {
+    const r = extractPeriodTitle("# Consulting Firm:\n\n- PLEXUS\n\n> 1 year 3 months", 0);
+    expect(r.title).toBe("Consulting Firm:");
+    expect(r.subtitle).toBe("1 year 3 months");
+  });
+
+  it("ignores non-`#` headings (e.g. h2)", () => {
+    const r = extractPeriodTitle("## Subhead\n\nbody", 0);
+    // No h1 found, so title falls back to a generic label.
+    expect(r.title).toMatch(/^Period/);
+  });
+
+  it("falls back to the first list item when no `#` heading is present", () => {
+    const r = extractPeriodTitle("- PLEXUS\n\n> 1 year 3 months", 0);
+    expect(r.title).toBe("PLEXUS");
+  });
+
+  it("uses the period index as a last-resort title", () => {
+    const r = extractPeriodTitle("just body", 4);
+    expect(r.title).toBe("Period 5");
   });
 });
 

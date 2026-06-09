@@ -37,23 +37,41 @@ describe("<Experience />", () => {
     expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders a nested accordion when the description contains `---` separators", () => {
+  it("renders sub-periods as accordion items with the first `#` heading as title", () => {
+    // Openbank-style content: two periods separated by `---`. Each period
+    // becomes a sub-accordion item; the title is the first `#` heading in
+    // that period, the subtitle is the first blockquote (e.g. duration).
+    // The first period is expanded by default; the second is collapsed.
     const split = {
       ...testExperienceData[0],
-      description: "# Period 1\n\nfirst body\n\n---\n\n# Period 2\n\nsecond body",
+      description:
+        "# Consulting Firm:\n\n- PLEXUS\n\n> 1 year 3 months\n\n---\n\n# Consulting Firm:\n\n- Knowmad Mood",
     };
     render(<Experience experienceData={[split]} />);
-    // Two sub-accordion buttons inside the parent (Period 1, Period 2).
+    // No "Period N" labels are rendered. Titles come from the first
+    // `#` heading.
     const buttons = screen.getAllByRole("button");
-    const period1 = buttons.find((b) => b.textContent?.includes("Period 1"));
-    const period2 = buttons.find((b) => b.textContent?.includes("Period 2"));
-    expect(period1).toBeDefined();
-    expect(period2).toBeDefined();
+    const periodButton = buttons.find((b) => b.textContent?.includes("Period "));
+    expect(periodButton).toBeUndefined();
+    // Both periods are accordion items labelled with the first `#` heading
+    // text. The text appears twice: once in the accordion title and once
+    // in the body. Use the title to identify the buttons.
+    const headingButtons = buttons.filter((b) => b.textContent?.includes("Consulting Firm:"));
+    // Two periods -> two buttons with the same first heading text.
+    expect(headingButtons.length).toBeGreaterThanOrEqual(2);
+    // The first period button is expanded; the second is collapsed.
+    expect(headingButtons[0].getAttribute("aria-expanded")).toBe("true");
+    expect(headingButtons[1].getAttribute("aria-expanded")).toBe("false");
+    // Subtitle (blockquote) is on the first period button.
+    expect(headingButtons[0].textContent).toContain("1 year 3 months");
+    // Both periods' content is in the DOM.
+    expect(screen.getByText("PLEXUS")).toBeDefined();
+    expect(screen.getByText("Knowmad Mood")).toBeDefined();
   });
 
   it("renders the description directly when there is no `---`", () => {
     render(<Experience experienceData={testExperienceData} />);
-    // Only the parent accordion buttons exist (no Period sub-buttons).
+    // No nested accordion buttons exist when there is no subgroup split.
     const buttons = screen.getAllByRole("button");
     const periodButton = buttons.find((b) => b.textContent?.includes("Period "));
     expect(periodButton).toBeUndefined();
