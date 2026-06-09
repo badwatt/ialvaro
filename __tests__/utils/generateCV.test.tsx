@@ -736,6 +736,36 @@ describe("measureMarkdown", () => {
     // h1 is larger (13pt line vs 12pt)
     expect(h1).toBeGreaterThan(h2);
   });
+
+  it("skips empty inline text in list items when measuring", async () => {
+    // A list item with an inline token whose text field is empty/undefined
+    // must not crash the measure loop. The empty string branch of
+    // `if (txt) inlineText += txt;` is the defensive guard.
+    const doc = { splitTextToSize: (t: string) => [t] };
+    expect(() => measureMarkdown(doc as any, "- ", 200)).not.toThrow();
+  });
+
+  it("skips empty inline text tokens in list items (measure branch)", async () => {
+    // Inject an empty text token into a list item's first text token so the
+    // `if (txt)` guard takes the false branch while measuring.
+    const marked = await import("marked");
+    const origLexer = marked.marked.lexer;
+    marked.marked.lexer = ((input: string) => {
+      const tokens = origLexer(input);
+      for (const t of tokens) {
+        if (t.type === "list") {
+          const list = t as unknown as { items: Array<{ tokens: Array<{ tokens?: unknown[] }> }> };
+          if (list.items[0]?.tokens[0]?.tokens) {
+            list.items[0].tokens[0].tokens = [{ type: "text", raw: "", text: "" }];
+          }
+        }
+      }
+      return tokens;
+    }) as typeof marked.marked.lexer;
+    const doc = { splitTextToSize: (t: string) => [t] };
+    expect(() => measureMarkdown(doc as any, "- real", 200)).not.toThrow();
+    marked.marked.lexer = origLexer;
+  });
 });
 
 describe("drawMarkdown", () => {
@@ -882,5 +912,56 @@ describe("drawMarkdown", () => {
     // No new text drawn for the unsupported block; y is unchanged.
     expect(finalY).toBe(50);
     expect((doc.text as any).mock.calls.length).toBe(beforeTextCalls);
+  });
+
+  it("renders a list item that contains only inline HTML (no text or paragraph tokens)", () => {
+    // A list item with only an html token has no paragraph/text children for
+    // getListItemInline to extract; it must fall back to an empty token list
+    // without throwing.
+    const doc = makeDoc();
+    expect(() => drawMarkdown(doc as any, C, '- <img src="x.png">', 36, 200, 50)).not.toThrow();
+  });
+
+  it("skips an inline token whose text field is empty", async () => {
+    // A stray text token with empty string must not crash the draw loop.
+    // We reach into marked to lex a contrived source and force a paragraph
+    // with an empty text token by directly mutating the result.
+    const marked = await import("marked");
+    const origLexer = marked.marked.lexer;
+    marked.marked.lexer = ((input: string) => {
+      const tokens = origLexer(input);
+      for (const t of tokens) {
+        if (t.type === "paragraph") {
+          (t as { tokens: unknown[] }).tokens = [{ type: "text", raw: "", text: "" }];
+        }
+      }
+      return tokens;
+    }) as typeof marked.marked.lexer;
+    const doc = makeDoc();
+    expect(() => drawMarkdown(doc as any, C, "hello", 36, 200, 50)).not.toThrow();
+    marked.marked.lexer = origLexer;
+  });
+
+  it("falls back to empty string when an inline token has no text field", async () => {
+    // A token without a `text` field at all exercises the `?? ""` branch in
+    // drawInline. The draw loop should treat it as an empty string and skip
+    // drawing via `if (!text) continue;`.
+    const marked = await import("marked");
+    const origLexer = marked.marked.lexer;
+    marked.marked.lexer = ((input: string) => {
+      const tokens = origLexer(input);
+      for (const t of tokens) {
+        if (t.type === "paragraph") {
+          (t as { tokens: unknown[] }).tokens = [
+            { type: "mystery", raw: "" },
+            { type: "text", raw: "x", text: "x" },
+          ];
+        }
+      }
+      return tokens;
+    }) as typeof marked.marked.lexer;
+    const doc = makeDoc();
+    expect(() => drawMarkdown(doc as any, C, "x", 36, 200, 50)).not.toThrow();
+    marked.marked.lexer = origLexer;
   });
 });

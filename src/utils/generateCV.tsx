@@ -122,10 +122,10 @@ function getListItemInline(item: Tokens.ListItem): Token[] {
   for (const t of item.tokens) {
     if (t.type === "paragraph") {
       const p = t as Tokens.Paragraph;
-      if (p.tokens) return p.tokens as Token[];
+      return p.tokens as Token[];
     } else if (t.type === "text") {
       const text = t as Tokens.Text;
-      if (text.tokens) return text.tokens as Token[];
+      return text.tokens as Token[];
     }
   }
   return [];
@@ -152,7 +152,7 @@ function measureToken(doc: any, token: Token, w: number): number {
         const inline = getListItemInline(item);
         let inlineText = "";
         for (const t of inline) {
-          const txt = (t as unknown as { text?: string }).text;
+          const txt = (t as { text?: string }).text;
           if (txt) inlineText += txt;
         }
         h += measureText(doc, inlineText, w - 14, 11) + 3;
@@ -174,8 +174,6 @@ function measureToken(doc: any, token: Token, w: number): number {
     }
     case "hr":
       return 8;
-    case "space":
-      return 0;
     default:
       return 0;
   }
@@ -274,21 +272,17 @@ function drawInline(
     if (lines.length > maxLines) maxLines = lines.length;
   };
 
-  const pickText = (t: Token): string | undefined => {
-    return (t as unknown as { text?: string }).text;
-  };
-
   for (const t of tokens) {
     if (t.type === "br") {
       y += lineH;
       cursorX = x;
-      if (Math.floor((y - startY) / lineH) + 1 > maxLines) {
-        maxLines = Math.floor((y - startY) / lineH) + 1;
-      }
+      // Track the number of lines drawn so far so the return value reflects
+      // the full block height even if a later chunk draws fewer lines.
+      maxLines = Math.floor((y - startY) / lineH) + 1;
       continue;
     }
-    const text = pickText(t);
-    if (text === undefined) continue;
+    const text = (t as unknown as { text?: string }).text ?? "";
+    if (!text) continue;
     if (t.type === "strong") {
       drawChunk(text, "bold");
     } else if (t.type === "em") {
@@ -393,8 +387,6 @@ function drawMarkdownToken(
       y += 8;
       break;
     }
-    case "space":
-      break;
     default:
       break;
   }
