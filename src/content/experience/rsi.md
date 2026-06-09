@@ -8,23 +8,23 @@ url: "https://grupocajarural.es/"
 
 # Consulting Firm
 
-• Devoteam
+- Devoteam
 
 # Projects
 
-• Onboarding
-• Customer
+- Onboarding
+- Customer
 
 # Tasks
 
-• Web application development using Vue.js and React.js
-• REST API integration in front-end applications
-• Unit and integration test development
-• Code documentation
-• Translations using i18n
-• Modification and elaboration of login pages
-• Internal SSO access elaboration
-• Modification of CSS styles
+- Web application development using Vue.js and React.js
+- REST API integration in front-end applications
+- Unit and integration test development
+- Code documentation
+- Translations using i18n
+- Modification and elaboration of login pages
+- Internal SSO access elaboration
+- Modification of CSS styles
 
 # Skills
 

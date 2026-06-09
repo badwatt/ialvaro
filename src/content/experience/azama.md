@@ -8,6 +8,6 @@ url: "https://azama.es/"
 
 # CEO Marketing
 
-• Incorporation of my company as sole proprietor
-• Management of sales teams
-• Marketing of various services
+- Incorporation of my company as sole proprietor
+- Management of sales teams
+- Marketing of various services

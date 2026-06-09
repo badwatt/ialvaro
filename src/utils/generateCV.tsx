@@ -1,5 +1,7 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
+import { tokenize, type Token } from "src/utils/markdown";
+import type { Tokens } from "marked";
 
 const PAGE_W = 595;
 const PAGE_H = 842;
@@ -107,24 +109,60 @@ export function toCircular(base64: string, size: number, scale = 4): Promise<str
   });
 }
 
-export function parseDescription(raw: string): { title: string; content: string }[] {
-  const sections: { title: string; content: string }[] = [];
-  const lines = raw.split("\n");
-  let currentTitle = "";
-  let currentContent: string[] = [];
-  for (const line of lines) {
-    if (line.startsWith("# ")) {
-      if (currentTitle)
-        sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
-      currentTitle = line.replace("# ", "").trim();
-      currentContent = [];
-    } else if (currentTitle) {
-      currentContent.push(line);
+export function parseDescription(raw: string): Token[] {
+  return tokenize(raw);
+}
+
+function measureText(doc: any, text: string, w: number, lineHeight: number): number {
+  const lines = doc.splitTextToSize(text, w);
+  return lines.length * lineHeight;
+}
+
+function measureToken(doc: any, token: Token, w: number): number {
+  switch (token.type) {
+    case "heading": {
+      const depth = (token as Tokens.Heading).depth;
+      const lineHeight = depth === 1 ? 13 : 12;
+      return measureText(doc, (token as Tokens.Heading).text, w, lineHeight) + 6;
     }
+    case "paragraph":
+      return measureText(doc, (token as Tokens.Paragraph).text, w, 10) + 4;
+    case "list": {
+      const list = token as Tokens.List;
+      let h = 2;
+      for (const item of list.items) {
+        h += measureText(doc, item.text, w - 14, 10) + 2;
+      }
+      return h + 4;
+    }
+    case "blockquote": {
+      const bq = token as Tokens.Blockquote;
+      let h = 4;
+      for (const t of bq.tokens) {
+        h += measureToken(doc, t as Token, w - 14);
+      }
+      return h + 4;
+    }
+    case "code": {
+      const code = token as Tokens.Code;
+      const lineH = 10;
+      return code.text.split("\n").length * lineH + 8;
+    }
+    case "hr":
+      return 6;
+    case "space":
+      return 0;
+    default:
+      return 0;
   }
-  if (currentTitle)
-    sections.push({ title: currentTitle, content: currentContent.join("\n").trim() });
-  return sections;
+}
+
+export function measureMarkdown(doc: any, raw: string, w: number): number {
+  let h = 0;
+  for (const token of parseDescription(raw)) {
+    h += measureToken(doc, token, w);
+  }
+  return h;
 }
 
 function sectionTitle(doc: any, C: CVColors, label: string, x: number, y: number): number {
@@ -171,16 +209,183 @@ function tag(
   return { x: x + tw + 5, y };
 }
 
+function drawInline(
+  doc: any,
+  C: CVColors,
+  tokens: Token[],
+  x: number,
+  w: number,
+  y: number,
+): number {
+  // Walk inline tokens and draw them left-to-right with the right font style.
+  // Word-wrap is handled per-chunk; we just print each chunk on the current line
+  // using its own font + size, then advance y if any chunk wrapped.
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.muted);
+
+  let cursorX = x;
+  const lineH = 10;
+
+  const drawChunk = (text: string, style: "normal" | "bold" | "italic") => {
+    doc.setFont("helvetica", style);
+    const lines = doc.splitTextToSize(text, w - (cursorX - x));
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (i > 0) {
+        y += lineH;
+        cursorX = x;
+      }
+      doc.text(line, cursorX, y);
+      cursorX += doc.getTextWidth(line);
+    }
+  };
+
+  const pickText = (t: Token): string | undefined => {
+    // The list of inline types we render as text. Anything not here
+    // (e.g. br, unknown extensions) has no text and is skipped by the caller.
+    return (t as unknown as { text?: string }).text;
+  };
+
+  for (const t of tokens) {
+    if (t.type === "br") {
+      y += lineH;
+      cursorX = x;
+      continue;
+    }
+    const text = pickText(t);
+    if (t.type === "strong") {
+      drawChunk(text, "bold");
+    } else if (t.type === "em") {
+      drawChunk(text, "italic");
+    } else {
+      drawChunk(text, "normal");
+    }
+  }
+
+  return y;
+}
+
+function drawMarkdownToken(
+  doc: any,
+  C: CVColors,
+  token: Token,
+  x: number,
+  w: number,
+  startY: number,
+): number {
+  let y = startY;
+  switch (token.type) {
+    case "heading": {
+      const h = token as Tokens.Heading;
+      const depth = h.depth;
+      const size = depth === 1 ? 10 : depth === 2 ? 9.5 : 9;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(size);
+      doc.setTextColor(...C.white);
+      const lineH = depth === 1 ? 13 : 12;
+      const lines = doc.splitTextToSize(h.text, w);
+      for (const line of lines) {
+        doc.text(line, x, y);
+        y += lineH;
+      }
+      y += 2;
+      break;
+    }
+    case "paragraph": {
+      const p = token as Tokens.Paragraph;
+      const inlineTokens: Token[] = p.tokens as Token[];
+      y = drawInline(doc, C, inlineTokens, x, w, y);
+      y += 4;
+      break;
+    }
+    case "list": {
+      const list = token as Tokens.List;
+      y += 2;
+      for (let i = 0; i < list.items.length; i++) {
+        const item = list.items[i];
+        const marker = list.ordered ? `${i + 1}.` : "•";
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...C.accent);
+        doc.text(marker, x, y);
+        // Find inline tokens inside the first paragraph of the list item
+        const para = item.tokens.find((t) => t.type === "paragraph") as
+          | Tokens.Paragraph
+          | undefined;
+        const inline: Token[] = (para?.tokens ?? []) as Token[];
+        y = drawInline(doc, C, inline, x + 14, w - 14, y);
+        y += 2;
+      }
+      y += 4;
+      break;
+    }
+    case "blockquote": {
+      const bq = token as Tokens.Blockquote;
+      doc.setDrawColor(...C.primary);
+      doc.setLineWidth(0.5);
+      y += 2;
+      const startY = y;
+      for (const t of bq.tokens) {
+        y = drawMarkdownToken(doc, C, t as Token, x + 8, w - 8, y);
+      }
+      doc.line(x, startY - 2, x, y);
+      y += 2;
+      break;
+    }
+    case "code": {
+      const code = token as Tokens.Code;
+      const lineH = 10;
+      const lines = code.text.split("\n");
+      const blockH = lines.length * lineH + 8;
+      doc.setFillColor(...C.base);
+      doc.setDrawColor(...C.border);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(x, y, w, blockH, 2, 2, "FD");
+      doc.setFont("courier", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(...C.white);
+      for (let i = 0; i < lines.length; i++) {
+        doc.text(lines[i], x + 4, y + 10 + i * lineH);
+      }
+      y += blockH;
+      break;
+    }
+    case "hr": {
+      doc.setDrawColor(...C.border);
+      doc.setLineWidth(0.4);
+      doc.line(x, y + 2, x + w, y + 2);
+      y += 6;
+      break;
+    }
+    case "space":
+      break;
+    default:
+      break;
+  }
+  return y;
+}
+
+export function drawMarkdown(
+  doc: any,
+  C: CVColors,
+  raw: string,
+  x: number,
+  w: number,
+  startY: number,
+): number {
+  let y = startY;
+  for (const token of parseDescription(raw)) {
+    y = drawMarkdownToken(doc, C, token, x, w, y);
+  }
+  return y;
+}
+
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
-  const sections = parseDescription(job.description);
-  for (const sec of sections) {
-    h += 13; // sec title
-    const lines = doc.splitTextToSize(sec.content, w);
-    h += lines.length * 10 + 4;
-  }
-  h += 20; // card vertical padding
+  h += measureMarkdown(doc, job.description, w);
+  h += 12; // bottom padding inside the card
   return h;
 }
 
@@ -194,7 +399,6 @@ function drawJob(
   startY: number,
   logo: string | null,
 ): number {
-  const sections = parseDescription(job.description);
   const cardH = measureExperience(doc, job, w);
   const LOGO = 16;
 
@@ -234,18 +438,7 @@ function drawJob(
   doc.text(`${job.date_from} — ${job.date_to}`, x, y);
   y += 14;
 
-  for (const sec of sections) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(...C.white);
-    doc.text(sec.title, x, y);
-    y += 12;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...C.muted);
-    const lines = doc.splitTextToSize(sec.content, w);
-    doc.text(lines, x, y);
-    y += lines.length * 10 + 4;
-  }
+  y = drawMarkdown(doc, C, job.description, x, w, y);
 
   return startY + cardH + 14;
 }

@@ -99,34 +99,54 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   </a>
                 </div>
                 <div
-                  class="space-y-4 text-alvaro-muted leading-relaxed"
+                  class="space-y-3 text-sm text-alvaro-muted leading-relaxed"
                 >
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Consulting Firm
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
-                      - Knowmad Mood
-- Plexus
-                    </p>
-                  </div>
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Projects
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
-                      - Onboarding
-- Customer
-                    </p>
-                  </div>
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Consulting Firm
+                  </h1>
+                  <ul
+                    class="list-disc pl-5 space-y-1"
+                  >
+                    <li>
+                      <div>
+                        <span>
+                          Knowmad Mood
+                        </span>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <span>
+                          Plexus
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Projects
+                  </h1>
+                  <ul
+                    class="list-disc pl-5 space-y-1"
+                  >
+                    <li>
+                      <div>
+                        <span>
+                          Onboarding
+                        </span>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <span>
+                          Customer
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -203,57 +223,75 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   </a>
                 </div>
                 <div
-                  class="space-y-4 text-alvaro-muted leading-relaxed"
+                  class="space-y-3 text-sm text-alvaro-muted leading-relaxed"
                 >
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Consulting Firm
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
-                      - Devoteam
-                    </p>
-                  </div>
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Projects
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
-                      - Onboarding
-- Customer
-                    </p>
-                  </div>
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Tasks
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
-                      - Web application development
-                    </p>
-                  </div>
-                  <div>
-                    <h4
-                      class="text-base font-medium text-alvaro-white mb-1"
-                    >
-                      Skills
-                    </h4>
-                    <p
-                      class="text-sm whitespace-pre-line"
-                    >
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Consulting Firm
+                  </h1>
+                  <ul
+                    class="list-disc pl-5 space-y-1"
+                  >
+                    <li>
+                      <div>
+                        <span>
+                          Devoteam
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Projects
+                  </h1>
+                  <ul
+                    class="list-disc pl-5 space-y-1"
+                  >
+                    <li>
+                      <div>
+                        <span>
+                          Onboarding
+                        </span>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <span>
+                          Customer
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Tasks
+                  </h1>
+                  <ul
+                    class="list-disc pl-5 space-y-1"
+                  >
+                    <li>
+                      <div>
+                        <span>
+                          Web application development
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                  <h1
+                    class="text-xl font-semibold text-alvaro-white"
+                  >
+                    Skills
+                  </h1>
+                  <p
+                    class="whitespace-pre-line"
+                  >
+                    <span>
                       vue.js, react.js
-                    </p>
-                  </div>
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>

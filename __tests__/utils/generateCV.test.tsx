@@ -7,6 +7,8 @@ import {
   generateCV,
   parseDescription,
   parseDate,
+  drawMarkdown,
+  measureMarkdown,
 } from "src/utils/generateCV";
 import {
   CV_THEMES,
@@ -634,20 +636,251 @@ describe("cvThemes", () => {
 });
 
 describe("parseDescription", () => {
-  it("parses sections from markdown body", () => {
+  it("tokenises headings and paragraphs from markdown", () => {
     const result = parseDescription("# A\n\ncontent\n\n# B\n\nmore");
-    expect(result).toEqual([
-      { title: "A", content: "content" },
-      { title: "B", content: "more" },
-    ]);
+    const blocks = result.filter((t) => t.type !== "space");
+    expect(blocks.map((t) => t.type)).toEqual(["heading", "paragraph", "heading", "paragraph"]);
+    expect((blocks[0] as { text: string }).text).toBe("A");
+    expect((blocks[1] as { text: string }).text).toBe("content");
+    expect((blocks[2] as { text: string }).text).toBe("B");
+    expect((blocks[3] as { text: string }).text).toBe("more");
   });
 
-  it("skips lines before first heading", () => {
+  it("tokenises lines before the first heading as a paragraph", () => {
     const result = parseDescription("intro\n# A\ncontent\n");
-    expect(result).toEqual([{ title: "A", content: "content" }]);
+    const blocks = result.filter((t) => t.type !== "space");
+    expect(blocks[0].type).toBe("paragraph");
+    expect((blocks[0] as { text: string }).text).toBe("intro");
+    expect(blocks[1].type).toBe("heading");
   });
 
-  it("returns empty for no headings", () => {
-    expect(parseDescription("just text")).toEqual([]);
+  it("returns a single paragraph token for plain text", () => {
+    const result = parseDescription("just text");
+    const blocks = result.filter((t) => t.type !== "space");
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("paragraph");
+    expect((blocks[0] as { text: string }).text).toBe("just text");
+  });
+
+  it("tokenises bullet lists", () => {
+    const result = parseDescription("- one\n- two\n- three");
+    const blocks = result.filter((t) => t.type !== "space");
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0].type).toBe("list");
+    const list = blocks[0] as unknown as { ordered: boolean; items: { text: string }[] };
+    expect(list.ordered).toBe(false);
+    expect(list.items).toHaveLength(3);
+  });
+
+  it("tokenises blockquotes", () => {
+    const result = parseDescription("> quoted");
+    const blocks = result.filter((t) => t.type !== "space");
+    expect(blocks[0].type).toBe("blockquote");
+  });
+});
+
+describe("measureMarkdown", () => {
+  it("returns 0 for empty input", () => {
+    const doc = {
+      splitTextToSize: () => [],
+    };
+    expect(measureMarkdown(doc as any, "", 200)).toBe(0);
+  });
+
+  it("includes height for headings", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "# Title", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("includes height for paragraphs", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "just a paragraph", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("includes height for lists", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "- a\n- b", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("includes height for blockquotes", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "> quoted", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("includes height for code blocks", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "```\nconst x = 1;\n```", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("includes height for hr", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "---", 200);
+    expect(h).toBeGreaterThan(0);
+  });
+
+  it("falls back to zero height for unsupported block types (e.g. tables)", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h = measureMarkdown(doc as any, "| col |\n| --- |\n| val |", 200);
+    expect(h).toBe(0);
+  });
+
+  it("uses h1 line height for # headings", () => {
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const h1 = measureMarkdown(doc as any, "# Heading", 200);
+    const h2 = measureMarkdown(doc as any, "## Heading", 200);
+    // h1 is larger (13pt line vs 12pt)
+    expect(h1).toBeGreaterThan(h2);
+  });
+});
+
+describe("drawMarkdown", () => {
+  // Build a minimal jsPDF-shaped mock that records method calls.
+  function makeDoc() {
+    return {
+      setTextColor: vi.fn(),
+      setFillColor: vi.fn(),
+      setDrawColor: vi.fn(),
+      setFont: vi.fn(),
+      setFontSize: vi.fn(),
+      setLineWidth: vi.fn(),
+      text: vi.fn(),
+      textWithLink: vi.fn(),
+      line: vi.fn(),
+      rect: vi.fn(),
+      roundedRect: vi.fn(),
+      ellipse: vi.fn(),
+      circle: vi.fn(),
+      addImage: vi.fn(),
+      addPage: vi.fn(),
+      splitTextToSize: vi.fn().mockImplementation((t: string) => [t]),
+      getTextWidth: vi.fn().mockReturnValue(50),
+      output: vi.fn(),
+    };
+  }
+
+  const C = {
+    base: [0, 0, 0] as [number, number, number],
+    surface: [10, 10, 10] as [number, number, number],
+    border: [20, 20, 20] as [number, number, number],
+    muted: [128, 128, 128] as [number, number, number],
+    white: [240, 240, 240] as [number, number, number],
+    primary: [60, 120, 200] as [number, number, number],
+    accent: [200, 80, 100] as [number, number, number],
+  };
+
+  it("draws headings, paragraphs, lists, blockquotes, code, and hr without throwing", () => {
+    const doc = makeDoc();
+    const source = [
+      "# Title",
+      "Paragraph with **bold** and *italic* and `code` and ~~strike~~.",
+      "- bullet one",
+      "- bullet two",
+      "> a quote",
+      "```",
+      "const x = 1;",
+      "```",
+      "---",
+    ].join("\n\n");
+    const finalY = drawMarkdown(doc as any, C, source, 36, 200, 50);
+    expect(finalY).toBeGreaterThan(50);
+    expect(doc.text).toHaveBeenCalled();
+    expect(doc.setFont).toHaveBeenCalled();
+  });
+
+  it("draws a heading at depth 1 (h1 lineHeight branch)", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "# Title", 36, 200, 50);
+    expect(doc.text).toHaveBeenCalled();
+  });
+
+  it("draws a heading at depth 2 (h2 size/lineHeight branch)", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "## Subtitle", 36, 200, 50);
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("Subtitle");
+  });
+
+  it("draws a heading at depth 3 (h3 fallback size/lineHeight branch)", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "### Sub-subtitle", 36, 200, 50);
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("Sub-subtitle");
+  });
+
+  it("draws inline images, links, and escape tokens", () => {
+    const doc = makeDoc();
+    const source =
+      "![alt](https://example.com/x.png) and a [link](https://example.com) and \\(escaped\\)";
+    drawMarkdown(doc as any, C, source, 36, 200, 50);
+    // The link text and the image text are both drawn.
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("link");
+  });
+
+  it("draws a paragraph that includes a del token (~~strike~~)", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "this is ~~struck~~", 36, 200, 50);
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("struck");
+  });
+
+  it("handles inline HTML tag tokens without crashing", () => {
+    const doc = makeDoc();
+    // Inline HTML produces an 'html' token. Should not throw.
+    expect(() => drawMarkdown(doc as any, C, "an <em>inline</em> tag", 36, 200, 50)).not.toThrow();
+  });
+
+  it("skips an empty inline text token without crashing", () => {
+    const doc = makeDoc();
+    // Direct call: feed an empty paragraph through drawMarkdown by wrapping
+    // an empty text-like source. Marked won't produce empty text, but the
+    // draw loop should still skip the call gracefully.
+    expect(() => drawMarkdown(doc as any, C, "", 36, 200, 50)).not.toThrow();
+  });
+
+  it("skips unknown inline token types gracefully", () => {
+    const doc = makeDoc();
+    // No crash when input contains only HTML that doesn't match an inline
+    // pattern recognised by pickText. The draw loop should no-op.
+    expect(() => drawMarkdown(doc as any, C, "<unknown>raw</unknown>", 36, 200, 50)).not.toThrow();
+  });
+
+  it("draws an ordered list with numeric markers", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "1. first\n2. second", 36, 200, 50);
+    // The accent color is used for the marker. The number "1." should appear.
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("1.");
+    expect(calls).toContain("2.");
+  });
+
+  it("draws a paragraph with a link inline", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "see [docs](https://example.com)", 36, 200, 50);
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("docs");
+  });
+
+  it("draws a paragraph with a hard line break", () => {
+    const doc = makeDoc();
+    drawMarkdown(doc as any, C, "line one  \nline two", 36, 200, 50);
+    // The break token is not drawn via text(), but the surrounding text is.
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("line one");
+    expect(calls).toContain("line two");
+  });
+
+  it("falls back to no-op for unsupported block types (e.g. tables)", () => {
+    const doc = makeDoc();
+    const beforeTextCalls = (doc.text as any).mock.calls.length;
+    const finalY = drawMarkdown(doc as any, C, "| col |\n| --- |\n| val |", 36, 200, 50);
+    // No new text drawn for the unsupported block; y is unchanged.
+    expect(finalY).toBe(50);
+    expect((doc.text as any).mock.calls.length).toBe(beforeTextCalls);
   });
 });

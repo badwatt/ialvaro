@@ -1,6 +1,6 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
-import { parseDescription } from "src/utils/generateCV";
+import { Markdown } from "src/components/Markdown";
 import type { ExperienceEntry } from "src/utils/content";
 
 interface ExperienceProps {
@@ -9,7 +9,6 @@ interface ExperienceProps {
 
 export const Experience = ({ experienceData }: ExperienceProps) => {
   const items = experienceData.map((entry, i) => {
-    const sections = parseDescription(entry.description);
     return {
       id: String(i),
       title: entry.title,
@@ -33,14 +32,7 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
               />
             </a>
           </div>
-          <div className="space-y-4 text-alvaro-muted leading-relaxed">
-            {sections.map((sec, i) => (
-              <div key={i}>
-                <h4 className="text-base font-medium text-alvaro-white mb-1">{sec.title}</h4>
-                <p className="text-sm whitespace-pre-line">{sec.content}</p>
-              </div>
-            ))}
-          </div>
+          <Markdown source={entry.description} />
         </div>
       ),
     };
