@@ -453,13 +453,18 @@ export function drawJob(
   doc.setDrawColor(...C.border);
   doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
 
-  // Left accent bar
-  doc.setFillColor(...C.accent);
-  doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
-
   // Dot
   doc.setFillColor(...C.accent);
   doc.circle(timelineX, startY + 6, 3.5, "F");
+
+  // Left accent bar: only when there is a single period. With multiple
+  // periods each chip draws its own colored bar; drawing a card-wide
+  // bar on top would create a redundant edge.
+  const subgroups = parseExperienceSubgroups(job.description);
+  if (subgroups.length <= 1) {
+    doc.setFillColor(...C.accent);
+    doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
+  }
 
   let y = startY + 14;
 
@@ -484,7 +489,6 @@ export function drawJob(
   doc.text(`${job.date_from} — ${job.date_to}`, x, y);
   y += 14;
 
-  const subgroups = parseExperienceSubgroups(job.description);
   for (let i = 0; i < subgroups.length; i++) {
     // Render each period as a chip inside the parent card so the two
     // periods are clearly distinct without competing with the parent
@@ -509,18 +513,20 @@ export function drawJob(
     const bodyTopPad = 2;
     const chipH = chipPadTop + chipHeaderH + bodyTopPad + bodyH + chipPadBottom;
 
-    // Draw the chip frame: subtle base fill, thin border.
+    // Draw the chip frame: only a subtle base fill (no border, since
+    // the parent card already provides one and a nested border would
+    // feel busy). The chip is flush with the card's interior
+    // (same x and width) so only the card's outline is visible.
     doc.setFillColor(...C.base);
-    doc.setDrawColor(...C.border);
-    doc.setLineWidth(0.4);
-    doc.roundedRect(x - 8, y, w + 16, chipH, 3, 3, "FD");
+    doc.roundedRect(x - 12, y, w + 24, chipH, 4, 4, "F");
 
-    // Colored left accent bar inside the chip.
+    // Colored left accent bar inside the chip, aligned with the
+    // card's accent bar.
     doc.setFillColor(...accent);
-    doc.rect(x - 8, y, 2.5, chipH, "F");
+    doc.rect(x - 12, y, 4, chipH, "F");
 
     // Title inside the chip.
-    const innerX = x + 4;
+    const innerX = x + 2;
     let innerY = y + chipPadTop + 9;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
@@ -536,9 +542,11 @@ export function drawJob(
       doc.text(meta.subtitle, innerX, innerY);
     }
 
-    // Body content with the title and subtitle stripped.
+    // Body content with the title and subtitle stripped. The body sits
+    // to the right of the colored accent bar (4pt) with a small
+    // padding.
     const bodyY = y + chipPadTop + chipHeaderH + bodyTopPad;
-    drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w - 4, bodyY);
+    drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w + 12, bodyY);
 
     y += chipH;
     if (i < subgroups.length - 1) y += 6;
