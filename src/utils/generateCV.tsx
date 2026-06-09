@@ -418,14 +418,18 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
   const subgroups = parseExperienceSubgroups(job.description);
-  const SUBHEADER_BLOCK_H = 24; // title (11) + subtitle line (9) + spacing (4)
-  const DIVIDER_BLOCK_H = 16; // gap above + line + gap below
+  const CHIP_PAD_TOP = 8;
+  const CHIP_PAD_BOTTOM = 8;
+  const CHIP_HEADER_H = 24; // title (11) + subtitle line (9) + spacing (4)
   const BODY_TOP_PAD = 2;
+  const CHIP_GAP = 6;
   for (let i = 0; i < subgroups.length; i++) {
-    h += SUBHEADER_BLOCK_H;
+    h += CHIP_PAD_TOP;
+    h += CHIP_HEADER_H;
     h += BODY_TOP_PAD;
     h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
-    if (i < subgroups.length - 1) h += DIVIDER_BLOCK_H;
+    h += CHIP_PAD_BOTTOM;
+    if (i < subgroups.length - 1) h += CHIP_GAP;
   }
   h += 12; // bottom padding inside the card
   return h;
@@ -482,49 +486,62 @@ export function drawJob(
 
   const subgroups = parseExperienceSubgroups(job.description);
   for (let i = 0; i < subgroups.length; i++) {
-    // Render each period as a visually distinct sub-block: a colored
-    // left bar, a bold title on its own line, a separate italic
-    // subtitle line below it, then the body (with the title/subtitle
-    // stripped so the same text isn't drawn twice).
+    // Render each period as a chip inside the parent card so the two
+    // periods are clearly distinct without competing with the parent
+    // for visual weight. Each chip has:
+    //   - A subtle base-color fill (slightly lighter than the card
+    //     surface, so it pops out as a "lifted" tile).
+    //   - A thin border in the card's border color.
+    //   - A colored left accent bar in primary or accent (alternating
+    //     per period) to mark the period.
+    //   - Title + subtitle + body inside.
     const meta = extractPeriodTitle(subgroups[i], i);
-    const periodX = x;
-    const periodW = w;
+    const accent =
+      i % 2 === 0
+        ? (C.primary as unknown as [number, number, number])
+        : (C.accent as unknown as [number, number, number]);
 
-    // Colored left bar marker for the period.
-    doc.setFillColor(...C.primary);
-    doc.rect(periodX - 6, y - 8, 2, 18, "F");
+    // Compute chip body height to draw the chip frame.
+    const bodyH = measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
+    const chipPadTop = 8;
+    const chipPadBottom = 8;
+    const chipHeaderH = 24;
+    const bodyTopPad = 2;
+    const chipH = chipPadTop + chipHeaderH + bodyTopPad + bodyH + chipPadBottom;
 
-    // Title line.
+    // Draw the chip frame: subtle base fill, thin border.
+    doc.setFillColor(...C.base);
+    doc.setDrawColor(...C.border);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(x - 8, y, w + 16, chipH, 3, 3, "FD");
+
+    // Colored left accent bar inside the chip.
+    doc.setFillColor(...accent);
+    doc.rect(x - 8, y, 2.5, chipH, "F");
+
+    // Title inside the chip.
+    const innerX = x + 4;
+    let innerY = y + chipPadTop + 9;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.setTextColor(...C.primary);
-    doc.text(meta.title, periodX, y);
-    y += 11;
+    doc.setTextColor(...accent);
+    doc.text(meta.title, innerX, innerY);
 
-    // Subtitle on its own line, clearly separated from the title.
+    // Subtitle on its own line below the title.
     if (meta.subtitle) {
+      innerY += 11;
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, periodX, y);
-      y += 11;
-    } else {
-      y += 2;
+      doc.text(meta.subtitle, innerX, innerY);
     }
 
-    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), periodX, periodW, y);
+    // Body content with the title and subtitle stripped.
+    const bodyY = y + chipPadTop + chipHeaderH + bodyTopPad;
+    drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w - 4, bodyY);
 
-    if (i < subgroups.length - 1) {
-      // A clear horizontal divider separates the two periods inside
-      // the same job card. Centered with margins on both sides so it
-      // reads as a visual separator, not a card edge.
-      y += 6;
-      doc.setDrawColor(...C.border);
-      doc.setLineWidth(0.4);
-      const inset = 12;
-      doc.line(periodX + inset, y, periodX + periodW - inset, y);
-      y += 10;
-    }
+    y += chipH;
+    if (i < subgroups.length - 1) y += 6;
   }
 
   return startY + cardH + 14;
