@@ -4,6 +4,8 @@ import { useScrollReveal } from "src/hooks/useScrollReveal";
 import { generateCV } from "src/utils/generateCV";
 import { PdfViewer } from "src/components/PdfViewer";
 import { CapWidget } from "src/components/CapWidget";
+import { CVThemePicker } from "src/components/CVThemePicker";
+import { getThemeById, type CVTheme } from "src/utils/cvThemes";
 import toast, { Toaster } from "react-hot-toast";
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 
@@ -16,8 +18,8 @@ interface HomeProps {
 export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const [parallax, setParallax] = useState(0);
-  const [showCaptcha, setShowCaptcha] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [cvStep, setCvStep] = useState<"idle" | "themes" | "captcha" | "loading">("idle");
+  const [theme, setTheme] = useState<CVTheme>(getThemeById("default"));
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showViewer, setShowViewer] = useState(false);
 
@@ -30,7 +32,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
   }, []);
 
   const handleOpenCV = async (token: string) => {
-    setLoading(true);
+    setCvStep("loading");
     try {
       const verifyRes = await fetch("/api/cap/verify", {
         method: "POST",
@@ -39,17 +41,17 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
       });
       if (!verifyRes.ok) {
         toast.error("Captcha verification failed. Please try again.");
+        setCvStep("captcha");
         return;
       }
-      const url = await generateCV(experienceData, aboutData, skillsData);
+      const url = await generateCV(theme, experienceData, aboutData, skillsData);
       setPdfUrl(url);
       setShowViewer(true);
+      setCvStep("idle");
     } catch (err) {
       console.error("CV generation failed:", err);
       toast.error("CV generation failed. Please try again.");
-    } finally {
-      setLoading(false);
-      setShowCaptcha(false);
+      setCvStep("captcha");
     }
   };
 
@@ -107,16 +109,22 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          {loading ? (
+          {cvStep === "loading" ? (
             <span className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl">
               Generating...
             </span>
-          ) : showCaptcha ? (
-            <CapWidget
-              onVerified={(token) => {
-                handleOpenCV(token);
-              }}
-            />
+          ) : cvStep === "themes" ? (
+            <div className="w-full max-w-2xl">
+              <CVThemePicker
+                selectedId={theme.id}
+                onSelect={(t) => {
+                  setTheme(t);
+                  setCvStep("captcha");
+                }}
+              />
+            </div>
+          ) : cvStep === "captcha" ? (
+            <CapWidget onVerified={handleOpenCV} />
           ) : (
             <>
               <a
@@ -128,7 +136,7 @@ export const Home = ({ experienceData, aboutData, skillsData }: HomeProps) => {
               </a>
               <button
                 type="button"
-                onClick={() => setShowCaptcha(true)}
+                onClick={() => setCvStep("themes")}
                 className="px-8 py-3.5 border border-alvaro-border text-alvaro-white font-semibold rounded-xl hover:border-alvaro-primary/50 hover:text-alvaro-primary transition-all duration-300 active:scale-[0.97] cursor-pointer"
               >
                 CV

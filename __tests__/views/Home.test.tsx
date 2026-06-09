@@ -117,7 +117,7 @@ describe("<Home />", () => {
     expect(tagline?.className).toContain("opacity-100");
   });
 
-  it("shows captcha widget after clicking CV", () => {
+  it("shows theme picker after clicking CV", () => {
     render(
       <Home
         experienceData={testExperienceData}
@@ -129,8 +129,9 @@ describe("<Home />", () => {
     act(() => {
       screen.getByText("CV").click();
     });
-    expect(screen.queryByText("CV")).toBeNull();
-    expect(screen.getByText("Verify")).toBeDefined();
+    expect(screen.queryByText("View work")).toBeNull();
+    expect(screen.getByText("Pick a palette")).toBeDefined();
+    expect(screen.queryByText("Verify")).toBeNull();
   });
 
   it("opens PdfViewer via generateCV after captcha resolves", async () => {
@@ -144,6 +145,9 @@ describe("<Home />", () => {
     );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Default theme").click();
     });
     act(() => {
       screen.getByText("Verify").click();
@@ -170,6 +174,9 @@ describe("<Home />", () => {
       screen.getByText("CV").click();
     });
     act(() => {
+      screen.getByLabelText("Select Default theme").click();
+    });
+    act(() => {
       screen.getByText("Verify").click();
     });
     expect(await screen.findByText("Generating...")).toBeDefined();
@@ -191,6 +198,9 @@ describe("<Home />", () => {
     );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Default theme").click();
     });
     act(() => {
       screen.getByText("Verify").click();
@@ -215,6 +225,9 @@ describe("<Home />", () => {
       screen.getByText("CV").click();
     });
     act(() => {
+      screen.getByLabelText("Select Default theme").click();
+    });
+    act(() => {
       screen.getByText("Verify").click();
     });
     await waitFor(() => {
@@ -234,6 +247,9 @@ describe("<Home />", () => {
     );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Default theme").click();
     });
     act(() => {
       screen.getByText("Verify").click();
@@ -264,6 +280,9 @@ describe("<Home />", () => {
     );
     act(() => {
       screen.getByText("CV").click();
+    });
+    act(() => {
+      screen.getByLabelText("Select Default theme").click();
     });
     act(() => {
       screen.getByText("Verify").click();

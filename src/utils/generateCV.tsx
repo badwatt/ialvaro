@@ -1,18 +1,31 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
+import type { CVTheme, CVThemeColors } from "src/utils/cvThemes";
 
 const PAGE_W = 595;
 const PAGE_H = 842;
 const M = 36;
 
-const C = {
-  base: [8, 8, 15] as [number, number, number],
-  surface: [18, 18, 29] as [number, number, number],
-  border: [32, 32, 53] as [number, number, number],
-  muted: [152, 152, 176] as [number, number, number],
-  white: [232, 232, 242] as [number, number, number],
-  primary: [91, 155, 213] as [number, number, number],
-  accent: [224, 85, 106] as [number, number, number],
+type CVColors = {
+  base: CVThemeColors["base"];
+  surface: CVThemeColors["surface"];
+  border: CVThemeColors["border"];
+  muted: CVThemeColors["muted"];
+  white: CVThemeColors["text"];
+  primary: CVThemeColors["primary"];
+  accent: CVThemeColors["accent"];
 };
+
+function buildColors(colors: CVThemeColors): CVColors {
+  return {
+    base: colors.base,
+    surface: colors.surface,
+    border: colors.border,
+    muted: colors.muted,
+    white: colors.text,
+    primary: colors.primary,
+    accent: colors.accent,
+  };
+}
 
 export function parseDate(str: string): number {
   if (str.toLowerCase() === "now") return Date.now();
@@ -114,7 +127,7 @@ export function parseDescription(raw: string): { title: string; content: string 
   return sections;
 }
 
-function sectionTitle(doc: any, label: string, x: number, y: number): number {
+function sectionTitle(doc: any, C: CVColors, label: string, x: number, y: number): number {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(...C.primary);
@@ -127,6 +140,7 @@ function sectionTitle(doc: any, label: string, x: number, y: number): number {
 
 function tag(
   doc: any,
+  C: CVColors,
   label: string,
   x: number,
   y: number,
@@ -172,6 +186,7 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
 
 function drawJob(
   doc: any,
+  C: CVColors,
   job: ExperienceEntry,
   x: number,
   w: number,
@@ -235,7 +250,7 @@ function drawJob(
   return startY + cardH + 14;
 }
 
-function continuationHeader(doc: any): number {
+function continuationHeader(doc: any, C: CVColors): number {
   let y = M;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
@@ -251,7 +266,7 @@ function continuationHeader(doc: any): number {
   return y + 56;
 }
 
-function drawFooter(doc: any, profileAltImg: string | null) {
+function drawFooter(doc: any, C: CVColors, profileAltImg: string | null) {
   const footerY = PAGE_H - 24;
   doc.setDrawColor(...C.border);
   doc.setLineWidth(0.5);
@@ -281,7 +296,7 @@ function drawFooter(doc: any, profileAltImg: string | null) {
   }
 }
 
-function startPage(doc: any, W: number) {
+function startPage(doc: any, W: number, C: CVColors) {
   doc.setFillColor(...C.base);
   doc.rect(0, 0, W, PAGE_H, "F");
   doc.setFillColor(...C.primary);
@@ -289,10 +304,12 @@ function startPage(doc: any, W: number) {
 }
 
 export async function generateCV(
+  theme: CVTheme,
   experienceData: ExperienceEntry[],
   aboutData: AboutEntry[],
   skillsData: SkillEntry[],
 ): Promise<string> {
+  const C = buildColors(theme.colors);
   const sortedExperience = [...experienceData].sort(
     (a, b) => parseDate(b.date_from) - parseDate(a.date_from),
   );
@@ -336,7 +353,7 @@ export async function generateCV(
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
 
-  startPage(doc, W);
+  startPage(doc, W, C);
 
   // Header
   let y = M;
@@ -421,7 +438,7 @@ export async function generateCV(
   const socialBottom = sy + 12;
   sy = socialBottom + 22;
 
-  sy = sectionTitle(doc, "ABOUT", M, sy);
+  sy = sectionTitle(doc, C, "ABOUT", M, sy);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
@@ -431,7 +448,7 @@ export async function generateCV(
 
   // Location
   if (aboutData[0]?.location) {
-    sy = sectionTitle(doc, "LOCATION", M, sy);
+    sy = sectionTitle(doc, C, "LOCATION", M, sy);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
     doc.setTextColor(...C.muted);
@@ -441,7 +458,7 @@ export async function generateCV(
 
   // Languages
   if (aboutData[0]?.languages && aboutData[0].languages.length > 0) {
-    sy = sectionTitle(doc, "LANGUAGES", M, sy);
+    sy = sectionTitle(doc, C, "LANGUAGES", M, sy);
     for (const lang of aboutData[0].languages) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8.5);
@@ -459,7 +476,7 @@ export async function generateCV(
 
   // Education
   if (aboutData[0]?.education && aboutData[0].education.length > 0) {
-    sy = sectionTitle(doc, "EDUCATION", M, sy);
+    sy = sectionTitle(doc, C, "EDUCATION", M, sy);
     for (const edu of aboutData[0].education) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8.5);
@@ -477,15 +494,15 @@ export async function generateCV(
     sy = eduBottom + 22;
   }
 
-  sy = sectionTitle(doc, "SKILLS", M, sy);
+  sy = sectionTitle(doc, C, "SKILLS", M, sy);
   let tx = M;
   for (const s of featuredSkills) {
-    const r = tag(doc, s, tx, sy, true, M, sidebarW);
+    const r = tag(doc, C, s, tx, sy, true, M, sidebarW);
     tx = r.x;
     sy = r.y;
   }
   for (const s of otherSkills) {
-    const r = tag(doc, s, tx, sy, false, M, sidebarW);
+    const r = tag(doc, C, s, tx, sy, false, M, sidebarW);
     tx = r.x;
     sy = r.y;
   }
@@ -506,21 +523,21 @@ export async function generateCV(
     const logo = expLogos[i] ?? null;
     const needed = measureExperience(doc, job, contW) + (i < totalJobs - 1 ? 14 : 0);
     if (y + needed > PAGE_H - M - 36) {
-      drawFooter(doc, profileAltImg);
+      drawFooter(doc, C, profileAltImg);
       doc.addPage();
       page++;
-      startPage(doc, W);
-      y = continuationHeader(doc);
+      startPage(doc, W, C);
+      y = continuationHeader(doc, C);
     }
     const startY = y;
     const usePage1 = page === 1;
     const dotX = usePage1 ? timelineX : M + 10;
     const jx = usePage1 ? cx : M + 28;
     const jw = usePage1 ? contW : CONTENT_W - 40;
-    y = drawJob(doc, job, jx, jw, dotX, startY, logo);
+    y = drawJob(doc, C, job, jx, jw, dotX, startY, logo);
   }
 
-  drawFooter(doc, profileAltImg);
+  drawFooter(doc, C, profileAltImg);
 
   const blob = doc.output("blob");
   const url = URL.createObjectURL(blob);

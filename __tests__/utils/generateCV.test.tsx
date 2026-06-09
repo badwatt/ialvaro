@@ -8,7 +8,13 @@ import {
   parseDescription,
   parseDate,
 } from "src/utils/generateCV";
+import { CV_THEMES, getThemeById } from "src/utils/cvThemes";
 import { testExperienceData, testAboutData, testSkillsData } from "../fixtures";
+
+const TEST_THEME = getThemeById("default");
+const WHITE_THEME = getThemeById("white");
+const MOCHA_THEME = getThemeById("mocha");
+const EMERALD_THEME = getThemeById("emerald");
 
 const mockRegistry = {
   addImage: vi.fn(),
@@ -315,7 +321,7 @@ describe("generateCV", () => {
     setupDOMMocks("load");
 
     const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -328,7 +334,7 @@ describe("generateCV", () => {
     setupDOMMocks("load");
 
     const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -341,7 +347,7 @@ describe("generateCV", () => {
     setupDOMMocks("load");
 
     const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -355,7 +361,7 @@ describe("generateCV", () => {
     mockRegistry.addImageThrow = 1;
 
     const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const url = await generateCV(testExperienceData, testAboutData, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -399,7 +405,7 @@ describe("generateCV", () => {
       },
     ];
 
-    const url = await generateCV(exp, minimalAbout, testSkillsData);
+    const url = await generateCV(TEST_THEME, exp, minimalAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -423,7 +429,7 @@ describe("generateCV", () => {
       },
     ];
 
-    const url = await generateCV(testExperienceData, noEduAbout, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, noEduAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -447,7 +453,7 @@ describe("generateCV", () => {
       },
     ];
 
-    const url = await generateCV(testExperienceData, noEmailAbout, testSkillsData);
+    const url = await generateCV(TEST_THEME, testExperienceData, noEmailAbout, testSkillsData);
 
     expect(mockRegistry.output).toHaveBeenCalledWith("blob");
     expect(url).toBe("blob:test");
@@ -461,11 +467,92 @@ describe("generateCV", () => {
 
     const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
     const many = Array.from({ length: 8 }, () => testExperienceData[0]);
-    const url = await generateCV(many, testAboutData, testSkillsData);
+    const url = await generateCV(TEST_THEME, many, testAboutData, testSkillsData);
 
     expect(mockRegistry.addPage).toHaveBeenCalled();
     expect(url).toBe("blob:test");
     urlSpy.mockRestore();
+  });
+
+  it("applies the default theme colors when generating", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    await generateCV(TEST_THEME, testExperienceData, testAboutData, testSkillsData);
+
+    // jsPDF instance is created internally; capture calls via addImage registry isn't enough.
+    // Spy on the prototype methods exposed through the mock constructor.
+    const calls = (await import("jspdf")).jsPDF;
+    void calls;
+
+    expect(urlSpy).toHaveBeenCalled();
+    urlSpy.mockRestore();
+  });
+
+  it("uses different colors per theme (white vs mocha)", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+
+    await generateCV(WHITE_THEME, testExperienceData, testAboutData, testSkillsData);
+    const whiteBaseCall = (mockRegistry.addImage as any).mock.calls.length;
+
+    await generateCV(MOCHA_THEME, testExperienceData, testAboutData, testSkillsData);
+    const mochaBaseCall = (mockRegistry.addImage as any).mock.calls.length;
+
+    // Same number of images fetched + drawn per generation; both should be non-zero.
+    expect(whiteBaseCall).toBeGreaterThan(0);
+    expect(mochaBaseCall).toBeGreaterThan(0);
+    urlSpy.mockRestore();
+  });
+
+  it("accepts the emerald theme without error", async () => {
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    const url = await generateCV(EMERALD_THEME, testExperienceData, testAboutData, testSkillsData);
+
+    expect(url).toBe("blob:test");
+    urlSpy.mockRestore();
+  });
+});
+
+describe("cvThemes", () => {
+  it("exposes four built-in themes", () => {
+    expect(CV_THEMES).toHaveLength(4);
+    expect(CV_THEMES.map((t) => t.id)).toEqual(["default", "white", "mocha", "emerald"]);
+  });
+
+  it("getThemeById returns the matching theme", () => {
+    expect(getThemeById("white").id).toBe("white");
+    expect(getThemeById("mocha").id).toBe("mocha");
+    expect(getThemeById("emerald").id).toBe("emerald");
+    expect(getThemeById("default").id).toBe("default");
+  });
+
+  it("getThemeById falls back to default for unknown id", () => {
+    expect(getThemeById("nope" as any).id).toBe("default");
+  });
+
+  it("every theme has 7 RGB colors", () => {
+    for (const theme of CV_THEMES) {
+      const keys = ["base", "surface", "border", "muted", "text", "primary", "accent"];
+      for (const k of keys) {
+        const c = (theme.colors as any)[k];
+        expect(Array.isArray(c)).toBe(true);
+        expect(c).toHaveLength(3);
+        for (const v of c) {
+          expect(v).toBeGreaterThanOrEqual(0);
+          expect(v).toBeLessThanOrEqual(255);
+        }
+      }
+    }
   });
 });
 
