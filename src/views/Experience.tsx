@@ -1,6 +1,7 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
 import { Markdown } from "src/components/Markdown";
+import { parseExperienceSubgroups } from "src/utils/markdown";
 import type { ExperienceEntry } from "src/utils/content";
 
 interface ExperienceProps {
@@ -9,6 +10,8 @@ interface ExperienceProps {
 
 export const Experience = ({ experienceData }: ExperienceProps) => {
   const items = experienceData.map((entry, i) => {
+    const subgroups = parseExperienceSubgroups(entry.description);
+    const hasSubgroups = subgroups.length > 1;
     return {
       id: String(i),
       title: entry.title,
@@ -32,7 +35,17 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
               />
             </a>
           </div>
-          <Markdown source={entry.description} />
+          {hasSubgroups ? (
+            <Accordion
+              items={subgroups.map((sub, j) => ({
+                id: `${i}-${j}`,
+                title: `Period ${j + 1}`,
+                content: <Markdown source={sub} />,
+              }))}
+            />
+          ) : (
+            <Markdown source={entry.description} />
+          )}
         </div>
       ),
     };

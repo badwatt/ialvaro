@@ -1,6 +1,6 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
-import { tokenize, type Token } from "src/utils/markdown";
+import { tokenize, parseExperienceSubgroups, type Token } from "src/utils/markdown";
 import type { Tokens } from "marked";
 
 const PAGE_W = 595;
@@ -172,8 +172,6 @@ function measureToken(doc: any, token: Token, w: number): number {
       const lineH = 11;
       return code.text.split("\n").length * lineH + 10;
     }
-    case "hr":
-      return 8;
     default:
       return 0;
   }
@@ -380,13 +378,6 @@ function drawMarkdownToken(
       y += blockH;
       break;
     }
-    case "hr": {
-      doc.setDrawColor(...C.border);
-      doc.setLineWidth(0.5);
-      doc.line(x, y + 2, x + w, y + 2);
-      y += 8;
-      break;
-    }
     default:
       break;
   }
@@ -406,7 +397,10 @@ export function drawMarkdown(
   let y = startY;
   let first = true;
   for (const token of parseDescription(raw)) {
-    if (token.type === "space") continue;
+    // Drop `hr` tokens here; callers (e.g. drawJob) split on them
+    // explicitly so they can render sub-periods with proper spacing
+    // instead of a horizontal rule line.
+    if (token.type === "space" || token.type === "hr") continue;
     if (!first) y += BLOCK_GAP;
     first = false;
     y = drawMarkdownToken(doc, C, token, x, w, y);
@@ -417,12 +411,17 @@ export function drawMarkdown(
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
-  h += measureMarkdown(doc, job.description, w);
+  const subgroups = parseExperienceSubgroups(job.description);
+  const SUBGROUP_GAP = 8;
+  for (let i = 0; i < subgroups.length; i++) {
+    h += measureMarkdown(doc, subgroups[i], w);
+    if (i < subgroups.length - 1) h += SUBGROUP_GAP;
+  }
   h += 12; // bottom padding inside the card
   return h;
 }
 
-function drawJob(
+export function drawJob(
   doc: any,
   C: CVColors,
   job: ExperienceEntry,
@@ -471,7 +470,12 @@ function drawJob(
   doc.text(`${job.date_from} — ${job.date_to}`, x, y);
   y += 14;
 
-  y = drawMarkdown(doc, C, job.description, x, w, y);
+  const subgroups = parseExperienceSubgroups(job.description);
+  const SUBGROUP_GAP = 8;
+  for (let i = 0; i < subgroups.length; i++) {
+    y = drawMarkdown(doc, C, subgroups[i], x, w, y);
+    if (i < subgroups.length - 1) y += SUBGROUP_GAP;
+  }
 
   return startY + cardH + 14;
 }

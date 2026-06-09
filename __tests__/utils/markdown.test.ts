@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { tokenize, tokenizeInline } from "src/utils/markdown";
+import { tokenize, tokenizeInline, parseExperienceSubgroups } from "src/utils/markdown";
 
 describe("tokenize", () => {
   it("returns an empty-ish array for empty input", () => {
@@ -47,5 +47,22 @@ describe("tokenizeInline", () => {
     const tokens = tokenizeInline("- one");
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens[0].type).toBe("text");
+  });
+});
+
+describe("parseExperienceSubgroups", () => {
+  it("returns the body as a single subgroup when there is no `---`", () => {
+    const result = parseExperienceSubgroups("just one body");
+    expect(result).toEqual(["just one body"]);
+  });
+
+  it("splits a body on `---` horizontal rules into multiple subgroups", () => {
+    const result = parseExperienceSubgroups("first period\n\n---\n\nsecond period");
+    expect(result).toEqual(["first period", "second period"]);
+  });
+
+  it("drops empty subgroups produced by leading or trailing `---`", () => {
+    const result = parseExperienceSubgroups("---\n\nmiddle\n\n---\n");
+    expect(result).toEqual(["middle"]);
   });
 });

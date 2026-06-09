@@ -25,3 +25,20 @@ export function tokenizeInline(text: string): Tokens.Generic[] {
   }
   return [{ type: "text", raw: text, text } as Tokens.Generic];
 }
+
+// Split a markdown body on horizontal rules (`---` lines at block level).
+// Used by the experience view to split a job into multiple sub-periods.
+// Returns an array of subgroup bodies. Lines between two `---` become one
+// subgroup; an empty subgroup is dropped.
+export function parseExperienceSubgroups(text: string): string[] {
+  const tokens = marked.lexer(normalizeMarkers(text));
+  const groups: string[][] = [[]];
+  for (const t of tokens) {
+    if (t.type === "hr") {
+      groups.push([]);
+      continue;
+    }
+    groups[groups.length - 1].push((t as { raw: string }).raw);
+  }
+  return groups.map((g) => g.join("\n").trim()).filter((g) => g.length > 0);
+}
