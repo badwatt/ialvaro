@@ -421,28 +421,37 @@ export function drawMarkdown(
 
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
-  // Header area:
-  //   - Logo row (if logo present): 16pt + 4pt gap
-  //   - Company name: 16pt + 4pt gap
-  //   - Role line (optional): 10pt + 6pt gap
-  //   - Horizontal rule + 10pt padding below
+  // Pure-typography header. No card, no border, no band, no rail, no
+  // dot. The hierarchy lives entirely in font size, weight, color, and
+  // a single short kicker rule that anchors each experience to the
+  // page. Generous whitespace does the visual work that boxes used
+  // to do.
+  //
+  // Vertical rhythm of the header:
+  //   - 14pt top padding
+  //   - company name: 18pt line height
+  //   - role line (optional): 13pt line height
+  //   - 6pt gap
+  //   - 4pt kicker rule
+  //   - 14pt bottom padding
+  //   - 18pt gap before the body
+  h += 14 + 18;
   const subgroups = parseExperienceSubgroups(job.description);
   const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
-  h += 16; // logo/company top padding
-  h += 16; // company name line
-  if (headerRole.role) h += 14; // role line + gap
-  h += 14; // horizontal rule + padding
+  if (headerRole.role) h += 13;
+  h += 6 + 4 + 14 + 18;
   // Periods:
-  //   - For each period: sub-header (24pt) + body
-  //   - 14pt gap between periods
-  const PERIOD_GAP = 14;
-  const SUBHEADER_BLOCK_H = 24;
+  //   - Sub-header (title + optional subtitle on the same line): 18pt
+  //   - 6pt gap before the body
+  //   - Body content
+  //   - 22pt gap between periods
+  const PERIOD_GAP = 22;
+  const SUBHEADER_H = 18;
   for (let i = 0; i < subgroups.length; i++) {
-    h += SUBHEADER_BLOCK_H;
+    h += SUBHEADER_H + 6;
     h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
     if (i < subgroups.length - 1) h += PERIOD_GAP;
   }
-  h += 16; // bottom padding
   return h;
 }
 
@@ -456,113 +465,99 @@ export function drawJob(
   startY: number,
   logo: string | null,
 ): number {
-  const cardH = measureExperience(doc, job, w);
-  const LOGO = 16;
+  const LOGO = 14;
   const subgroups = parseExperienceSubgroups(job.description);
   const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
 
-  // Vertical timeline rail: a thin line on the far left that connects
-  // this experience to the next. Stops just below the company name
-  // baseline so it doesn't run into the body.
-  doc.setDrawColor(...C.border);
-  doc.setLineWidth(0.4);
-  doc.line(timelineX, startY, timelineX, startY + 30);
+  let y = startY + 14;
 
-  // Accent dot: a small filled circle in the primary color at the
-  // company name baseline. Sits on top of the timeline rail.
-  doc.setFillColor(...C.primary);
-  doc.circle(timelineX, startY + 8, 3, "F");
-
-  // Outer ring around the dot, in the border color, so the dot reads
-  // as a marker on a rail rather than a floating blob.
-  doc.setDrawColor(...C.border);
-  doc.setLineWidth(0.6);
-  doc.circle(timelineX, startY + 8, 4, "S");
-
-  let y = startY + 6;
-
-  // Logo + company name on the same baseline. Logo sits to the left
-  // of the text, with a small gap.
-  const textX = x + (logo ? LOGO + 8 : 0);
+  // Logo as a small mark above the company name. Centered horizontally
+  // on the text column (offset from the left text edge) so it reads as
+  // a brand mark rather than a bullet point.
+  let textX = x;
   if (logo) {
     try {
-      doc.addImage(logo, "PNG", x, y, LOGO, LOGO);
+      // Slightly indented to give the logo its own visual slot, so
+      // the company name and the logo don't fight for the same line.
+      doc.addImage(logo, "PNG", x + 4, y, LOGO, LOGO);
+      textX = x + LOGO + 10;
     } catch {
       /* noop */
     }
   }
+
+  // Company name. Large (18pt), bold, white. The dominant element of
+  // the experience header. Logo sits to the left at half its line
+  // height so the two share the same baseline.
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
+  doc.setFontSize(18);
   doc.setTextColor(...C.white);
-  doc.text(job.title, textX, y + 12);
+  doc.text(job.title, textX, y + LOGO * 0.75);
   y += 18;
 
-  // Role line below the company name (italic, muted). Empty when the
-  // markdown body has no role heading paired with a period blockquote.
+  // Role line below the company name, italic muted, smaller (10pt).
+  // Surfaces the job title (e.g. "Full Stack Developer") separately
+  // from the period name (e.g. "Devoteam"). Only drawn when the
+  // markdown body has a role+period structure.
   if (headerRole.role) {
     doc.setFont("helvetica", "italic");
     doc.setFontSize(10);
     doc.setTextColor(...C.muted);
-    doc.text(headerRole.role, x, y + 6);
-    y += 14;
+    doc.text(headerRole.role, x, y + 10);
+    y += 13;
   }
 
-  // Dates as a small uppercase letterspaced tag on the right, aligned
-  // with the company name baseline. Right-aligned to the card edge so
-  // it floats independently of the text on the left.
+  // Kicker rule: a short line in the primary color (40pt wide, 1.2pt
+  // thick) sitting just below the company name and role. Anchors the
+  // experience to the page and acts as a visual signature.
+  y += 6;
+  doc.setDrawColor(...C.primary);
+  doc.setLineWidth(1.2);
+  doc.line(x, y, x + 40, y);
+  y += 14;
+
+  // Dates on the right, aligned to the company name baseline. Small
+  // (8pt), uppercase, letter-spaced via spaces, muted color. Floats
+  // independently of the company/role text on the left.
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...C.muted);
-  const dateText = `${job.date_from.toUpperCase()} — ${job.date_to.toUpperCase()}`;
+  const dateText = `${job.date_from.toUpperCase()}  —  ${job.date_to.toUpperCase()}`;
   const dateWidth = doc.getTextWidth(dateText);
-  doc.text(dateText, x + 12 + w - dateWidth, startY + 12);
+  doc.text(dateText, x + w + 12 - dateWidth, startY + 14 + LOGO * 0.75);
 
-  // Horizontal rule below the header, in the border color. Full width
-  // of the card content.
-  y += 4;
-  doc.setDrawColor(...C.border);
-  doc.setLineWidth(0.3);
-  doc.line(x, y, x + w + 12, y);
-  y += 10;
+  y += 18;
 
   for (let i = 0; i < subgroups.length; i++) {
-    // Sub-header for this period. The title is the period name (or
-    // the role if no period was extracted) in the primary color, bold
-    // 12pt. The subtitle (typically a duration like "1y 3m") sits on
-    // the same line, italic muted, with a small dot separator. This
-    // pairs the two pieces of metadata into a single editorial label.
+    // Sub-header: period title in primary color, bold 11pt, with the
+    // duration subtitle (italic muted) on the same line, separated by
+    // a small dot. Acts as a label for the body content that follows.
     const meta = extractPeriodTitle(subgroups[i], i);
 
-    // Sub-header: title + subtitle on a single line, separated by a
-    // small primary-colored dot. Sits on its own line with the body
-    // content flowing below.
-    const subHeaderY = y;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
+    doc.setFontSize(11);
     doc.setTextColor(...C.primary);
-    doc.text(meta.title, x, subHeaderY + 10);
+    doc.text(meta.title, x, y + 11);
 
     if (meta.subtitle) {
       const titleWidth = doc.getTextWidth(meta.title);
-      // Small dot separator in the muted color, 6pt to the right of
-      // the title.
       doc.setFillColor(...C.muted);
-      doc.circle(x + titleWidth + 6, subHeaderY + 7, 0.8, "F");
+      doc.circle(x + titleWidth + 6, y + 8, 0.8, "F");
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, x + titleWidth + 12, subHeaderY + 10);
+      doc.text(meta.subtitle, x + titleWidth + 12, y + 11);
     }
 
-    y = subHeaderY + 18;
+    y += 18;
 
     // Body content with the title and subtitle stripped.
-    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
+    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y) + 6;
 
-    if (i < subgroups.length - 1) y += 14;
+    if (i < subgroups.length - 1) y += 22;
   }
 
-  return startY + cardH + 14;
+  return y + 6;
 }
 
 function continuationHeader(doc: any, C: CVColors): number {

@@ -444,6 +444,73 @@ describe("generateCV", () => {
     urlSpy.mockRestore();
   });
 
+  it("measures multi-period experiences with a gap between periods", async () => {
+    // measureExperience is only called from the internal pickLayout.
+    // Exercise the multi-period branch (PERIOD_GAP) by going through
+    // generateCV with a job that has two periods separated by `---`.
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+
+    const multiPeriodExp = [
+      {
+        id: "5",
+        title: "Openbank",
+        image: "../../assets/experience/openbank.svg",
+        date_from: "June 2023",
+        date_to: "now",
+        url: "https://openbank.es/",
+        description: "# Plexus\n\ncontent\n\n---\n\n# Knowmad Mood\n\ncontent",
+      },
+    ];
+    const minimalAbout = [
+      {
+        email: "a@b.com",
+        location: "X",
+        languages: [],
+        bio: "x",
+      },
+    ];
+    await generateCV(TEST_THEME, multiPeriodExp, minimalAbout, testSkillsData);
+    expect(urlSpy).toHaveBeenCalled();
+    urlSpy.mockRestore();
+  });
+
+  it("measures experiences with an empty description", async () => {
+    // An experience with no description produces zero subgroups in
+    // measureExperience; the empty-group ternary branch must be hit.
+    setupFetchMock();
+    setupFileReaderMock();
+    setupDOMMocks("load");
+
+    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+
+    const emptyDescExp = [
+      {
+        id: "6",
+        title: "Empty",
+        image: "../../assets/experience/empty.svg",
+        date_from: "January 2024",
+        date_to: "now",
+        url: "https://empty.com/",
+        description: "",
+      },
+    ];
+    const minimalAbout = [
+      {
+        email: "a@b.com",
+        location: "X",
+        languages: [],
+        bio: "x",
+      },
+    ];
+    await generateCV(TEST_THEME, emptyDescExp, minimalAbout, testSkillsData);
+    expect(urlSpy).toHaveBeenCalled();
+    urlSpy.mockRestore();
+  });
+
   it("handles missing email", async () => {
     setupFetchMock();
     setupFileReaderMock();
@@ -1012,6 +1079,23 @@ describe("drawMarkdown", () => {
       date_to: "July 2026",
       url: "https://openbank.es/",
       description: "",
+    };
+    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    expect(finalY).toBeGreaterThan(50);
+  });
+
+  it("renders two periods with a vertical gap when the body has ---", () => {
+    // The PERIOD_GAP branch in measureExperience is only hit when there
+    // are at least two periods (i.e. the body has a horizontal rule).
+    // Exercise it directly so the gap is included in the measurement.
+    const doc = makeDoc();
+    const job = {
+      title: "Openbank",
+      image: "",
+      date_from: "June 2023",
+      date_to: "July 2026",
+      url: "https://openbank.es/",
+      description: "# Plexus\n\nbody\n\n---\n\n# Knowmad Mood\n\nbody",
     };
     const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
     expect(finalY).toBeGreaterThan(50);

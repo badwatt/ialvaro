@@ -228,24 +228,24 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                   <h1
                     class="text-xl font-semibold text-alvaro-white"
                   >
-                    Consulting Firm
+                    Full Stack Developer
                   </h1>
-                  <ul
-                    class="list-disc pl-5 space-y-1"
+                  <blockquote
+                    class="border-l-2 border-alvaro-primary/60 pl-4 italic text-alvaro-muted/90 space-y-2"
                   >
-                    <li>
-                      <div>
-                        <span>
-                          Devoteam
-                        </span>
-                      </div>
-                    </li>
-                  </ul>
-                  <h1
-                    class="text-xl font-semibold text-alvaro-white"
+                    <p
+                      class="whitespace-pre-line"
+                    >
+                      <span>
+                        Devoteam
+                      </span>
+                    </p>
+                  </blockquote>
+                  <h2
+                    class="text-lg font-semibold text-alvaro-white"
                   >
                     Projects
-                  </h1>
+                  </h2>
                   <ul
                     class="list-disc pl-5 space-y-1"
                   >
@@ -264,11 +264,11 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                       </div>
                     </li>
                   </ul>
-                  <h1
-                    class="text-xl font-semibold text-alvaro-white"
+                  <h2
+                    class="text-lg font-semibold text-alvaro-white"
                   >
                     Tasks
-                  </h1>
+                  </h2>
                   <ul
                     class="list-disc pl-5 space-y-1"
                   >
@@ -280,11 +280,11 @@ exports[`<Experience /> > should match the snapshot 1`] = `
                       </div>
                     </li>
                   </ul>
-                  <h1
-                    class="text-xl font-semibold text-alvaro-white"
+                  <h2
+                    class="text-lg font-semibold text-alvaro-white"
                   >
                     Skills
-                  </h1>
+                  </h2>
                   <p
                     class="whitespace-pre-line"
                   >
