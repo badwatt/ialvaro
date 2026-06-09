@@ -113,6 +113,24 @@ export function parseDescription(raw: string): Token[] {
   return tokenize(raw);
 }
 
+function getListItemInline(item: Tokens.ListItem): Token[] {
+  // A list item can be either "tight" (tokens = [Text]) or "loose"
+  // (tokens = [Paragraph, Space, Paragraph, ...]). We want the inline
+  // tokens of the first content block so the marker and the text line
+  // up. For loose items, the first paragraph's tokens are used; for tight
+  // items, the text token's tokens are used.
+  for (const t of item.tokens) {
+    if (t.type === "paragraph") {
+      const p = t as Tokens.Paragraph;
+      if (p.tokens) return p.tokens as Token[];
+    } else if (t.type === "text") {
+      const text = t as Tokens.Text;
+      if (text.tokens) return text.tokens as Token[];
+    }
+  }
+  return [];
+}
+
 function measureText(doc: any, text: string, w: number, lineHeight: number): number {
   const lines = doc.splitTextToSize(text, w);
   return lines.length * lineHeight;
@@ -122,22 +140,28 @@ function measureToken(doc: any, token: Token, w: number): number {
   switch (token.type) {
     case "heading": {
       const depth = (token as Tokens.Heading).depth;
-      const lineHeight = depth === 1 ? 13 : 12;
-      return measureText(doc, (token as Tokens.Heading).text, w, lineHeight) + 6;
+      const lineHeight = depth === 1 ? 14 : 13;
+      return measureText(doc, (token as Tokens.Heading).text, w, lineHeight) + 2;
     }
     case "paragraph":
-      return measureText(doc, (token as Tokens.Paragraph).text, w, 10) + 4;
+      return measureText(doc, (token as Tokens.Paragraph).text, w, 11) + 2;
     case "list": {
       const list = token as Tokens.List;
       let h = 2;
       for (const item of list.items) {
-        h += measureText(doc, item.text, w - 14, 10) + 2;
+        const inline = getListItemInline(item);
+        let inlineText = "";
+        for (const t of inline) {
+          const txt = (t as unknown as { text?: string }).text;
+          if (txt) inlineText += txt;
+        }
+        h += measureText(doc, inlineText, w - 14, 11) + 3;
       }
-      return h + 4;
+      return h + 2;
     }
     case "blockquote": {
       const bq = token as Tokens.Blockquote;
-      let h = 4;
+      let h = 2;
       for (const t of bq.tokens) {
         h += measureToken(doc, t as Token, w - 14);
       }
@@ -145,11 +169,11 @@ function measureToken(doc: any, token: Token, w: number): number {
     }
     case "code": {
       const code = token as Tokens.Code;
-      const lineH = 10;
-      return code.text.split("\n").length * lineH + 8;
+      const lineH = 11;
+      return code.text.split("\n").length * lineH + 10;
     }
     case "hr":
-      return 6;
+      return 8;
     case "space":
       return 0;
     default:
@@ -159,7 +183,11 @@ function measureToken(doc: any, token: Token, w: number): number {
 
 export function measureMarkdown(doc: any, raw: string, w: number): number {
   let h = 0;
+  let first = true;
   for (const token of parseDescription(raw)) {
+    if (token.type === "space") continue;
+    if (!first) h += 4;
+    first = false;
     h += measureToken(doc, token, w);
   }
   return h;
@@ -220,12 +248,16 @@ function drawInline(
   // Walk inline tokens and draw them left-to-right with the right font style.
   // Word-wrap is handled per-chunk; we just print each chunk on the current line
   // using its own font + size, then advance y if any chunk wrapped.
+  // Returns y advanced by at least one line height (lineH) so callers can
+  // stack the next block without overlap.
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
+  doc.setFontSize(9);
   doc.setTextColor(...C.muted);
 
   let cursorX = x;
-  const lineH = 10;
+  const lineH = 11;
+  let maxLines = 1;
+  const startY = y;
 
   const drawChunk = (text: string, style: "normal" | "bold" | "italic") => {
     doc.setFont("helvetica", style);
@@ -239,11 +271,10 @@ function drawInline(
       doc.text(line, cursorX, y);
       cursorX += doc.getTextWidth(line);
     }
+    if (lines.length > maxLines) maxLines = lines.length;
   };
 
   const pickText = (t: Token): string | undefined => {
-    // The list of inline types we render as text. Anything not here
-    // (e.g. br, unknown extensions) has no text and is skipped by the caller.
     return (t as unknown as { text?: string }).text;
   };
 
@@ -251,9 +282,13 @@ function drawInline(
     if (t.type === "br") {
       y += lineH;
       cursorX = x;
+      if (Math.floor((y - startY) / lineH) + 1 > maxLines) {
+        maxLines = Math.floor((y - startY) / lineH) + 1;
+      }
       continue;
     }
     const text = pickText(t);
+    if (text === undefined) continue;
     if (t.type === "strong") {
       drawChunk(text, "bold");
     } else if (t.type === "em") {
@@ -263,7 +298,10 @@ function drawInline(
     }
   }
 
-  return y;
+  // Always advance by at least one line height, even when text didn't wrap
+  // or when no chunks were drawn. This keeps callers from stacking blocks
+  // on top of each other.
+  return startY + lineH * maxLines;
 }
 
 function drawMarkdownToken(
@@ -279,24 +317,22 @@ function drawMarkdownToken(
     case "heading": {
       const h = token as Tokens.Heading;
       const depth = h.depth;
-      const size = depth === 1 ? 10 : depth === 2 ? 9.5 : 9;
+      const size = depth === 1 ? 11 : depth === 2 ? 10 : 9.5;
+      const lineH = depth === 1 ? 14 : 13;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(size);
-      doc.setTextColor(...C.white);
-      const lineH = depth === 1 ? 13 : 12;
+      doc.setTextColor(...C.primary);
       const lines = doc.splitTextToSize(h.text, w);
       for (const line of lines) {
         doc.text(line, x, y);
         y += lineH;
       }
-      y += 2;
       break;
     }
     case "paragraph": {
       const p = token as Tokens.Paragraph;
       const inlineTokens: Token[] = p.tokens as Token[];
       y = drawInline(doc, C, inlineTokens, x, w, y);
-      y += 4;
       break;
     }
     case "list": {
@@ -305,37 +341,36 @@ function drawMarkdownToken(
       for (let i = 0; i < list.items.length; i++) {
         const item = list.items[i];
         const marker = list.ordered ? `${i + 1}.` : "•";
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
         doc.setTextColor(...C.accent);
         doc.text(marker, x, y);
-        // Find inline tokens inside the first paragraph of the list item
-        const para = item.tokens.find((t) => t.type === "paragraph") as
-          | Tokens.Paragraph
-          | undefined;
-        const inline: Token[] = (para?.tokens ?? []) as Token[];
+        const inline = getListItemInline(item);
         y = drawInline(doc, C, inline, x + 14, w - 14, y);
-        y += 2;
+        y += 3;
       }
-      y += 4;
       break;
     }
     case "blockquote": {
       const bq = token as Tokens.Blockquote;
-      doc.setDrawColor(...C.primary);
-      doc.setLineWidth(0.5);
-      y += 2;
       const startY = y;
       for (const t of bq.tokens) {
-        y = drawMarkdownToken(doc, C, t as Token, x + 8, w - 8, y);
+        y = drawMarkdownToken(doc, C, t as Token, x + 10, w - 10, y);
       }
-      doc.line(x, startY - 2, x, y);
+      // Draw the left rule aligned with the first and last text lines.
+      // Text drawn at the baseline `startY` extends roughly from `startY - 7`
+      // (ascender of a 9pt helvetica glyph) to `y + 2` (descender of the
+      // last line). The line is offset slightly above the visual top and
+      // below the visual bottom to bracket the text cleanly.
+      doc.setDrawColor(...C.primary);
+      doc.setLineWidth(0.6);
+      doc.line(x + 6, startY - 12, x + 6, y - 4);
       y += 2;
       break;
     }
     case "code": {
       const code = token as Tokens.Code;
-      const lineH = 10;
+      const lineH = 11;
       const lines = code.text.split("\n");
       const blockH = lines.length * lineH + 8;
       doc.setFillColor(...C.base);
@@ -353,9 +388,9 @@ function drawMarkdownToken(
     }
     case "hr": {
       doc.setDrawColor(...C.border);
-      doc.setLineWidth(0.4);
+      doc.setLineWidth(0.5);
       doc.line(x, y + 2, x + w, y + 2);
-      y += 6;
+      y += 8;
       break;
     }
     case "space":
@@ -366,6 +401,8 @@ function drawMarkdownToken(
   return y;
 }
 
+const BLOCK_GAP = 4;
+
 export function drawMarkdown(
   doc: any,
   C: CVColors,
@@ -375,7 +412,11 @@ export function drawMarkdown(
   startY: number,
 ): number {
   let y = startY;
+  let first = true;
   for (const token of parseDescription(raw)) {
+    if (token.type === "space") continue;
+    if (!first) y += BLOCK_GAP;
+    first = false;
     y = drawMarkdownToken(doc, C, token, x, w, y);
   }
   return y;
