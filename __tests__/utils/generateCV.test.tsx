@@ -9,7 +9,6 @@ import {
   parseDate,
   drawMarkdown,
   measureMarkdown,
-  drawJob,
 } from "src/utils/generateCV";
 import {
   CV_THEMES,
@@ -444,73 +443,6 @@ describe("generateCV", () => {
     urlSpy.mockRestore();
   });
 
-  it("measures multi-period experiences with a gap between periods", async () => {
-    // measureExperience is only called from the internal pickLayout.
-    // Exercise the multi-period branch (PERIOD_GAP) by going through
-    // generateCV with a job that has two periods separated by `---`.
-    setupFetchMock();
-    setupFileReaderMock();
-    setupDOMMocks("load");
-
-    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-
-    const multiPeriodExp = [
-      {
-        id: "5",
-        title: "Openbank",
-        image: "../../assets/experience/openbank.svg",
-        date_from: "June 2023",
-        date_to: "now",
-        url: "https://openbank.es/",
-        description: "# Plexus\n\ncontent\n\n---\n\n# Knowmad Mood\n\ncontent",
-      },
-    ];
-    const minimalAbout = [
-      {
-        email: "a@b.com",
-        location: "X",
-        languages: [],
-        bio: "x",
-      },
-    ];
-    await generateCV(TEST_THEME, multiPeriodExp, minimalAbout, testSkillsData);
-    expect(urlSpy).toHaveBeenCalled();
-    urlSpy.mockRestore();
-  });
-
-  it("measures experiences with an empty description", async () => {
-    // An experience with no description produces zero subgroups in
-    // measureExperience; the empty-group ternary branch must be hit.
-    setupFetchMock();
-    setupFileReaderMock();
-    setupDOMMocks("load");
-
-    const urlSpy = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-
-    const emptyDescExp = [
-      {
-        id: "6",
-        title: "Empty",
-        image: "../../assets/experience/empty.svg",
-        date_from: "January 2024",
-        date_to: "now",
-        url: "https://empty.com/",
-        description: "",
-      },
-    ];
-    const minimalAbout = [
-      {
-        email: "a@b.com",
-        location: "X",
-        languages: [],
-        bio: "x",
-      },
-    ];
-    await generateCV(TEST_THEME, emptyDescExp, minimalAbout, testSkillsData);
-    expect(urlSpy).toHaveBeenCalled();
-    urlSpy.mockRestore();
-  });
-
   it("handles missing email", async () => {
     setupFetchMock();
     setupFileReaderMock();
@@ -785,10 +717,10 @@ describe("measureMarkdown", () => {
     expect(h).toBeGreaterThan(0);
   });
 
-  it("skips `---` so the caller can split on it", () => {
+  it("includes height for hr", () => {
     const doc = { splitTextToSize: (t: string) => [t] };
     const h = measureMarkdown(doc as any, "---", 200);
-    expect(h).toBe(0);
+    expect(h).toBeGreaterThan(0);
   });
 
   it("falls back to zero height for unsupported block types (e.g. tables)", () => {
@@ -834,16 +766,6 @@ describe("measureMarkdown", () => {
     expect(() => measureMarkdown(doc as any, "- real", 200)).not.toThrow();
     marked.marked.lexer = origLexer;
   });
-
-  it("adds the subgroup gap between periods when measuring", () => {
-    // Two subgroups split on `---` should have a gap between them when
-    // measuring total experience height. The first period is small; the
-    // second is larger; the total must be sum + gap.
-    const doc = { splitTextToSize: (t: string) => [t] };
-    const single = measureMarkdown(doc as any, "period body", 200);
-    const split = measureMarkdown(doc as any, "first body\n\n---\n\nsecond body", 200);
-    expect(split).toBeGreaterThan(single * 2);
-  });
 });
 
 describe("drawMarkdown", () => {
@@ -881,7 +803,7 @@ describe("drawMarkdown", () => {
     accent: [200, 80, 100] as [number, number, number],
   };
 
-  it("draws headings, paragraphs, lists, blockquotes, and code without throwing", () => {
+  it("draws headings, paragraphs, lists, blockquotes, code, and hr without throwing", () => {
     const doc = makeDoc();
     const source = [
       "# Title",
@@ -892,19 +814,12 @@ describe("drawMarkdown", () => {
       "```",
       "const x = 1;",
       "```",
+      "---",
     ].join("\n\n");
     const finalY = drawMarkdown(doc as any, C, source, 36, 200, 50);
     expect(finalY).toBeGreaterThan(50);
     expect(doc.text).toHaveBeenCalled();
     expect(doc.setFont).toHaveBeenCalled();
-  });
-
-  it("does not draw a line for `---` (caller splits on it instead)", () => {
-    const doc = makeDoc();
-    const beforeLineCalls = (doc.line as any).mock.calls.length;
-    drawMarkdown(doc as any, C, "---", 36, 200, 50);
-    // No line drawn; the hr is filtered out by drawMarkdown.
-    expect((doc.line as any).mock.calls.length).toBe(beforeLineCalls);
   });
 
   it("draws a heading at depth 1 (h1 lineHeight branch)", () => {
@@ -1048,95 +963,5 @@ describe("drawMarkdown", () => {
     const doc = makeDoc();
     expect(() => drawMarkdown(doc as any, C, "x", 36, 200, 50)).not.toThrow();
     marked.marked.lexer = origLexer;
-  });
-
-  it("renders two subgroups with a gap between them in drawJob", () => {
-    // Direct coverage for the loop in drawJob that walks subgroups and
-    // inserts a divider between them. The mock is jsPDF-shaped so we
-    // invoke drawJob directly.
-    const doc = makeDoc();
-    const job = {
-      title: "Openbank",
-      image: "",
-      date_from: "June 2023",
-      date_to: "July 2026",
-      url: "https://openbank.es/",
-      description: "first body\n\n---\n\nsecond body",
-    };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
-    expect(finalY).toBeGreaterThan(50);
-  });
-
-  it("renders an experience with an empty description without throwing", () => {
-    // Edge case: an experience with no description (no subgroups). The
-    // header should still render with the company name and dates, and
-    // drawJob should not throw or produce NaN measurements.
-    const doc = makeDoc();
-    const job = {
-      title: "Openbank",
-      image: "",
-      date_from: "June 2023",
-      date_to: "July 2026",
-      url: "https://openbank.es/",
-      description: "",
-    };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
-    expect(finalY).toBeGreaterThan(50);
-  });
-
-  it("renders two periods with a vertical gap when the body has ---", () => {
-    // The PERIOD_GAP branch in measureExperience is only hit when there
-    // are at least two periods (i.e. the body has a horizontal rule).
-    // Exercise it directly so the gap is included in the measurement.
-    const doc = makeDoc();
-    const job = {
-      title: "Openbank",
-      image: "",
-      date_from: "June 2023",
-      date_to: "July 2026",
-      url: "https://openbank.es/",
-      description: "# Plexus\n\nbody\n\n---\n\n# Knowmad Mood\n\nbody",
-    };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
-    expect(finalY).toBeGreaterThan(50);
-  });
-
-  it("draws the period subtitle in italic muted when present", () => {
-    // A subgroup with a blockquote (subtitle) exercises the if-branch
-    // that draws the subtitle inline with the title.
-    const doc = makeDoc();
-    const job = {
-      title: "Openbank",
-      image: "",
-      date_from: "June 2023",
-      date_to: "July 2026",
-      url: "https://openbank.es/",
-      description: "# Consulting Firm\n\n- PLEXUS\n\n> 1 year 3 months\n\n---\n\n# Period 2",
-    };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
-    expect(finalY).toBeGreaterThan(50);
-    // The subtitle text was drawn.
-    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
-    expect(calls).toContain("1 year 3 months");
-  });
-
-  it("draws the role in italic muted when the body has a role+period pair", () => {
-    // rsi.md has `# Full Stack Developer` followed by `> Devoteam`. The
-    // role is the h1 and the period name is the blockquote. The role
-    // should be drawn as a separate italic muted line under the company
-    // name in the header.
-    const doc = makeDoc();
-    const job = {
-      title: "RSI",
-      image: "",
-      date_from: "October 2021",
-      date_to: "April 2023",
-      url: "https://grupocajarural.es/",
-      description: "# Full Stack Developer\n\n> Devoteam\n\n## Projects\n\n- Onboarding",
-    };
-    drawJob(doc as any, C, job, 36, 200, 36, 50, null);
-    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
-    expect(calls).toContain("Full Stack Developer");
-    expect(calls).toContain("Devoteam");
   });
 });

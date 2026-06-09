@@ -1,11 +1,6 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
 import { Markdown } from "src/components/Markdown";
-import {
-  extractPeriodTitle,
-  parseExperienceSubgroups,
-  stripExtractedTitleAndSubtitle,
-} from "src/utils/markdown";
 import type { ExperienceEntry } from "src/utils/content";
 
 interface ExperienceProps {
@@ -14,8 +9,6 @@ interface ExperienceProps {
 
 export const Experience = ({ experienceData }: ExperienceProps) => {
   const items = experienceData.map((entry, i) => {
-    const subgroups = parseExperienceSubgroups(entry.description);
-    const hasSubgroups = subgroups.length > 1;
     return {
       id: String(i),
       title: entry.title,
@@ -39,29 +32,7 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
               />
             </a>
           </div>
-          {hasSubgroups ? (
-            // Multiple periods separated by `---`. Render each as a
-            // sub-accordion item. The title for each item is the first `#`
-            // heading in that period; the subtitle is the first blockquote
-            // (typically a duration). The first period is expanded by
-            // default; the rest are collapsed.
-            <Accordion
-              items={subgroups.map((sub, j) => {
-                const meta = extractPeriodTitle(sub, j);
-                return {
-                  id: `${i}-${j}`,
-                  title: meta.title,
-                  subtitle: meta.subtitle,
-                  // Don't render the title/subtitle twice; the body
-                  // already shows them in the header.
-                  content: <Markdown source={stripExtractedTitleAndSubtitle(sub)} />,
-                };
-              })}
-              defaultOpenId={`${i}-0`}
-            />
-          ) : (
-            <Markdown source={entry.description} />
-          )}
+          <Markdown source={entry.description} />
         </div>
       ),
     };

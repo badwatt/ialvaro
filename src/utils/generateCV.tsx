@@ -1,13 +1,6 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
-import {
-  tokenize,
-  parseExperienceSubgroups,
-  extractPeriodTitle,
-  extractRoleAndPeriod,
-  stripExtractedTitleAndSubtitle,
-  type Token,
-} from "src/utils/markdown";
+import { tokenize, type Token } from "src/utils/markdown";
 import type { Tokens } from "marked";
 
 const PAGE_W = 595;
@@ -179,6 +172,8 @@ function measureToken(doc: any, token: Token, w: number): number {
       const lineH = 11;
       return code.text.split("\n").length * lineH + 10;
     }
+    case "hr":
+      return 8;
     default:
       return 0;
   }
@@ -316,15 +311,11 @@ function drawMarkdownToken(
     case "heading": {
       const h = token as Tokens.Heading;
       const depth = h.depth;
-      // In-body headings are distinct from the per-period sub-headers
-      // (which use the primary color in drawJob). Use white here so the
-      // eye reads the sub-headers as labels and the in-body headings
-      // as section breaks inside the body.
-      const size = depth === 1 ? 10 : depth === 2 ? 9.5 : 9;
-      const lineH = depth === 1 ? 12 : 11;
+      const size = depth === 1 ? 11 : depth === 2 ? 10 : 9.5;
+      const lineH = depth === 1 ? 14 : 13;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(size);
-      doc.setTextColor(...C.white);
+      doc.setTextColor(...C.primary);
       const lines = doc.splitTextToSize(h.text, w);
       for (const line of lines) {
         doc.text(line, x, y);
@@ -368,7 +359,7 @@ function drawMarkdownToken(
       doc.setDrawColor(...C.primary);
       doc.setLineWidth(0.6);
       doc.line(x + 6, startY - 12, x + 6, y - 4);
-      y += 6;
+      y += 2;
       break;
     }
     case "code": {
@@ -387,6 +378,13 @@ function drawMarkdownToken(
         doc.text(lines[i], x + 4, y + 10 + i * lineH);
       }
       y += blockH;
+      break;
+    }
+    case "hr": {
+      doc.setDrawColor(...C.border);
+      doc.setLineWidth(0.5);
+      doc.line(x, y + 2, x + w, y + 2);
+      y += 8;
       break;
     }
     default:
@@ -408,10 +406,7 @@ export function drawMarkdown(
   let y = startY;
   let first = true;
   for (const token of parseDescription(raw)) {
-    // Drop `hr` tokens here; callers (e.g. drawJob) split on them
-    // explicitly so they can render sub-periods with proper spacing
-    // instead of a horizontal rule line.
-    if (token.type === "space" || token.type === "hr") continue;
+    if (token.type === "space") continue;
     if (!first) y += BLOCK_GAP;
     first = false;
     y = drawMarkdownToken(doc, C, token, x, w, y);
@@ -421,41 +416,13 @@ export function drawMarkdown(
 
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
-  // Pure-typography header. No card, no border, no band, no rail, no
-  // dot. The hierarchy lives entirely in font size, weight, color, and
-  // a single short kicker rule that anchors each experience to the
-  // page. Generous whitespace does the visual work that boxes used
-  // to do.
-  //
-  // Vertical rhythm of the header:
-  //   - 14pt top padding
-  //   - company name: 18pt line height
-  //   - role line (optional): 13pt line height
-  //   - 6pt gap
-  //   - 4pt kicker rule
-  //   - 14pt bottom padding
-  //   - 18pt gap before the body
-  h += 14 + 18;
-  const subgroups = parseExperienceSubgroups(job.description);
-  const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
-  if (headerRole.role) h += 13;
-  h += 6 + 4 + 14 + 18;
-  // Periods:
-  //   - Sub-header (title + optional subtitle on the same line): 18pt
-  //   - 6pt gap before the body
-  //   - Body content
-  //   - 22pt gap between periods
-  const PERIOD_GAP = 22;
-  const SUBHEADER_H = 18;
-  for (let i = 0; i < subgroups.length; i++) {
-    h += SUBHEADER_H + 6;
-    h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
-    if (i < subgroups.length - 1) h += PERIOD_GAP;
-  }
+  h += 14 + 18 + 14; // dot spacing + company row + dates
+  h += measureMarkdown(doc, job.description, w);
+  h += 12; // bottom padding inside the card
   return h;
 }
 
-export function drawJob(
+function drawJob(
   doc: any,
   C: CVColors,
   job: ExperienceEntry,
@@ -465,99 +432,48 @@ export function drawJob(
   startY: number,
   logo: string | null,
 ): number {
-  const LOGO = 14;
-  const subgroups = parseExperienceSubgroups(job.description);
-  const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
+  const cardH = measureExperience(doc, job, w);
+  const LOGO = 16;
+
+  // Card background
+  doc.setFillColor(...C.surface);
+  doc.setDrawColor(...C.border);
+  doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
+
+  // Left accent bar
+  doc.setFillColor(...C.accent);
+  doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
+
+  // Dot
+  doc.setFillColor(...C.accent);
+  doc.circle(timelineX, startY + 6, 3.5, "F");
 
   let y = startY + 14;
 
-  // Logo as a small mark above the company name. Centered horizontally
-  // on the text column (offset from the left text edge) so it reads as
-  // a brand mark rather than a bullet point.
-  let textX = x;
+  // Company + logo
   if (logo) {
     try {
-      // Slightly indented to give the logo its own visual slot, so
-      // the company name and the logo don't fight for the same line.
-      doc.addImage(logo, "PNG", x + 4, y, LOGO, LOGO);
-      textX = x + LOGO + 10;
+      doc.addImage(logo, "PNG", x, y - LOGO + 2, LOGO, LOGO);
     } catch {
       /* noop */
     }
   }
-
-  // Company name. Large (18pt), bold, white. The dominant element of
-  // the experience header. Logo sits to the left at half its line
-  // height so the two share the same baseline.
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
+  doc.setFontSize(11);
   doc.setTextColor(...C.white);
-  doc.text(job.title, textX, y + LOGO * 0.75);
+  doc.text(job.title, x + (logo ? LOGO + 6 : 0), y);
   y += 18;
 
-  // Role line below the company name, italic muted, smaller (10pt).
-  // Surfaces the job title (e.g. "Full Stack Developer") separately
-  // from the period name (e.g. "Devoteam"). Only drawn when the
-  // markdown body has a role+period structure.
-  if (headerRole.role) {
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(10);
-    doc.setTextColor(...C.muted);
-    doc.text(headerRole.role, x, y + 10);
-    y += 13;
-  }
-
-  // Kicker rule: a short line in the primary color (40pt wide, 1.2pt
-  // thick) sitting just below the company name and role. Anchors the
-  // experience to the page and acts as a visual signature.
-  y += 6;
-  doc.setDrawColor(...C.primary);
-  doc.setLineWidth(1.2);
-  doc.line(x, y, x + 40, y);
+  // Dates
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...C.muted);
+  doc.text(`${job.date_from} — ${job.date_to}`, x, y);
   y += 14;
 
-  // Dates on the right, aligned to the company name baseline. Small
-  // (8pt), uppercase, letter-spaced via spaces, muted color. Floats
-  // independently of the company/role text on the left.
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(...C.muted);
-  const dateText = `${job.date_from.toUpperCase()}  —  ${job.date_to.toUpperCase()}`;
-  const dateWidth = doc.getTextWidth(dateText);
-  doc.text(dateText, x + w + 12 - dateWidth, startY + 14 + LOGO * 0.75);
+  y = drawMarkdown(doc, C, job.description, x, w, y);
 
-  y += 18;
-
-  for (let i = 0; i < subgroups.length; i++) {
-    // Sub-header: period title in primary color, bold 11pt, with the
-    // duration subtitle (italic muted) on the same line, separated by
-    // a small dot. Acts as a label for the body content that follows.
-    const meta = extractPeriodTitle(subgroups[i], i);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(...C.primary);
-    doc.text(meta.title, x, y + 11);
-
-    if (meta.subtitle) {
-      const titleWidth = doc.getTextWidth(meta.title);
-      doc.setFillColor(...C.muted);
-      doc.circle(x + titleWidth + 6, y + 8, 0.8, "F");
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, x + titleWidth + 12, y + 11);
-    }
-
-    y += 18;
-
-    // Body content with the title and subtitle stripped.
-    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y) + 6;
-
-    if (i < subgroups.length - 1) y += 22;
-  }
-
-  return y + 6;
+  return startY + cardH + 14;
 }
 
 function continuationHeader(doc: any, C: CVColors): number {

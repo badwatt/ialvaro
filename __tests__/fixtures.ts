@@ -31,7 +31,7 @@ export const testExperienceData = [
     date_to: "April 2023",
     url: "https://grupocajarural.es/",
     description:
-      "# Full Stack Developer\n\n> Devoteam\n\n## Projects\n\n- Onboarding\n- Customer\n\n## Tasks\n\n- Web application development\n\n## Skills\n\nvue.js, react.js",
+      "# Consulting Firm\n\n- Devoteam\n\n# Projects\n\n- Onboarding\n- Customer\n\n# Tasks\n\n- Web application development\n\n# Skills\n\nvue.js, react.js",
   },
 ];
 

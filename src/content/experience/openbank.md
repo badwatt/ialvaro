@@ -6,7 +6,9 @@ date_to: "July 2026"
 url: "https://openbank.es/"
 ---
 
-# Plexus
+# Consulting Firm:
+
+• PLEXUS
 
 > 1 year 3 months
 
@@ -33,9 +35,9 @@ TypeScript, React.js, Jest.js, Git, GitHub, Postman, etc...
 
 ---
 
-# Knowmad Mood
+# Consulting Firm:
 
-> 1 year 3 months
+• Knowmad Mood
 
 # Projects:
 
