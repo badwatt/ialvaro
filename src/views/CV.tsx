@@ -25,7 +25,6 @@ export const CV = ({ experienceData, aboutData, skillsData }: CVProps) => {
   const [showViewer, setShowViewer] = useState(false);
 
   const handleOpen = async (token: string) => {
-    if (step === "loading") return;
     setStep("loading");
     try {
       const verifyRes = await fetch("/api/cap/verify", {
