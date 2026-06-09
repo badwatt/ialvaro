@@ -84,3 +84,38 @@ export function extractPeriodTitle(
     subtitle: subtitle || undefined,
   };
 }
+
+// Strip the markdown lines that were extracted as the period title
+// (first h1) and subtitle (first blockquote) so the body of a
+// sub-accordion item does not duplicate the title already shown in
+// its header. Falls back to the original body when nothing was
+// extracted (so list-item fallbacks still render the original text).
+export function stripExtractedTitleAndSubtitle(body: string): string {
+  const tokens = marked.lexer(normalizeMarkers(body));
+  const skipTypes = new Set<string>();
+  let sawH1 = false;
+  let sawFirstBlockquote = false;
+  for (const t of tokens) {
+    if (t.type === "heading" && (t as Tokens.Heading).depth === 1 && !sawH1) {
+      skipTypes.add(t.raw);
+      sawH1 = true;
+    } else if (t.type === "blockquote" && !sawFirstBlockquote) {
+      skipTypes.add(t.raw);
+      sawFirstBlockquote = true;
+    }
+  }
+  if (skipTypes.size === 0) return body;
+  const lines = body.split("\n");
+  const kept: string[] = [];
+  let skipping = false;
+  for (const line of lines) {
+    if (skipTypes.has(line)) {
+      skipping = true;
+      continue;
+    }
+    if (skipping && line.trim() === "") continue;
+    skipping = false;
+    kept.push(line);
+  }
+  return kept.join("\n").trim();
+}

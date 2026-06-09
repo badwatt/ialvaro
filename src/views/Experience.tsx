@@ -1,7 +1,11 @@
 import { Header } from "src/components/Header";
 import { Accordion } from "src/components/Accordion";
 import { Markdown } from "src/components/Markdown";
-import { extractPeriodTitle, parseExperienceSubgroups } from "src/utils/markdown";
+import {
+  extractPeriodTitle,
+  parseExperienceSubgroups,
+  stripExtractedTitleAndSubtitle,
+} from "src/utils/markdown";
 import type { ExperienceEntry } from "src/utils/content";
 
 interface ExperienceProps {
@@ -48,7 +52,9 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
                   id: `${i}-${j}`,
                   title: meta.title,
                   subtitle: meta.subtitle,
-                  content: <Markdown source={sub} />,
+                  // Don't render the title/subtitle twice; the body
+                  // already shows them in the header.
+                  content: <Markdown source={stripExtractedTitleAndSubtitle(sub)} />,
                 };
               })}
               defaultOpenId={`${i}-0`}

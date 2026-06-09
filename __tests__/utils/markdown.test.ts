@@ -4,6 +4,7 @@ import {
   tokenizeInline,
   parseExperienceSubgroups,
   extractPeriodTitle,
+  stripExtractedTitleAndSubtitle,
 } from "src/utils/markdown";
 
 describe("tokenize", () => {
@@ -76,6 +77,28 @@ describe("extractPeriodTitle", () => {
   it("uses the period index as a last-resort title", () => {
     const r = extractPeriodTitle("just body", 4);
     expect(r.title).toBe("Period 5");
+  });
+});
+
+describe("stripExtractedTitleAndSubtitle", () => {
+  it("removes the first h1 heading from the body", () => {
+    const body = "# Title\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("removes the first blockquote (subtitle) from the body", () => {
+    const body = "> 1 year 3 months\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("removes both the first h1 and the first blockquote", () => {
+    const body = "# Title\n\n> duration\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("returns the body unchanged when no h1 or blockquote is present", () => {
+    const body = "just plain text\n\nno headings or quotes";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe(body);
   });
 });
 

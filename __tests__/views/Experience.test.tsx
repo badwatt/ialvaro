@@ -67,6 +67,12 @@ describe("<Experience />", () => {
     // Both periods' content is in the DOM.
     expect(screen.getByText("PLEXUS")).toBeDefined();
     expect(screen.getByText("Knowmad Mood")).toBeDefined();
+    // The accordion title (first `#` heading) appears once per period
+    // (in the accordion header, stripped from the body). Two periods
+    // -> two occurrences in the DOM, none inside the body content.
+    expect(screen.getAllByText("Consulting Firm:").length).toBe(2);
+    // The blockquote subtitle is also stripped from the body.
+    expect(screen.getAllByText("1 year 3 months").length).toBe(1);
   });
 
   it("renders the description directly when there is no `---`", () => {
