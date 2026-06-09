@@ -4,6 +4,7 @@ import {
   tokenize,
   parseExperienceSubgroups,
   extractPeriodTitle,
+  extractRoleAndPeriod,
   stripExtractedTitleAndSubtitle,
   type Token,
 } from "src/utils/markdown";
@@ -420,22 +421,28 @@ export function drawMarkdown(
 
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
-  h += 14 + 18 + 14; // dot spacing + company row + dates
+  // Header area:
+  //   - Logo row (if logo present): 16pt + 4pt gap
+  //   - Company name: 16pt + 4pt gap
+  //   - Role line (optional): 10pt + 6pt gap
+  //   - Horizontal rule + 10pt padding below
   const subgroups = parseExperienceSubgroups(job.description);
-  const CHIP_PAD_TOP = 8;
-  const CHIP_PAD_BOTTOM = 8;
-  const CHIP_HEADER_H = 24; // title (11) + subtitle line (9) + spacing (4)
-  const BODY_TOP_PAD = 2;
-  const CHIP_GAP = 6;
+  const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
+  h += 16; // logo/company top padding
+  h += 16; // company name line
+  if (headerRole.role) h += 14; // role line + gap
+  h += 14; // horizontal rule + padding
+  // Periods:
+  //   - For each period: sub-header (24pt) + body
+  //   - 14pt gap between periods
+  const PERIOD_GAP = 14;
+  const SUBHEADER_BLOCK_H = 24;
   for (let i = 0; i < subgroups.length; i++) {
-    h += CHIP_PAD_TOP;
-    h += CHIP_HEADER_H;
-    h += BODY_TOP_PAD;
+    h += SUBHEADER_BLOCK_H;
     h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
-    h += CHIP_PAD_BOTTOM;
-    if (i < subgroups.length - 1) h += CHIP_GAP;
+    if (i < subgroups.length - 1) h += PERIOD_GAP;
   }
-  h += 12; // bottom padding inside the card
+  h += 16; // bottom padding
   return h;
 }
 
@@ -451,85 +458,108 @@ export function drawJob(
 ): number {
   const cardH = measureExperience(doc, job, w);
   const LOGO = 16;
-
-  // Card background
-  doc.setFillColor(...C.surface);
-  doc.setDrawColor(...C.border);
-  doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
-
-  // Dot
-  doc.setFillColor(...C.accent);
-  // doc.circle(timelineX, startY + 6, 3.5, "F");
-
-  // Left accent bar: only when there is a single period. With multiple
-  // periods each chip draws its own colored bar; drawing a card-wide
-  // bar on top would create a redundant edge.
   const subgroups = parseExperienceSubgroups(job.description);
-  if (subgroups.length <= 1) {
-    doc.setFillColor(...C.accent);
-    doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
-  }
+  const headerRole = subgroups.length > 0 ? extractRoleAndPeriod(subgroups[0]) : {};
 
-  let y = startY + 14;
+  // Vertical timeline rail: a thin line on the far left that connects
+  // this experience to the next. Stops just below the company name
+  // baseline so it doesn't run into the body.
+  doc.setDrawColor(...C.border);
+  doc.setLineWidth(0.4);
+  doc.line(timelineX, startY, timelineX, startY + 30);
 
-  // Company + logo
+  // Accent dot: a small filled circle in the primary color at the
+  // company name baseline. Sits on top of the timeline rail.
+  doc.setFillColor(...C.primary);
+  doc.circle(timelineX, startY + 8, 3, "F");
+
+  // Outer ring around the dot, in the border color, so the dot reads
+  // as a marker on a rail rather than a floating blob.
+  doc.setDrawColor(...C.border);
+  doc.setLineWidth(0.6);
+  doc.circle(timelineX, startY + 8, 4, "S");
+
+  let y = startY + 6;
+
+  // Logo + company name on the same baseline. Logo sits to the left
+  // of the text, with a small gap.
+  const textX = x + (logo ? LOGO + 8 : 0);
   if (logo) {
     try {
-      doc.addImage(logo, "PNG", x, y - LOGO + 2, LOGO, LOGO);
+      doc.addImage(logo, "PNG", x, y, LOGO, LOGO);
     } catch {
       /* noop */
     }
   }
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
+  doc.setFontSize(16);
   doc.setTextColor(...C.white);
-  doc.text(job.title, x + (logo ? LOGO + 6 : 0), y);
+  doc.text(job.title, textX, y + 12);
   y += 18;
 
-  // Dates
+  // Role line below the company name (italic, muted). Empty when the
+  // markdown body has no role heading paired with a period blockquote.
+  if (headerRole.role) {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.setTextColor(...C.muted);
+    doc.text(headerRole.role, x, y + 6);
+    y += 14;
+  }
+
+  // Dates as a small uppercase letterspaced tag on the right, aligned
+  // with the company name baseline. Right-aligned to the card edge so
+  // it floats independently of the text on the left.
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(...C.muted);
-  doc.text(`${job.date_from} — ${job.date_to}`, x, y);
-  y += 14;
+  const dateText = `${job.date_from.toUpperCase()} — ${job.date_to.toUpperCase()}`;
+  const dateWidth = doc.getTextWidth(dateText);
+  doc.text(dateText, x + 12 + w - dateWidth, startY + 12);
+
+  // Horizontal rule below the header, in the border color. Full width
+  // of the card content.
+  y += 4;
+  doc.setDrawColor(...C.border);
+  doc.setLineWidth(0.3);
+  doc.line(x, y, x + w + 12, y);
+  y += 10;
 
   for (let i = 0; i < subgroups.length; i++) {
-    // Render each period as a clear sub-block inside the card. No
-    // chip bg, no chip border, no chip accent bar: the parent card's
-    // own outline is enough. The sub-header (title + subtitle) is the
-    // visual marker for the period: a small primary-colored square
-    // before the title, the title itself in the primary color, then
-    // the italic subtitle on the next line. This trio reads as a
-    // distinct section label without nesting boxes-within-boxes.
+    // Sub-header for this period. The title is the period name (or
+    // the role if no period was extracted) in the primary color, bold
+    // 12pt. The subtitle (typically a duration like "1y 3m") sits on
+    // the same line, italic muted, with a small dot separator. This
+    // pairs the two pieces of metadata into a single editorial label.
     const meta = extractPeriodTitle(subgroups[i], i);
+
+    // Sub-header: title + subtitle on a single line, separated by a
+    // small primary-colored dot. Sits on its own line with the body
+    // content flowing below.
     const subHeaderY = y;
-
-    // Sub-header marker: a 4pt square in the primary color, vertically
-    // centered with the title baseline. Sits 6pt to the left of the
-    // title so it has its own visual slot.
-    doc.setFillColor(...C.primary);
-    doc.rect(x - 6, subHeaderY - 4, 4, 4, "F");
-
-    // Sub-header: title in primary color, bold 12pt.
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.setTextColor(...C.primary);
-    doc.text(meta.title, x, subHeaderY);
+    doc.text(meta.title, x, subHeaderY + 10);
 
-    // Subtitle on its own line below the title, italic muted.
     if (meta.subtitle) {
+      const titleWidth = doc.getTextWidth(meta.title);
+      // Small dot separator in the muted color, 6pt to the right of
+      // the title.
+      doc.setFillColor(...C.muted);
+      doc.circle(x + titleWidth + 6, subHeaderY + 7, 0.8, "F");
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, x, subHeaderY + 12);
+      doc.text(meta.subtitle, x + titleWidth + 12, subHeaderY + 10);
     }
 
-    y = subHeaderY + 24;
+    y = subHeaderY + 18;
 
     // Body content with the title and subtitle stripped.
     y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
 
-    if (i < subgroups.length - 1) y += 8;
+    if (i < subgroups.length - 1) y += 14;
   }
 
   return startY + cardH + 14;

@@ -1000,6 +1000,23 @@ describe("drawMarkdown", () => {
     expect(finalY).toBeGreaterThan(50);
   });
 
+  it("renders an experience with an empty description without throwing", () => {
+    // Edge case: an experience with no description (no subgroups). The
+    // header should still render with the company name and dates, and
+    // drawJob should not throw or produce NaN measurements.
+    const doc = makeDoc();
+    const job = {
+      title: "Openbank",
+      image: "",
+      date_from: "June 2023",
+      date_to: "July 2026",
+      url: "https://openbank.es/",
+      description: "",
+    };
+    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    expect(finalY).toBeGreaterThan(50);
+  });
+
   it("draws the period subtitle in italic muted when present", () => {
     // A subgroup with a blockquote (subtitle) exercises the if-branch
     // that draws the subtitle inline with the title.
@@ -1017,5 +1034,25 @@ describe("drawMarkdown", () => {
     // The subtitle text was drawn.
     const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
     expect(calls).toContain("1 year 3 months");
+  });
+
+  it("draws the role in italic muted when the body has a role+period pair", () => {
+    // rsi.md has `# Full Stack Developer` followed by `> Devoteam`. The
+    // role is the h1 and the period name is the blockquote. The role
+    // should be drawn as a separate italic muted line under the company
+    // name in the header.
+    const doc = makeDoc();
+    const job = {
+      title: "RSI",
+      image: "",
+      date_from: "October 2021",
+      date_to: "April 2023",
+      url: "https://grupocajarural.es/",
+      description: "# Full Stack Developer\n\n> Devoteam\n\n## Projects\n\n- Onboarding",
+    };
+    drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("Full Stack Developer");
+    expect(calls).toContain("Devoteam");
   });
 });

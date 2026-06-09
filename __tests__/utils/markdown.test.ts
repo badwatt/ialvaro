@@ -4,6 +4,7 @@ import {
   tokenizeInline,
   parseExperienceSubgroups,
   extractPeriodTitle,
+  extractRoleAndPeriod,
   stripExtractedTitleAndSubtitle,
 } from "src/utils/markdown";
 
@@ -69,6 +70,26 @@ describe("extractPeriodTitle", () => {
     expect(r.title).toBe("CEO & Founder");
   });
 
+  it("treats a role+period pair (h1 followed by blockquote) as period=blockquote", () => {
+    // E.g. rsi.md uses `# Full Stack Developer` as the role and
+    // `> Devoteam` as the period name. The role is surfaced separately
+    // by extractRoleAndPeriod; the period title here is the blockquote.
+    const r = extractPeriodTitle(
+      "# Full Stack Developer\n\n> Devoteam\n\n## Projects\n\n- Onboarding",
+      0,
+    );
+    expect(r.title).toBe("Devoteam");
+    expect(r.subtitle).toBeUndefined();
+  });
+
+  it("keeps the heading as the period when the blockquote is empty", () => {
+    // Edge case: an h1 followed by an empty blockquote. The empty
+    // blockquote should not overwrite the heading; the heading stays
+    // as the period title.
+    const r = extractPeriodTitle("# Plexus\n\n>\n\nbody", 0);
+    expect(r.title).toBe("Plexus");
+  });
+
   it("falls back to the first list item when no heading is present", () => {
     const r = extractPeriodTitle("- PLEXUS\n\n> 1 year 3 months", 0);
     expect(r.title).toBe("PLEXUS");
@@ -77,6 +98,33 @@ describe("extractPeriodTitle", () => {
   it("uses the period index as a last-resort title", () => {
     const r = extractPeriodTitle("just body", 4);
     expect(r.title).toBe("Period 5");
+  });
+});
+
+describe("extractRoleAndPeriod", () => {
+  it("extracts a role+period pair from an h1 + blockquote body", () => {
+    const r = extractRoleAndPeriod("# Full Stack Developer\n\n> Devoteam\n\nbody");
+    expect(r.role).toBe("Full Stack Developer");
+    expect(r.period).toBe("Devoteam");
+  });
+
+  it("extracts a role+period pair from an h2 + blockquote body", () => {
+    const r = extractRoleAndPeriod("## CEO\n\n> Period name\n\nbody");
+    expect(r.role).toBe("CEO");
+    expect(r.period).toBe("Period name");
+  });
+
+  it("treats the heading itself as the period when no blockquote follows", () => {
+    // E.g. openbank.md uses `# Plexus` as the period with no role.
+    const r = extractRoleAndPeriod("# Plexus\n\n> 1 year 3 months\n\nbody");
+    expect(r.role).toBeUndefined();
+    expect(r.period).toBe("Plexus");
+  });
+
+  it("returns nothing for a body with no headings or blockquotes", () => {
+    const r = extractRoleAndPeriod("just body text");
+    expect(r.role).toBeUndefined();
+    expect(r.period).toBeUndefined();
   });
 });
 

@@ -47,6 +47,12 @@ export function parseExperienceSubgroups(text: string): string[] {
 // body. The title is the first `#` (h1) or `##` (h2) heading in the
 // body, the subtitle is the first blockquote's text. Falls back to the
 // first list item when no h1/h2 is present, then to `Period N`.
+//
+// When the first h1/h2 is followed by a blockquote (a "role + period
+// + body" structure, e.g. rsi.md), the heading is treated as the role
+// and the blockquote as the period name. In that case the title here
+// is the period name and the subtitle is left empty (the role is
+// surfaced separately by extractRoleAndPeriod).
 export function extractPeriodTitle(
   body: string,
   index: number,
@@ -54,16 +60,31 @@ export function extractPeriodTitle(
   const tokens = marked.lexer(normalizeMarkers(body));
   let title: string | undefined;
   let subtitle: string | undefined;
-  // First pass: the first h1 (`#`) or h2 (`##`) heading is the canonical
-  // period title.
-  for (const t of tokens) {
-    if (t.type === "heading" && (t as Tokens.Heading).depth <= 2) {
-      title = (t as Tokens.Heading).text.split("\n")[0]?.trim();
+  // Find the first h1/h2 heading.
+  let headingIdx = -1;
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type === "heading" && (tokens[i] as Tokens.Heading).depth <= 2) {
+      headingIdx = i;
+      title = (tokens[i] as Tokens.Heading).text.split("\n")[0]?.trim();
       break;
     }
   }
-  // Second pass: fall back to the first list item if no heading was
-  // found.
+  // Detect whether the heading is a role (followed by a blockquote) or
+  // a period (no blockquote follows). For a role, the title we return
+  // is the blockquote text and the subtitle stays empty.
+  if (headingIdx >= 0) {
+    const nextNonSpace = tokens.slice(headingIdx + 1).find((t) => t.type !== "space");
+    if (nextNonSpace?.type === "blockquote") {
+      const bqText = (nextNonSpace as Tokens.Blockquote).text.split("\n")[0]?.trim();
+      if (bqText) {
+        title = bqText;
+        // No duration subtitle in the role+period layout.
+        return { title, subtitle: undefined };
+      }
+    }
+  }
+  // Otherwise (heading is the period) look for a duration blockquote
+  // later in the body.
   if (!title) {
     for (const t of tokens) {
       if (t.type === "list") {
@@ -73,8 +94,6 @@ export function extractPeriodTitle(
       }
     }
   }
-  // Subtitle: the first blockquote's text (typically a duration like
-  // "1 year 3 months").
   for (const t of tokens) {
     if (t.type === "blockquote") {
       subtitle = (t as Tokens.Blockquote).text.split("\n")[0]?.trim();
@@ -85,6 +104,48 @@ export function extractPeriodTitle(
     title: title ?? `Period ${index + 1}`,
     subtitle: subtitle || undefined,
   };
+}
+
+// Extract the role (job title) and the first period marker from a
+// sub-period body. The role is the first h1/h2 when it is immediately
+// followed by a blockquote that does NOT look like a duration
+// (e.g. "> Devoteam"). In that case the blockquote is the period name
+// and the h1/h2 is the role. When the first heading is followed by a
+// duration blockquote (e.g. "> 1 year 3 months") the heading itself is
+// the period name and the role is left undefined.
+//
+// Examples:
+//   "# Full Stack Developer\n> Devoteam"      → role="Full Stack Developer", period="Devoteam"
+//   "# Plexus\n> 1 year 3 months"              → period="Plexus" (no role)
+//   "## CEO & Founder\n- item"                 → period="CEO & Founder" (no role)
+export function extractRoleAndPeriod(body: string): { role?: string; period?: string } {
+  const tokens = marked.lexer(normalizeMarkers(body));
+  let headingIdx = -1;
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type === "heading" && (tokens[i] as Tokens.Heading).depth <= 2) {
+      headingIdx = i;
+      break;
+    }
+  }
+  if (headingIdx < 0) return { role: undefined, period: undefined };
+  const headingText = (tokens[headingIdx] as Tokens.Heading).text.split("\n")[0]?.trim();
+  // Look at the next non-space token after the heading.
+  const nextNonSpace = tokens.slice(headingIdx + 1).find((t) => t.type !== "space");
+  if (nextNonSpace?.type === "blockquote") {
+    const bqText = (nextNonSpace as Tokens.Blockquote).text.split("\n")[0]?.trim();
+    if (bqText && !isDurationText(bqText)) {
+      return { role: headingText, period: bqText };
+    }
+  }
+  return { role: undefined, period: headingText };
+}
+
+// Heuristic: a blockquote text is a duration when it contains a digit
+// or a duration keyword. Used by extractRoleAndPeriod to distinguish
+// a period-name blockquote (e.g. "Devoteam") from a duration blockquote
+// (e.g. "1 year 3 months" or "2y 3m").
+function isDurationText(text: string): boolean {
+  return /\d|\byears?\b|\bmonths?\b/i.test(text);
 }
 
 // Strip the markdown lines that were extracted as the period title
