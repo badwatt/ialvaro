@@ -9,10 +9,10 @@ url: "https://openbank.es/"
 
 # Consulting Firm
 
-- Knowmad Mood
-- Plexus
+• Knowmad Mood
+• Plexus
 
 # Projects
 
-- Onboarding
-- Customer
+• Onboarding
+• Customer
