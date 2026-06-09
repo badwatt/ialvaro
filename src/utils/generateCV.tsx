@@ -315,11 +315,15 @@ function drawMarkdownToken(
     case "heading": {
       const h = token as Tokens.Heading;
       const depth = h.depth;
-      const size = depth === 1 ? 11 : depth === 2 ? 10 : 9.5;
-      const lineH = depth === 1 ? 14 : 13;
+      // In-body headings are distinct from the per-period sub-headers
+      // (which use the primary color in drawJob). Use white here so the
+      // eye reads the sub-headers as labels and the in-body headings
+      // as section breaks inside the body.
+      const size = depth === 1 ? 10 : depth === 2 ? 9.5 : 9;
+      const lineH = depth === 1 ? 12 : 11;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(size);
-      doc.setTextColor(...C.primary);
+      doc.setTextColor(...C.white);
       const lines = doc.splitTextToSize(h.text, w);
       for (const line of lines) {
         doc.text(line, x, y);
@@ -363,7 +367,7 @@ function drawMarkdownToken(
       doc.setDrawColor(...C.primary);
       doc.setLineWidth(0.6);
       doc.line(x + 6, startY - 12, x + 6, y - 4);
-      y += 2;
+      y += 6;
       break;
     }
     case "code": {
@@ -490,66 +494,35 @@ export function drawJob(
   y += 14;
 
   for (let i = 0; i < subgroups.length; i++) {
-    // Render each period as a chip inside the parent card so the two
-    // periods are clearly distinct without competing with the parent
-    // for visual weight. Each chip has:
-    //   - A subtle base-color fill (slightly lighter than the card
-    //     surface, so it pops out as a "lifted" tile).
-    //   - A thin border in the card's border color.
-    //   - A colored left accent bar in primary or accent (alternating
-    //     per period) to mark the period.
-    //   - Title + subtitle + body inside.
+    // Render each period as a clear sub-block inside the card. No
+    // chip bg, no chip border, no accent bar: the parent card's own
+    // outline is enough. The sub-header (title + subtitle) is drawn
+    // larger and in the primary color so it reads as a label, distinct
+    // from the in-body headings (h1/h2 inside the body) which are
+    // drawn in white. Each period is separated from the next by a
+    // clear vertical gap.
     const meta = extractPeriodTitle(subgroups[i], i);
-    const accent =
-      i % 2 === 0
-        ? (C.primary as unknown as [number, number, number])
-        : (C.accent as unknown as [number, number, number]);
 
-    // Compute chip body height to draw the chip frame.
-    const bodyH = measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
-    const chipPadTop = 8;
-    const chipPadBottom = 8;
-    const chipHeaderH = 24;
-    const bodyTopPad = 2;
-    const chipH = chipPadTop + chipHeaderH + bodyTopPad + bodyH + chipPadBottom;
-
-    // Draw the chip frame: only a subtle base fill (no border, since
-    // the parent card already provides one and a nested border would
-    // feel busy). The chip is flush with the card's interior
-    // (same x and width) so only the card's outline is visible.
-    doc.setFillColor(...C.base);
-    doc.roundedRect(x - 12, y, w + 24, chipH, 4, 4, "F");
-
-    // Colored left accent bar inside the chip, aligned with the
-    // card's accent bar.
-    doc.setFillColor(...accent);
-    doc.rect(x - 12, y, 4, chipH, "F");
-
-    // Title inside the chip.
-    const innerX = x + 2;
-    let innerY = y + chipPadTop + 9;
+    // Sub-header: title in primary color, bold 11pt.
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.setTextColor(...accent);
-    doc.text(meta.title, innerX, innerY);
+    doc.setTextColor(...C.primary);
+    doc.text(meta.title, x, y);
 
-    // Subtitle on its own line below the title.
+    // Subtitle on its own line below the title, italic muted.
     if (meta.subtitle) {
-      innerY += 11;
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, innerX, innerY);
+      doc.text(meta.subtitle, x, y + 11);
     }
 
-    // Body content with the title and subtitle stripped. The body sits
-    // to the right of the colored accent bar (4pt) with a small
-    // padding.
-    const bodyY = y + chipPadTop + chipHeaderH + bodyTopPad;
-    drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w + 12, bodyY);
+    y += 22;
 
-    y += chipH;
-    if (i < subgroups.length - 1) y += 6;
+    // Body content with the title and subtitle stripped.
+    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
+
+    if (i < subgroups.length - 1) y += 8;
   }
 
   return startY + cardH + 14;

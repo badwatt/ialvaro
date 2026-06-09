@@ -44,9 +44,9 @@ export function parseExperienceSubgroups(text: string): string[] {
 }
 
 // Extract a human-friendly title and optional subtitle for a sub-period
-// body. The title is the first `#` (h1) heading in the body, the subtitle
-// is the first blockquote's text. Falls back to the first list item when
-// no h1 is present, then to `Period N`.
+// body. The title is the first `#` (h1) or `##` (h2) heading in the
+// body, the subtitle is the first blockquote's text. Falls back to the
+// first list item when no h1/h2 is present, then to `Period N`.
 export function extractPeriodTitle(
   body: string,
   index: number,
@@ -54,14 +54,16 @@ export function extractPeriodTitle(
   const tokens = marked.lexer(normalizeMarkers(body));
   let title: string | undefined;
   let subtitle: string | undefined;
-  // First pass: the first h1 (`#`) heading is the canonical period title.
+  // First pass: the first h1 (`#`) or h2 (`##`) heading is the canonical
+  // period title.
   for (const t of tokens) {
-    if (t.type === "heading" && (t as Tokens.Heading).depth === 1) {
+    if (t.type === "heading" && (t as Tokens.Heading).depth <= 2) {
       title = (t as Tokens.Heading).text.split("\n")[0]?.trim();
       break;
     }
   }
-  // Second pass: fall back to the first list item if no h1 was found.
+  // Second pass: fall back to the first list item if no heading was
+  // found.
   if (!title) {
     for (const t of tokens) {
       if (t.type === "list") {

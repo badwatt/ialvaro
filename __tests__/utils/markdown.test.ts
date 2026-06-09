@@ -63,13 +63,13 @@ describe("extractPeriodTitle", () => {
     expect(r.subtitle).toBe("1 year 3 months");
   });
 
-  it("ignores non-`#` headings (e.g. h2)", () => {
-    const r = extractPeriodTitle("## Subhead\n\nbody", 0);
-    // No h1 found, so title falls back to a generic label.
-    expect(r.title).toMatch(/^Period/);
+  it("accepts a `##` (h2) heading as the title when no h1 is present", () => {
+    // E.g. azama.md uses `## CEO & Founder` as the section heading.
+    const r = extractPeriodTitle("## CEO & Founder\n\n- item", 0);
+    expect(r.title).toBe("CEO & Founder");
   });
 
-  it("falls back to the first list item when no `#` heading is present", () => {
+  it("falls back to the first list item when no heading is present", () => {
     const r = extractPeriodTitle("- PLEXUS\n\n> 1 year 3 months", 0);
     expect(r.title).toBe("PLEXUS");
   });
