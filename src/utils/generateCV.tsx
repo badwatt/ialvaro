@@ -418,13 +418,14 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
   const subgroups = parseExperienceSubgroups(job.description);
-  const SUBHEADER_H = 16;
-  const DIVIDER_H = 10;
-  const GAP = 8;
+  const SUBHEADER_BLOCK_H = 24; // title (11) + subtitle line (9) + spacing (4)
+  const DIVIDER_BLOCK_H = 16; // gap above + line + gap below
+  const BODY_TOP_PAD = 2;
   for (let i = 0; i < subgroups.length; i++) {
-    h += SUBHEADER_H;
+    h += SUBHEADER_BLOCK_H;
+    h += BODY_TOP_PAD;
     h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
-    if (i < subgroups.length - 1) h += DIVIDER_H + GAP;
+    if (i < subgroups.length - 1) h += DIVIDER_BLOCK_H;
   }
   h += 12; // bottom padding inside the card
   return h;
@@ -480,33 +481,49 @@ export function drawJob(
   y += 14;
 
   const subgroups = parseExperienceSubgroups(job.description);
-  const DIVIDER_Y = 10;
-  const GAP = 8;
   for (let i = 0; i < subgroups.length; i++) {
-    // Render the extracted period title as a sub-header so the two
-    // periods are visually distinct inside the card. The body itself
-    // has the title heading stripped to avoid duplication.
+    // Render each period as a visually distinct sub-block: a colored
+    // left bar, a bold title on its own line, a separate italic
+    // subtitle line below it, then the body (with the title/subtitle
+    // stripped so the same text isn't drawn twice).
     const meta = extractPeriodTitle(subgroups[i], i);
+    const periodX = x;
+    const periodW = w;
+
+    // Colored left bar marker for the period.
+    doc.setFillColor(...C.primary);
+    doc.rect(periodX - 6, y - 8, 2, 18, "F");
+
+    // Title line.
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setTextColor(...C.primary);
-    doc.text(meta.title, x, y);
+    doc.text(meta.title, periodX, y);
+    y += 11;
+
+    // Subtitle on its own line, clearly separated from the title.
     if (meta.subtitle) {
       doc.setFont("helvetica", "italic");
-      doc.setFontSize(8.5);
+      doc.setFontSize(9);
       doc.setTextColor(...C.muted);
-      doc.text(meta.subtitle, x + doc.getTextWidth(meta.title) + 6, y);
+      doc.text(meta.subtitle, periodX, y);
+      y += 11;
+    } else {
+      y += 2;
     }
-    y += 16;
-    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
+
+    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), periodX, periodW, y);
+
     if (i < subgroups.length - 1) {
-      // Subtle divider between periods so they read as distinct
-      // sub-blocks inside the same job card.
-      y += GAP;
+      // A clear horizontal divider separates the two periods inside
+      // the same job card. Centered with margins on both sides so it
+      // reads as a visual separator, not a card edge.
+      y += 6;
       doc.setDrawColor(...C.border);
-      doc.setLineWidth(0.3);
-      doc.line(x, y, x + w, y);
-      y += DIVIDER_Y;
+      doc.setLineWidth(0.4);
+      const inset = 12;
+      doc.line(periodX + inset, y, periodX + periodW - inset, y);
+      y += 10;
     }
   }
 
