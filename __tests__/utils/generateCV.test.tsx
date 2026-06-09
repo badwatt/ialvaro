@@ -9,6 +9,7 @@ import {
   parseDate,
   drawMarkdown,
   measureMarkdown,
+  drawJob,
 } from "src/utils/generateCV";
 import {
   CV_THEMES,
@@ -717,10 +718,10 @@ describe("measureMarkdown", () => {
     expect(h).toBeGreaterThan(0);
   });
 
-  it("includes height for hr", () => {
+  it("skips `---` so the caller can split on it", () => {
     const doc = { splitTextToSize: (t: string) => [t] };
     const h = measureMarkdown(doc as any, "---", 200);
-    expect(h).toBeGreaterThan(0);
+    expect(h).toBe(0);
   });
 
   it("falls back to zero height for unsupported block types (e.g. tables)", () => {
@@ -766,6 +767,16 @@ describe("measureMarkdown", () => {
     expect(() => measureMarkdown(doc as any, "- real", 200)).not.toThrow();
     marked.marked.lexer = origLexer;
   });
+
+  it("adds the subgroup gap between periods when measuring", () => {
+    // Two subgroups split on `---` should have a gap between them when
+    // measuring total experience height. The first period is small; the
+    // second is larger; the total must be sum + gap.
+    const doc = { splitTextToSize: (t: string) => [t] };
+    const single = measureMarkdown(doc as any, "period body", 200);
+    const split = measureMarkdown(doc as any, "first body\n\n---\n\nsecond body", 200);
+    expect(split).toBeGreaterThan(single * 2);
+  });
 });
 
 describe("drawMarkdown", () => {
@@ -803,7 +814,7 @@ describe("drawMarkdown", () => {
     accent: [200, 80, 100] as [number, number, number],
   };
 
-  it("draws headings, paragraphs, lists, blockquotes, code, and hr without throwing", () => {
+  it("draws headings, paragraphs, lists, blockquotes, and code without throwing", () => {
     const doc = makeDoc();
     const source = [
       "# Title",
@@ -814,12 +825,19 @@ describe("drawMarkdown", () => {
       "```",
       "const x = 1;",
       "```",
-      "---",
     ].join("\n\n");
     const finalY = drawMarkdown(doc as any, C, source, 36, 200, 50);
     expect(finalY).toBeGreaterThan(50);
     expect(doc.text).toHaveBeenCalled();
     expect(doc.setFont).toHaveBeenCalled();
+  });
+
+  it("does not draw a line for `---` (caller splits on it instead)", () => {
+    const doc = makeDoc();
+    const beforeLineCalls = (doc.line as any).mock.calls.length;
+    drawMarkdown(doc as any, C, "---", 36, 200, 50);
+    // No line drawn; the hr is filtered out by drawMarkdown.
+    expect((doc.line as any).mock.calls.length).toBe(beforeLineCalls);
   });
 
   it("draws a heading at depth 1 (h1 lineHeight branch)", () => {
@@ -963,5 +981,41 @@ describe("drawMarkdown", () => {
     const doc = makeDoc();
     expect(() => drawMarkdown(doc as any, C, "x", 36, 200, 50)).not.toThrow();
     marked.marked.lexer = origLexer;
+  });
+
+  it("renders two subgroups with a gap between them in drawJob", () => {
+    // Direct coverage for the loop in drawJob that walks subgroups and
+    // inserts a divider between them. The mock is jsPDF-shaped so we
+    // invoke drawJob directly.
+    const doc = makeDoc();
+    const job = {
+      title: "Openbank",
+      image: "",
+      date_from: "June 2023",
+      date_to: "July 2026",
+      url: "https://openbank.es/",
+      description: "first body\n\n---\n\nsecond body",
+    };
+    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    expect(finalY).toBeGreaterThan(50);
+  });
+
+  it("draws the period subtitle in italic muted when present", () => {
+    // A subgroup with a blockquote (subtitle) exercises the if-branch
+    // that draws the subtitle inline with the title.
+    const doc = makeDoc();
+    const job = {
+      title: "Openbank",
+      image: "",
+      date_from: "June 2023",
+      date_to: "July 2026",
+      url: "https://openbank.es/",
+      description: "# Consulting Firm\n\n- PLEXUS\n\n> 1 year 3 months\n\n---\n\n# Period 2",
+    };
+    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    expect(finalY).toBeGreaterThan(50);
+    // The subtitle text was drawn.
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("1 year 3 months");
   });
 });

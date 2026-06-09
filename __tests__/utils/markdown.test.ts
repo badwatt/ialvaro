@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { tokenize, tokenizeInline } from "src/utils/markdown";
+import {
+  tokenize,
+  tokenizeInline,
+  parseExperienceSubgroups,
+  extractPeriodTitle,
+  stripExtractedTitleAndSubtitle,
+} from "src/utils/markdown";
 
 describe("tokenize", () => {
   it("returns an empty-ish array for empty input", () => {
@@ -47,5 +53,68 @@ describe("tokenizeInline", () => {
     const tokens = tokenizeInline("- one");
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens[0].type).toBe("text");
+  });
+});
+
+describe("extractPeriodTitle", () => {
+  it("uses the first `#` heading as the title", () => {
+    const r = extractPeriodTitle("# Consulting Firm:\n\n- PLEXUS\n\n> 1 year 3 months", 0);
+    expect(r.title).toBe("Consulting Firm:");
+    expect(r.subtitle).toBe("1 year 3 months");
+  });
+
+  it("ignores non-`#` headings (e.g. h2)", () => {
+    const r = extractPeriodTitle("## Subhead\n\nbody", 0);
+    // No h1 found, so title falls back to a generic label.
+    expect(r.title).toMatch(/^Period/);
+  });
+
+  it("falls back to the first list item when no `#` heading is present", () => {
+    const r = extractPeriodTitle("- PLEXUS\n\n> 1 year 3 months", 0);
+    expect(r.title).toBe("PLEXUS");
+  });
+
+  it("uses the period index as a last-resort title", () => {
+    const r = extractPeriodTitle("just body", 4);
+    expect(r.title).toBe("Period 5");
+  });
+});
+
+describe("stripExtractedTitleAndSubtitle", () => {
+  it("removes the first h1 heading from the body", () => {
+    const body = "# Title\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("removes the first blockquote (subtitle) from the body", () => {
+    const body = "> 1 year 3 months\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("removes both the first h1 and the first blockquote", () => {
+    const body = "# Title\n\n> duration\n\nbody text";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe("body text");
+  });
+
+  it("returns the body unchanged when no h1 or blockquote is present", () => {
+    const body = "just plain text\n\nno headings or quotes";
+    expect(stripExtractedTitleAndSubtitle(body)).toBe(body);
+  });
+});
+
+describe("parseExperienceSubgroups", () => {
+  it("returns the body as a single subgroup when there is no `---`", () => {
+    const result = parseExperienceSubgroups("just one body");
+    expect(result).toEqual(["just one body"]);
+  });
+
+  it("splits a body on `---` horizontal rules into multiple subgroups", () => {
+    const result = parseExperienceSubgroups("first period\n\n---\n\nsecond period");
+    expect(result).toEqual(["first period", "second period"]);
+  });
+
+  it("drops empty subgroups produced by leading or trailing `---`", () => {
+    const result = parseExperienceSubgroups("---\n\nmiddle\n\n---\n");
+    expect(result).toEqual(["middle"]);
   });
 });

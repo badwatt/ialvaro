@@ -1,6 +1,12 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
-import { tokenize, type Token } from "src/utils/markdown";
+import {
+  tokenize,
+  parseExperienceSubgroups,
+  extractPeriodTitle,
+  stripExtractedTitleAndSubtitle,
+  type Token,
+} from "src/utils/markdown";
 import type { Tokens } from "marked";
 
 const PAGE_W = 595;
@@ -172,8 +178,6 @@ function measureToken(doc: any, token: Token, w: number): number {
       const lineH = 11;
       return code.text.split("\n").length * lineH + 10;
     }
-    case "hr":
-      return 8;
     default:
       return 0;
   }
@@ -380,13 +384,6 @@ function drawMarkdownToken(
       y += blockH;
       break;
     }
-    case "hr": {
-      doc.setDrawColor(...C.border);
-      doc.setLineWidth(0.5);
-      doc.line(x, y + 2, x + w, y + 2);
-      y += 8;
-      break;
-    }
     default:
       break;
   }
@@ -406,7 +403,10 @@ export function drawMarkdown(
   let y = startY;
   let first = true;
   for (const token of parseDescription(raw)) {
-    if (token.type === "space") continue;
+    // Drop `hr` tokens here; callers (e.g. drawJob) split on them
+    // explicitly so they can render sub-periods with proper spacing
+    // instead of a horizontal rule line.
+    if (token.type === "space" || token.type === "hr") continue;
     if (!first) y += BLOCK_GAP;
     first = false;
     y = drawMarkdownToken(doc, C, token, x, w, y);
@@ -417,12 +417,25 @@ export function drawMarkdown(
 function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
-  h += measureMarkdown(doc, job.description, w);
+  const subgroups = parseExperienceSubgroups(job.description);
+  const CHIP_PAD_TOP = 8;
+  const CHIP_PAD_BOTTOM = 8;
+  const CHIP_HEADER_H = 24; // title (11) + subtitle line (9) + spacing (4)
+  const BODY_TOP_PAD = 2;
+  const CHIP_GAP = 6;
+  for (let i = 0; i < subgroups.length; i++) {
+    h += CHIP_PAD_TOP;
+    h += CHIP_HEADER_H;
+    h += BODY_TOP_PAD;
+    h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
+    h += CHIP_PAD_BOTTOM;
+    if (i < subgroups.length - 1) h += CHIP_GAP;
+  }
   h += 12; // bottom padding inside the card
   return h;
 }
 
-function drawJob(
+export function drawJob(
   doc: any,
   C: CVColors,
   job: ExperienceEntry,
@@ -440,13 +453,18 @@ function drawJob(
   doc.setDrawColor(...C.border);
   doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
 
-  // Left accent bar
-  doc.setFillColor(...C.accent);
-  doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
-
   // Dot
   doc.setFillColor(...C.accent);
   doc.circle(timelineX, startY + 6, 3.5, "F");
+
+  // Left accent bar: only when there is a single period. With multiple
+  // periods each chip draws its own colored bar; drawing a card-wide
+  // bar on top would create a redundant edge.
+  const subgroups = parseExperienceSubgroups(job.description);
+  if (subgroups.length <= 1) {
+    doc.setFillColor(...C.accent);
+    doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
+  }
 
   let y = startY + 14;
 
@@ -471,7 +489,68 @@ function drawJob(
   doc.text(`${job.date_from} — ${job.date_to}`, x, y);
   y += 14;
 
-  y = drawMarkdown(doc, C, job.description, x, w, y);
+  for (let i = 0; i < subgroups.length; i++) {
+    // Render each period as a chip inside the parent card so the two
+    // periods are clearly distinct without competing with the parent
+    // for visual weight. Each chip has:
+    //   - A subtle base-color fill (slightly lighter than the card
+    //     surface, so it pops out as a "lifted" tile).
+    //   - A thin border in the card's border color.
+    //   - A colored left accent bar in primary or accent (alternating
+    //     per period) to mark the period.
+    //   - Title + subtitle + body inside.
+    const meta = extractPeriodTitle(subgroups[i], i);
+    const accent =
+      i % 2 === 0
+        ? (C.primary as unknown as [number, number, number])
+        : (C.accent as unknown as [number, number, number]);
+
+    // Compute chip body height to draw the chip frame.
+    const bodyH = measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
+    const chipPadTop = 8;
+    const chipPadBottom = 8;
+    const chipHeaderH = 24;
+    const bodyTopPad = 2;
+    const chipH = chipPadTop + chipHeaderH + bodyTopPad + bodyH + chipPadBottom;
+
+    // Draw the chip frame: only a subtle base fill (no border, since
+    // the parent card already provides one and a nested border would
+    // feel busy). The chip is flush with the card's interior
+    // (same x and width) so only the card's outline is visible.
+    doc.setFillColor(...C.base);
+    doc.roundedRect(x - 12, y, w + 24, chipH, 4, 4, "F");
+
+    // Colored left accent bar inside the chip, aligned with the
+    // card's accent bar.
+    doc.setFillColor(...accent);
+    doc.rect(x - 12, y, 4, chipH, "F");
+
+    // Title inside the chip.
+    const innerX = x + 2;
+    let innerY = y + chipPadTop + 9;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(...accent);
+    doc.text(meta.title, innerX, innerY);
+
+    // Subtitle on its own line below the title.
+    if (meta.subtitle) {
+      innerY += 11;
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(...C.muted);
+      doc.text(meta.subtitle, innerX, innerY);
+    }
+
+    // Body content with the title and subtitle stripped. The body sits
+    // to the right of the colored accent bar (4pt) with a small
+    // padding.
+    const bodyY = y + chipPadTop + chipHeaderH + bodyTopPad;
+    drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w + 12, bodyY);
+
+    y += chipH;
+    if (i < subgroups.length - 1) y += 6;
+  }
 
   return startY + cardH + 14;
 }
