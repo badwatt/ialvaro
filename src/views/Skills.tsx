@@ -14,9 +14,9 @@ export const Skills = ({ skillsData }: SkillsProps) => {
       <div id="skills-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Skills" />
       <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense gap-4 md:gap-6">
-        {skillsData.map(({ id, title, image, url, featured }, i) => (
+        {skillsData.map(({ title, image, url, featured }, i) => (
           <a
-            key={id}
+            key={i}
             href={url}
             rel="noopener noreferrer"
             target="_blank"

@@ -31,7 +31,6 @@ function parseDate(str: string): number {
 
 const experienceData: ExperienceEntry[] = experienceDocs
   .map((e) => ({
-    id: e.data.id,
     title: e.data.title,
     image: e.data.image.src,
     date_from: e.data.date_from,
@@ -42,7 +41,6 @@ const experienceData: ExperienceEntry[] = experienceDocs
   .sort((a, b) => parseDate(b.date_from) - parseDate(a.date_from));
 
 const portfolioData: PortfolioEntry[] = portfolioDocs.map((e) => ({
-  id: e.data.id,
   title: e.data.title,
   image: e.data.image.src,
   url: e.data.url,
@@ -58,7 +56,6 @@ const aboutData: AboutEntry[] = aboutDocs.map((e) => ({
 }));
 
 const skillsData: SkillEntry[] = skillsDocs.map((e) => ({
-  id: e.data.id,
   title: e.data.title,
   image: e.data.image.src,
   url: e.data.url,

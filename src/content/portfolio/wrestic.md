@@ -1,5 +1,4 @@
 ---
-id: "2"
 title: "wrestic"
 image: "../../assets/portfolio/wrestic/wrestic_mockup.png"
 url: "https://github.com/badwatt/wrestic"

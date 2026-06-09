@@ -1,14 +1,12 @@
 export const testSkillsData = [
   {
-    id: "0",
     title: "react.js",
     image: "/skills/react.svg",
     url: "https://react.dev/",
     featured: true,
   },
-  { id: "1", title: "vue.js", image: "/skills/vue.svg", url: "https://vuejs.org/" },
+  { title: "vue.js", image: "/skills/vue.svg", url: "https://vuejs.org/" },
   {
-    id: "2",
     title: "typescript",
     image: "/skills/typescript.svg",
     url: "https://typescriptlang.org/",
@@ -18,7 +16,6 @@ export const testSkillsData = [
 
 export const testExperienceData = [
   {
-    id: "2",
     title: "Openbank",
     image: "../../assets/experience/openbank.svg",
     date_from: "June 2023",
@@ -28,7 +25,6 @@ export const testExperienceData = [
       "# Consulting Firm\n\n- Knowmad Mood\n- Plexus\n\n# Projects\n\n- Onboarding\n- Customer",
   },
   {
-    id: "1",
     title: "RSI",
     image: "../../assets/experience/rsi.svg",
     date_from: "October 2021",
@@ -41,14 +37,12 @@ export const testExperienceData = [
 
 export const testPortfolioData = [
   {
-    id: "1",
     title: "ialvaro",
     image: "../../assets/images/readme/ialvaro.png",
     url: "https://github.com/badwatt/ialvaro",
     description: "A website done by using TypeScript, React.js, Astro.js, Tailwind & Framer Motion",
   },
   {
-    id: "2",
     title: "wrestic",
     image: "../../assets/portfolio/wrestic/wrestic_mockup.png",
     url: "https://github.com/badwatt/wrestic",

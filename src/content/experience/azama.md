@@ -1,5 +1,4 @@
 ---
-id: "3"
 title: "AZAMA"
 image: "../../assets/experience/azama.png"
 date_from: "October 2016"

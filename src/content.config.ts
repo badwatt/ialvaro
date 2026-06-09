@@ -6,7 +6,6 @@ const experience = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/experience" }),
   schema: ({ image }) =>
     z.object({
-      id: z.string(),
       title: z.string(),
       image: image(),
       date_from: z.string(),
@@ -19,7 +18,6 @@ const portfolio = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/portfolio" }),
   schema: ({ image }) =>
     z.object({
-      id: z.string(),
       title: z.string(),
       image: image(),
       url: z.string(),
@@ -50,10 +48,14 @@ const about = defineCollection({
 });
 
 const skills = defineCollection({
-  loader: file("src/content/skills/skills.json"),
+  loader: file("src/content/skills/skills.json", {
+    parser: (text) => {
+      const parsed = JSON.parse(text) as Array<Record<string, unknown>>;
+      return parsed.map((entry, index) => ({ ...entry, id: String(index) }));
+    },
+  }),
   schema: ({ image }) =>
     z.object({
-      id: z.string(),
       title: z.string(),
       image: image(),
       url: z.string(),

@@ -1,5 +1,4 @@
 ---
-id: "1"
 title: "RSI"
 image: "../../assets/experience/rsi.svg"
 date_from: "October 2021"

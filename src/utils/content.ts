@@ -1,5 +1,4 @@
 export type SkillEntry = {
-  id: string;
   title: string;
   image: string;
   url: string;
@@ -7,7 +6,6 @@ export type SkillEntry = {
 };
 
 export type ExperienceEntry = {
-  id: string;
   title: string;
   image: string;
   date_from: string;
@@ -17,7 +15,6 @@ export type ExperienceEntry = {
 };
 
 export type PortfolioEntry = {
-  id: string;
   title: string;
   image: string;
   url: string;

@@ -1,5 +1,4 @@
 ---
-id: "2"
 title: "Openbank"
 image: "../../assets/experience/openbank.svg"
 date_from: "June 2023"

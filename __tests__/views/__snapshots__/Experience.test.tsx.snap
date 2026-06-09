@@ -39,7 +39,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
           class="border rounded-2xl overflow-hidden transition-colors duration-300 border-alvaro-primary/30 bg-alvaro-surface"
         >
           <button
-            aria-controls="accordion-content-2"
+            aria-controls="accordion-content-0"
             aria-expanded="true"
             class="w-full flex items-center justify-between p-6 text-left cursor-pointer"
             type="button"
@@ -71,7 +71,7 @@ exports[`<Experience /> > should match the snapshot 1`] = `
           </button>
           <div
             class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-[1000px] opacity-100"
-            id="accordion-content-2"
+            id="accordion-content-0"
           >
             <div
               class="px-6 pb-6"

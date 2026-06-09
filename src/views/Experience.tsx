@@ -8,10 +8,10 @@ interface ExperienceProps {
 }
 
 export const Experience = ({ experienceData }: ExperienceProps) => {
-  const items = experienceData.map((entry) => {
+  const items = experienceData.map((entry, i) => {
     const sections = parseDescription(entry.description);
     return {
-      id: String(entry.id),
+      id: String(i),
       title: entry.title,
       subtitle: `${entry.date_from} \u2014 ${entry.date_to}`,
       content: (
@@ -50,7 +50,7 @@ export const Experience = ({ experienceData }: ExperienceProps) => {
     <section id="experience" className="section-curve relative">
       <div id="experience-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Experience" />
-      <Accordion items={items} defaultOpenId={String(experienceData[0].id)} timeline />
+      <Accordion items={items} defaultOpenId="0" timeline />
     </section>
   );
 };

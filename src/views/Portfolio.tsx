@@ -12,9 +12,9 @@ export const Portfolio = ({ portfolioData }: PortfolioProps) => {
       <div id="portfolio-nav" className="absolute top-0 left-0" aria-hidden="true" />
       <Header title="Portfolio" />
       <div className="space-y-6">
-        {portfolioData.map(({ id, title, image, url, description }, i) => (
+        {portfolioData.map(({ title, image, url, description }, i) => (
           <SpotlightCard
-            key={id}
+            key={i}
             className={`sticky grid md:grid-cols-[1fr_2fr] gap-8 p-6 md:p-10 group`}
           >
             <div
