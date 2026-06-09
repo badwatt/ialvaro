@@ -1,6 +1,12 @@
 import type { ExperienceEntry, AboutEntry, SkillEntry } from "src/utils/content";
 import { pickAssetByLuminance, type CVTheme, type CVThemeColors } from "src/utils/cvThemes";
-import { tokenize, parseExperienceSubgroups, type Token } from "src/utils/markdown";
+import {
+  tokenize,
+  parseExperienceSubgroups,
+  extractPeriodTitle,
+  stripExtractedTitleAndSubtitle,
+  type Token,
+} from "src/utils/markdown";
 import type { Tokens } from "marked";
 
 const PAGE_W = 595;
@@ -412,10 +418,13 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   let h = 0;
   h += 14 + 18 + 14; // dot spacing + company row + dates
   const subgroups = parseExperienceSubgroups(job.description);
-  const SUBGROUP_GAP = 8;
+  const SUBHEADER_H = 16;
+  const DIVIDER_H = 10;
+  const GAP = 8;
   for (let i = 0; i < subgroups.length; i++) {
-    h += measureMarkdown(doc, subgroups[i], w);
-    if (i < subgroups.length - 1) h += SUBGROUP_GAP;
+    h += SUBHEADER_H;
+    h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
+    if (i < subgroups.length - 1) h += DIVIDER_H + GAP;
   }
   h += 12; // bottom padding inside the card
   return h;
@@ -471,10 +480,34 @@ export function drawJob(
   y += 14;
 
   const subgroups = parseExperienceSubgroups(job.description);
-  const SUBGROUP_GAP = 8;
+  const DIVIDER_Y = 10;
+  const GAP = 8;
   for (let i = 0; i < subgroups.length; i++) {
-    y = drawMarkdown(doc, C, subgroups[i], x, w, y);
-    if (i < subgroups.length - 1) y += SUBGROUP_GAP;
+    // Render the extracted period title as a sub-header so the two
+    // periods are visually distinct inside the card. The body itself
+    // has the title heading stripped to avoid duplication.
+    const meta = extractPeriodTitle(subgroups[i], i);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...C.primary);
+    doc.text(meta.title, x, y);
+    if (meta.subtitle) {
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...C.muted);
+      doc.text(meta.subtitle, x + doc.getTextWidth(meta.title) + 6, y);
+    }
+    y += 16;
+    y = drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), x, w, y);
+    if (i < subgroups.length - 1) {
+      // Subtle divider between periods so they read as distinct
+      // sub-blocks inside the same job card.
+      y += GAP;
+      doc.setDrawColor(...C.border);
+      doc.setLineWidth(0.3);
+      doc.line(x, y, x + w, y);
+      y += DIVIDER_Y;
+    }
   }
 
   return startY + cardH + 14;

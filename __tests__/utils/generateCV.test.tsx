@@ -985,7 +985,7 @@ describe("drawMarkdown", () => {
 
   it("renders two subgroups with a gap between them in drawJob", () => {
     // Direct coverage for the loop in drawJob that walks subgroups and
-    // inserts SUBGROUP_GAP between them. The mock is jsPDF-shaped so we
+    // inserts a divider between them. The mock is jsPDF-shaped so we
     // invoke drawJob directly.
     const doc = makeDoc();
     const job = {
@@ -998,5 +998,24 @@ describe("drawMarkdown", () => {
     };
     const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
     expect(finalY).toBeGreaterThan(50);
+  });
+
+  it("draws the period subtitle in italic muted when present", () => {
+    // A subgroup with a blockquote (subtitle) exercises the if-branch
+    // that draws the subtitle inline with the title.
+    const doc = makeDoc();
+    const job = {
+      title: "Openbank",
+      image: "",
+      date_from: "June 2023",
+      date_to: "July 2026",
+      url: "https://openbank.es/",
+      description: "# Consulting Firm\n\n- PLEXUS\n\n> 1 year 3 months\n\n---\n\n# Period 2",
+    };
+    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    expect(finalY).toBeGreaterThan(50);
+    // The subtitle text was drawn.
+    const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
+    expect(calls).toContain("1 year 3 months");
   });
 });
