@@ -420,12 +420,14 @@ function measureExperience(doc: any, job: ExperienceEntry, w: number): number {
   const subgroups = parseExperienceSubgroups(job.description);
   const CHIP_PAD_TOP = 8;
   const CHIP_PAD_BOTTOM = 8;
-  const CHIP_HEADER_H = 24; // title (11) + subtitle line (9) + spacing (4)
-  const BODY_TOP_PAD = 2;
+  const CHIP_TITLE_H = 11;
+  const CHIP_SUBTITLE_H = 11; // subtitle line (9pt) + small gap
+  const BODY_TOP_PAD = 10; // breathing room before the body starts
   const CHIP_GAP = 6;
   for (let i = 0; i < subgroups.length; i++) {
     h += CHIP_PAD_TOP;
-    h += CHIP_HEADER_H;
+    h += CHIP_TITLE_H;
+    h += CHIP_SUBTITLE_H;
     h += BODY_TOP_PAD;
     h += measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
     h += CHIP_PAD_BOTTOM;
@@ -452,10 +454,6 @@ export function drawJob(
   doc.setFillColor(...C.surface);
   doc.setDrawColor(...C.border);
   doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
-
-  // Dot
-  doc.setFillColor(...C.accent);
-  doc.circle(timelineX, startY + 6, 3.5, "F");
 
   // Left accent bar: only when there is a single period. With multiple
   // periods each chip draws its own colored bar; drawing a card-wide
@@ -490,28 +488,23 @@ export function drawJob(
   y += 14;
 
   for (let i = 0; i < subgroups.length; i++) {
-    // Render each period as a chip inside the parent card so the two
-    // periods are clearly distinct without competing with the parent
-    // for visual weight. Each chip has:
-    //   - A subtle base-color fill (slightly lighter than the card
-    //     surface, so it pops out as a "lifted" tile).
-    //   - A thin border in the card's border color.
-    //   - A colored left accent bar in primary or accent (alternating
-    //     per period) to mark the period.
-    //   - Title + subtitle + body inside.
+    // Render each period as a chip inside the parent card. Both
+    // periods share the same primary color so they read as siblings
+    // of one experience, not as two competing entries. A card-wide
+    // accent bar is drawn on top of the card (single-period only);
+    // for multi-period jobs each chip draws its own 4pt left bar in
+    // the primary color to mark the period.
     const meta = extractPeriodTitle(subgroups[i], i);
-    const accent =
-      i % 2 === 0
-        ? (C.primary as unknown as [number, number, number])
-        : (C.accent as unknown as [number, number, number]);
+    const chipColor = C.primary as unknown as [number, number, number];
 
     // Compute chip body height to draw the chip frame.
     const bodyH = measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
     const chipPadTop = 8;
     const chipPadBottom = 8;
-    const chipHeaderH = 24;
-    const bodyTopPad = 2;
-    const chipH = chipPadTop + chipHeaderH + bodyTopPad + bodyH + chipPadBottom;
+    const chipTitleH = 11;
+    const chipSubtitleH = 11;
+    const bodyTopPad = 10;
+    const chipH = chipPadTop + chipTitleH + chipSubtitleH + bodyTopPad + bodyH + chipPadBottom;
 
     // Draw the chip frame: only a subtle base fill (no border, since
     // the parent card already provides one and a nested border would
@@ -522,7 +515,7 @@ export function drawJob(
 
     // Colored left accent bar inside the chip, aligned with the
     // card's accent bar.
-    doc.setFillColor(...accent);
+    doc.setFillColor(...chipColor);
     doc.rect(x - 12, y, 4, chipH, "F");
 
     // Title inside the chip.
@@ -530,12 +523,12 @@ export function drawJob(
     let innerY = y + chipPadTop + 9;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.setTextColor(...accent);
+    doc.setTextColor(...chipColor);
     doc.text(meta.title, innerX, innerY);
 
     // Subtitle on its own line below the title.
     if (meta.subtitle) {
-      innerY += 11;
+      innerY += chipSubtitleH;
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
       doc.setTextColor(...C.muted);
@@ -544,8 +537,9 @@ export function drawJob(
 
     // Body content with the title and subtitle stripped. The body sits
     // to the right of the colored accent bar (4pt) with a small
-    // padding.
-    const bodyY = y + chipPadTop + chipHeaderH + bodyTopPad;
+    // padding. bodyTopPad (10pt) leaves a clear gap between the
+    // subtitle and the first body heading so the two never collide.
+    const bodyY = y + chipPadTop + chipTitleH + chipSubtitleH + bodyTopPad;
     drawMarkdown(doc, C, stripExtractedTitleAndSubtitle(subgroups[i]), innerX, w + 12, bodyY);
 
     y += chipH;
