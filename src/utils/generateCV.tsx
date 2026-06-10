@@ -450,19 +450,15 @@ export function drawJob(
   const cardH = measureExperience(doc, job, w);
   const LOGO = 16;
 
-  // Card background
+  // Card background. The card itself draws no left accent bar; every
+  // period chip draws its own 4pt bar on the left, including the
+  // single-period case. The bar's color is always the primary color
+  // so single-period and multi-period jobs read consistently.
   doc.setFillColor(...C.surface);
   doc.setDrawColor(...C.border);
   doc.roundedRect(x - 12, startY - 10, w + 24, cardH, 4, 4, "FD");
 
-  // Left accent bar: only when there is a single period. With multiple
-  // periods each chip draws its own colored bar; drawing a card-wide
-  // bar on top would create a redundant edge.
   const subgroups = parseExperienceSubgroups(job.description);
-  if (subgroups.length <= 1) {
-    doc.setFillColor(...C.accent);
-    doc.roundedRect(x - 12, startY - 10, 4, cardH, 2, 2, "F");
-  }
 
   let y = startY + 14;
 
