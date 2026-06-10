@@ -497,13 +497,16 @@ export function drawJob(
     const meta = extractPeriodTitle(subgroups[i], i);
     const chipColor = C.primary as unknown as [number, number, number];
 
-    // Compute chip body height to draw the chip frame.
+    // Compute chip body height to draw the chip frame. The body-top
+    // pad is wider for multi-period jobs (30pt) than for single-
+    // period jobs (2pt) so the chip's body has visual breathing
+    // room when the card contains multiple chips stacked together.
     const bodyH = measureMarkdown(doc, stripExtractedTitleAndSubtitle(subgroups[i]), w);
     const chipPadTop = 8;
     const chipPadBottom = 8;
     const chipTitleH = 11;
     const chipSubtitleH = 11;
-    const bodyTopPad = 10;
+    const bodyTopPad = subgroups.length > 1 ? 30 : 2;
     const chipH = chipPadTop + chipTitleH + chipSubtitleH + bodyTopPad + bodyH + chipPadBottom;
 
     // Draw the chip frame: only a subtle base fill (no border, since
