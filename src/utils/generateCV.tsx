@@ -443,7 +443,6 @@ export function drawJob(
   job: ExperienceEntry,
   x: number,
   w: number,
-  timelineX: number,
   startY: number,
   logo: string | null,
 ): number {
@@ -819,7 +818,6 @@ export async function generateCV(
 
   let page = 1;
 
-  const timelineX = mainX + 10;
   const cx = mainX + 28;
 
   // Experience area (no title)
@@ -840,10 +838,9 @@ export async function generateCV(
     }
     const startY = y;
     const usePage1 = page === 1;
-    const dotX = usePage1 ? timelineX : M + 10;
     const jx = usePage1 ? cx : M + 28;
     const jw = usePage1 ? contW : CONTENT_W - 40;
-    y = drawJob(doc, C, job, jx, jw, dotX, startY, logo);
+    y = drawJob(doc, C, job, jx, jw, startY, logo);
   }
 
   drawFooter(doc, C, profileAltImg);

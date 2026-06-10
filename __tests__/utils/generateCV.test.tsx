@@ -996,7 +996,7 @@ describe("drawMarkdown", () => {
       url: "https://openbank.es/",
       description: "first body\n\n---\n\nsecond body",
     };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    const finalY = drawJob(doc as any, C, job, 36, 200, 50, null);
     expect(finalY).toBeGreaterThan(50);
   });
 
@@ -1012,7 +1012,7 @@ describe("drawMarkdown", () => {
       url: "https://openbank.es/",
       description: "# Consulting Firm\n\n- PLEXUS\n\n> 1 year 3 months\n\n---\n\n# Period 2",
     };
-    const finalY = drawJob(doc as any, C, job, 36, 200, 36, 50, null);
+    const finalY = drawJob(doc as any, C, job, 36, 200, 50, null);
     expect(finalY).toBeGreaterThan(50);
     // The subtitle text was drawn.
     const calls = (doc.text as any).mock.calls.map((c: unknown[]) => c[0]);
